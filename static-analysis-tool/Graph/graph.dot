@@ -1,0 +1,119 @@
+digraph G{
+	rankdir=LR
+	size="8,5"
+	nodesep=1.0
+	node[shape=box style=rounded peripheries=2]
+"ViewBidHist(iid)"
+"RegItem(cid)"->"RegItem(cid)"[label="ww,ITEMS(*).*;
+cid = cid'
+",style=dashed]
+"RegItem(cid)"->"RegItem(cid)"[label="ww,ITEMS(*).*;
+cid = cid'
+
+",dir=both,style=solid]
+"RegItem(cid)"->"ViewItem(iid)"[label="wr,ITEMS(iid).*;
+",style=dashed]
+"RegItem(cid)"->"AboutMe(uid)"[label="wr,ITEMS(uid).*;
+",style=dashed]
+"RegItem(cid)"->"SearchItemByReg(cid,rid)"[label="wr,ITEMS(cid).iId;
+cid = cid'
+",style=dashed]
+"RegItem(cid)"->"StoreBuyNow(iid,uid,qty)"[label="wr,ITEMS(iid).qty;
+ww,ITEMS(iid).end_date;
+ww,ITEMS(iid).qty;
+",style=dashed]
+"RegItem(cid)"->"SearchiItemByCat(cid)"[label="wr,ITEMS(cid).*;
+cid = cid'
+",style=dashed]
+"RegItem(cid)"->"StoreBid(iid,val)"[label="wr,ITEMS(iid).nbids;
+ww,ITEMS(iid).nbids;
+",style=dashed]
+"RegItem(cid)"->"StoreBid(iid,val)"[label="ww,ITEMS(iid).nbids;
+
+",dir=both,style=solid]
+"ViewUser(uid)"->"RegUser(uname,rid)"[label="rw,USERS(uid).*;
+",style=dashed]
+"RegUser(uname,rid)"->"ViewUser(uid)"[label="wr,USERS(uid).*;
+",style=dashed]
+"RegUser(uname,rid)"->"RegUser(uname,rid)"[label="ww,USERS(*).*;
+uname = uname'
+rid = rid'
+",style=dashed]
+"RegUser(uname,rid)"->"SearchItemByReg(cid,rid)"[label="wr,USERS(rid).uId;
+rid = rid'
+",style=dashed]
+"ViewItem(iid)"->"RegItem(cid)"[label="rw,ITEMS(iid).*;
+",style=dashed]
+"ViewItem(iid)"->"StoreBuyNow(iid,uid,qty)"[label="rw,ITEMS(iid).end_date;
+rw,ITEMS(iid).qty;
+rw,BUY_NOW(iid).uid;
+iid = iid'
+",style=dashed]
+"ViewItem(iid)"->"StoreBid(iid,val)"[label="rw,ITEMS(iid).nbids;
+rw,BIDS(iid).*;
+iid = iid'
+",style=dashed]
+"AboutMe(uid)"->"RegItem(cid)"[label="rw,ITEMS(uid).*;
+",style=dashed]
+"AboutMe(uid)"->"StoreBuyNow(iid,uid,qty)"[label="rw,BUY_NOW(uid).uid;
+uid = uid'
+",style=dashed]
+"AboutMe(uid)"->"StoreBid(iid,val)"[label="rw,BIDS(uid).iId;
+",style=dashed]
+"SearchItemByReg(cid,rid)"->"RegItem(cid)"[label="rw,ITEMS(cid).iId;
+cid = cid'
+",style=dashed]
+"SearchItemByReg(cid,rid)"->"RegUser(uname,rid)"[label="rw,USERS(rid).uId;
+rid = rid'
+",style=dashed]
+"StoreBuyNow(iid,uid,qty)"->"RegItem(cid)"[label="ww,ITEMS(iid).end_date;
+ww,ITEMS(iid).qty;
+rw,ITEMS(iid).qty;
+",style=dashed]
+"StoreBuyNow(iid,uid,qty)"->"ViewItem(iid)"[label="wr,ITEMS(iid).end_date;
+wr,ITEMS(iid).qty;
+wr,BUY_NOW(iid).uid;
+iid = iid'
+",style=dashed]
+"StoreBuyNow(iid,uid,qty)"->"AboutMe(uid)"[label="wr,BUY_NOW(uid).uid;
+uid = uid'
+",style=dashed]
+"StoreBuyNow(iid,uid,qty)"->"StoreBuyNow(iid,uid,qty)"[label="wr,ITEMS(iid).end_date;
+wr,ITEMS(iid).qty;
+ww,ITEMS(iid).end_dateqty;
+ww,ITEMS(iid).qty;
+ww,BUY_NOW(*).uid;
+rw,ITEMS(iid).qty;
+iid = iid'
+uid = uid'
+qty = qty'
+",style=dashed]
+"SearchiItemByCat(cid)"->"RegItem(cid)"[label="rw,ITEMS(cid).*;
+cid = cid'
+",style=dashed]
+"StoreBid(iid,val)"->"RegItem(cid)"[label="ww,ITEMS(iid).nbids;
+rw,ITEMS(iid).nbids;
+",style=dashed]
+"StoreBid(iid,val)"->"RegItem(cid)"[label="ww,ITEMS(iid).nbids;
+
+",dir=both,style=solid]
+"StoreBid(iid,val)"->"ViewItem(iid)"[label="wr,BIDS(iid).*;
+wr,ITEMS(iid).nbids;
+iid = iid'
+",style=dashed]
+"StoreBid(iid,val)"->"AboutMe(uid)"[label="wr,BIDS(uid).iId;
+",style=dashed]
+"StoreBid(iid,val)"->"StoreBid(iid,val)"[label="wr,ITEMS(iid).nbids;
+ww,BIDS(*).*;
+ww,ITEMS(iid).nbids;
+rw,ITEMS(iid).nbids;
+iid = iid'
+val = val'
+",style=dashed]
+"StoreBid(iid,val)"->"StoreBid(iid,val)"[label="ww,BIDS(*).*;
+ww,ITEMS(iid).nbids;
+iid = iid'
+val = val'
+
+",dir=both,style=solid]
+}

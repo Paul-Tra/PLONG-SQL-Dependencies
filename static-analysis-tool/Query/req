@@ -1,0 +1,3 @@
+StoreBuyNow(iid ,uid , qty)
+
+select blabla from TEST where iId = iid and uId = uid;

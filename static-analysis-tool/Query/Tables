@@ -1,0 +1,7 @@
+CATEGORIES(cId,name) (cId)
+REGIONS(rId,name) (rId)
+ITEMS(iId,desc,qty,nbids,max_bid,end_date,uId,cId) (iId)
+USERS(uId,name,rating,rId) (uId)
+BIDS(bId,uId,iId,bid) (bId)
+BUY_NOW(bnId,uId,iId,qty) (bnId)
+COMMENT(comId,uIdfrom,UIdto,iIdto,iId,rating,cmt) (comId)

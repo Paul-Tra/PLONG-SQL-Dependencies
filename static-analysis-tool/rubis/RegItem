@@ -1,0 +1,2 @@
+RegItem(desc,cid)
+insert into ITEMS values (_,desc,0,cid);

@@ -1,0 +1,5 @@
+digraph G{
+	rankdir=LR
+	size="8,5"
+	nodesep=1.0
+	node[shape=box style=rounded peripheries=2]

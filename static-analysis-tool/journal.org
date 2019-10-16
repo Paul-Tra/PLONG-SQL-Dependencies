@@ -1,0 +1,83 @@
+* <13-10-2017>
+** Fait:
+- Depo git + README
+** À Faire:
+- Installer PostgreSQL et créer BD
+- Écrire ensemble de SQL queries (un fichier pour cache query)
+- Examples du parsing
+- Modifier la grammaire
+
+
+* <27-10-2017>
+** Fait:
+   - Installé PostgreSQL
+   - Testé queries
+** À faire:
+   - Queries avec IF THEN ELSE et BOUCLES (e.g. pgSQL)
+   - Mettre chaque query dans un fichier
+   - Continuer avec la partie de parsing
+
+
+
+* <24-10-2017>
+** Fait:
+   - Une query avec IF THEN ELSE
+** À faire:
+    - Mettre chaque query dans un fichier
+    - Creer de FUNCTIONS en PostgreSQL (par exemple StoreBuyNow)
+    - Tester le lexer sur les queries simples
+    - Modfier le lexer pour gerér les parametres des fonctionnes
+
+
+
+* <26-01-2018>
+** Fait:
+   - Lexer avec un problème d'analyse des params.
+** À faire:
+   - Corriger le lexer
+   - Écrire un algo. pour calcules les dependencies
+     ex. caldep Query1 Query2 Query3
+
+
+
+* <09-02-2018>
+** Fait:
+  - Premier calcule des dependencies
+  - Afficache en graphML et dot
+** À Faire:
+  - Geres le schema d'une base de donnés
+  - Ajouter la possibiité de donner des arguments au programme
+  - Gerer les égualités entre les paramètres
+
+* <23-02-2018>
+** Fait:
+   - Souligné que il manque le code du StoreComment dans la submission
+   - Algo de calcule de SDG
+** À faire:
+  - Geres le schema d'une base de donnés => ok
+  - Geres les SELECT sur deux tables
+  - Ajouter une nouvelle ligne après chaque objet dans le SDG
+  - Calculer l'intersection des object en utilisand les égualités sur les params.
+  - Utiliser comme argument du programe n'importe quel nom de fichier => ok
+
+
+* <23-03-2018>
+** Fait:
+  - Un programme qui semble calculer les dependences entre des requetes en SQL
+** À faire:
+ - Geres les SELECT sur deux tables => ok
+ - Pourqoui l'etiquette "ITEMS(iid')" n'a pas le nom d'une colonne ?
+ - Schema du DB comme paramètre  => ok
+ - Écrire la documentation pour l'utilisateur final
+ - Ajouter la possibilité de stocker le graph en GraphML => OK
+ - Utiliser le programme pour caculer le SDG du Rubis sans StoreComment
+
+* <06-04-2018>
+** Fait:
+ - Un programme qui semble calculer les dependences entre des requetes en SQL
+** À faire:
+ - Ameliorer la documentation pour l'utilisateur final
+ - Utiliser le programme pour caculer le SDG du Rubis (sans StoreComment)
+   et stocker le resultat dans le git
+ - Ajouter une option a la ligne de commande pour stocker en GraphML
+ - Check out Prefuse drawing API

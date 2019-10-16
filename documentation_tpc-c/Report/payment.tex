@@ -1,0 +1,40 @@
+\subsubsection {Overview}
+
+The payment business transaction updates the customer's balance and reflects the payment on the district and warehouse sales statistics. A customer can be selected by their last name or by their unique customer ID.
+
+A Payment transaction is said to be \textbf{home} if the customer belongs to the warehouse from which the payment is entered (when CUSTOMER.wId = w\_id)
+
+A Payment transaction is said to be \textbf{remote}if the warehouse from which the payment is entered is not the one to which the customer belongs to (when CUSTOMER.wId does not equal w\_id.
+
+\subsubsection{The payment Function}
+
+
+\lstinputlisting{code/payment.sql}
+
+\subsubsection{The Transaction Profile}
+
+For a given warehouse number w\_id, district number d\_id, customer number c\_id or customer last name c\_last, payment amount h\_amount, and indicator by\_name:
+
+\begin{enumerate}
+    \item The row in the WAREHOUSE (W) table with matching W.wId is selected. W.wYTD (the warehouse's year-to-date balance) is increased by h\_amount. W.name, W.str1, W.str2, W.city, and W.zip are retrieved.
+    
+    \item The row in the DISTRICT (D) table with matching D.wId and D.dId is selected. D.name, D.str1, D.str2, D.city, D.state, and D.zip are retrieved and D.dYtd (the district's year-to-date balance) is increased by h\_amount.
+    
+    \item There are two cases possible (indicated by the boolean by\_name):
+    
+    \begin{enumerate}
+        \item \textbf{Case 1:} the customer is selected based on customer last name.
+        
+        All rows in the CUSTOMER (C) table with matching C.wId, C.dId and C.last are selected sorted by C.first in ascending order. Let \textit{n} be the number of rows selected. C.cId, C.first, C.middle, C.str1, C.str2, C.city, C.state, C.zip, C. phone, C.since, C.credit, C.credLim, C.discount, and C.balance are retrieved from the row at position (n/2 rounded up to the next integer) in the sorted set of selected rows from the CUSTOMER table. C.balance is decreased by h\_amount.
+        
+        \item \textbf{Case 2:} the customer is selected based on customer number.
+        
+        The row in the CUSTOMER table with matching C.wId, C.dId, and C.cId is selected. C.first, C.middle, C.last, C.str1, C.str2, C.city, C.state, C.zip, C.phone, C.since, C.credit, C.creditLim, C.discount, and C.balance are retrieved. C.balance is decreased by h\_amount.
+    \end{enumerate}
+    
+    \item In both cases, the C.YTDPaymt is increased by h\_amount, and the C.PaymtCnt is incremented by 1.
+    
+    \item If the value of C.credit is equal to "BC", then C.data is also retrieved from the selected customer and the following history information: C.cId, C.dId, C.wId, D.dId, W.wId, and h\_amount, are inserted at the left of the C.data field by shifting the existing content of C.data to the right by an equal number of bytes and by discarding the bytes that are shifted out of the right side of the C.data field. The content of the C.data field never exceeds 500 characters. The selected customer is updated with the new C.data field. If C.data is implemented as two fields, they must be treated and operated on as one single field.
+    
+    \item The function FORMAT used in the code is similar to the C function sprintf or the Python format() function. It substitutes the placeholders in the string (the second argument) with string values of the variables that follow it.
+\end{enumerate}

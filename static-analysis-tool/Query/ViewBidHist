@@ -1,0 +1,8 @@
+ViewBidHist(iid)
+select * from BIDS as ret_bids
+  where iId = iid;
+do{
+  select name from USERS as ret_bidder
+  where uId = user;
+}while((_,user,_,_) = ret_bid.next())
+;

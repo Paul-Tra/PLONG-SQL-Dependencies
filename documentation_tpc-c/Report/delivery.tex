@@ -1,0 +1,24 @@
+\subsubsection {Overview}
+
+The delivery business transaction consists of processing a batch of 10 new (not yet delivered) orders. Each order is processed (delivered) in full within the scope of a read-write database transaction. The Delivery transaction must be executed in deferred mode (more on page 40 of TPC-C document).
+
+\subsubsection{The delivery Function}
+
+\lstinputlisting{code/delivery.sql}
+
+\subsubsection{The Transaction Profile}
+
+For a given warehouse number w\_id, for each of the 10 districts d\_id within that warehouse, and for a given carrier number o\_carrier\_id: 
+
+\begin{enumerate}
+    \item The row in the NEW-ORDER (NO) table with matching NO.wId (equals w\_id) and NO.dId (equals d\_id) and with the lowest NO.oId value is selected. This is the oldest undelivered order of that district. NO.oId (the order number) is retrieved. If no matching row is found, then the delivery of an order for this district is skipped (more on page 42 of the document).
+    
+    \item The selected row in the NEW-ORDER table is deleted.
+    
+    \item The row in the ORDER (O) table with matching O.wId (equals w\_id), O.dId (equals d\_id), and O.oId (equals no\_o\_id) is selected, O.cId (the customer number) is retrieved, and O.carrierId is updated.
+    
+    \item All rows in the ORDER-LINE (OL) table with matching OL.wId (equals O.wId), OL.dId (equals O.dId),and OL.oId (equals O.oId) is selected. All OL.deliveryDate (the delivery dates) are updated to the current system time as returned by the operating system and the sum of all OL.amount is retrieved.
+    
+    \item The row in the CUSTOMER (C) table with matching C.wId (equals w\_id), C.dId (equals d\_id),and C.cId (equals O.cId) is selected and C.balance is increased by the sum of all order-line amounts (OL.amount) previously retrieved. C.deliveryCnt is incremented by 1. 
+    
+\end{enumerate}

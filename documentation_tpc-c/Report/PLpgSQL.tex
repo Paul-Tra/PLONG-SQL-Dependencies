@@ -1,0 +1,7 @@
+PL/pgSQL is a loadable procedural language for the PostgreSQL database system. See documentation here: https://www.postgresql.org/docs/10/plpgsql-overview.html
+
+Some notes about the PL/pgSQL syntax with regards to the functions presented in this report:
+
+- All variables referred to in each function have to either be among the parameters of the function, or declared at the beginning of the function.
+
+- The return type of a function must be specified at the beginning of the function. A function that returns nothing should specify with RETURNS VOID.  All of the functions below return nothing or 0, but could be modified to return desired values. 

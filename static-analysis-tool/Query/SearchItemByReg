@@ -1,0 +1,7 @@
+SearchItemByReg(cid,rid)
+select (iId,desc,nbids,end_date,uId,cId)
+as ret_items
+  from ITEMS,USERS
+  where cId = cid and
+        uId = USERS.uId and USERS.rId = rid;
+;

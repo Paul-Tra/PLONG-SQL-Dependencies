@@ -1,0 +1,15 @@
+
+Compiler :
+  make
+
+Executer :
+  make run Query1 Query2 Query3... SchemaTable
+
+Le fichier du schéma de la table doit obligatoirement être à la fin de la commande.
+
+Le fichier contenant la description des table est Query/Tables ( 1 table par ligne ).
+Les fichiers contenant les requêtes peuvent se trouver n'importe où.
+
+lien youtube :
+
+ + https://www.youtube.com/watch?v=Z8ij8ZJMwto

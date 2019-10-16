@@ -1,0 +1,2 @@
+SearchiItemByCat(cid)
+select * from ITEMS as ret_items where cId = cid;

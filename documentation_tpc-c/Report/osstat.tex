@@ -1,0 +1,20 @@
+\subsubsection {Overview}
+The Order-Status business transaction queries the status of a customer's last order.
+
+\subsubsection{The osstat Function}
+
+\lstinputlisting{code/orderstatus.sql}
+
+\subsubsection{The Transaction Profile}
+
+For a given customer number c\_id and associated district number d\_id, warehouse number w\_id: 
+
+\begin{enumerate}
+    \item \textbf{Case 1}, the customer is selected based on customer last name: all rows in the CUSTOMER (C) table with matching C.wId, C.dId, and C.last are selected sorted by C.first in ascending order. Let n be the number of rows selected. C.balance, C.first, C.middle, and C.last are retrieved from the row at position n/2 rounded up in the sorted set of selected rows from the CUSTOMER table. 
+    \item \textbf{Case 2}, the customer is selected based on customer number: the row in the CUSTOMER table with matching C.wId, C.dId, and C.last is selected and C.balance, C.first, C.middle, and C.last are retrieved.
+    
+    \item The row in the ORDER (O) table with matching O.wId (equals C.wId), O.dId (equals C.dId), O.cId (equals C.cId), and with the largest existing O.oId, is selected. This is the most recent order placed by that customer. O.oId, O.carrierId, O.entryDate are retrieved.
+    
+    \item All rows in the ORDERLINE (OL) table with matching OL.wId (equals O.wId), OL.dId (equals O.dId), and OL.oId (equals O.oId) are selected and the correspnding sets of OL.iId, OL.supplyWId, OL.quantity, OL.amount, and OL.deliveryDate are retrieved.
+    
+\end{enumerate}

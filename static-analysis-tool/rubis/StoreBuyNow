@@ -1,0 +1,13 @@
+StoreBuyNow(iid ,uid , qty)
+
+select qty, end_date from ITEMS as (q,e)
+where iId = iid;
+if ((q-qty) == 0) then
+  update ITEMS set end_date = now,qty = q-qty
+  where iId = iid;
+else
+  update ITEMS set qty = q-qty
+  where iId = iid;
+  insert into BUY_NOW values (uid,iid,qty);
+end if
+;

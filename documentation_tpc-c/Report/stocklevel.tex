@@ -1,0 +1,19 @@
+\subsubsection {Overview}
+
+The Stock-Level transaction determines the number of recently sold items that have a stock level below a specified threshold.
+
+\subsubsection{The stocklevel Function}
+
+\lstinputlisting{code/stocklevel.sql}
+
+\subsubsection{The Transaction Profile}
+
+For a given warehouse number (w\_id), district number (d\_id), and stock level threshold (threshold):
+
+\begin{enumerate}
+    \item The row in the DISTRICT (D) table with matching D.wId and D.dId is selected and D.nextOrdId is retrieved.
+    
+    \item All rows in the ORDER-LINE (OL) table with matching OL.wId (equals w\_id), OL.dId (equals d\_id), and OL.oId (lower than D.nextOrdId and greater than or equal to D.nextOrdId - 20) are selected. They are the items for 20 recent orders of the district.
+    
+    \item All rows in the STOCK (S) table with matching S.iId (equals OL.iId) and S.wId (equals w\_id) from the list of distinct item numbers and with S.quantity lower than threshold are counted (giving low\_stock).
+\end{enumerate}

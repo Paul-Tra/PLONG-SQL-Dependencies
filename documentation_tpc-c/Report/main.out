@@ -1,0 +1,40 @@
+\BOOKMARK [1][-]{section.1}{TPC-C Benchmark Guide}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Model summary}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Abridged table chema}{section.1}% 3
+\BOOKMARK [1][-]{section.2}{Database generation}{}% 4
+\BOOKMARK [1][-]{section.3}{PL/pgSQL}{}% 5
+\BOOKMARK [1][-]{section.4}{TPC-C functions}{}% 6
+\BOOKMARK [2][-]{subsection.4.1}{The New-Order Transaction}{section.4}% 7
+\BOOKMARK [3][-]{subsubsection.4.1.1}{Overview}{subsection.4.1}% 8
+\BOOKMARK [3][-]{subsubsection.4.1.2}{The neworder Function}{subsection.4.1}% 9
+\BOOKMARK [3][-]{subsubsection.4.1.3}{The Transaction Profile}{subsection.4.1}% 10
+\BOOKMARK [2][-]{subsection.4.2}{The Payment Transaction}{section.4}% 11
+\BOOKMARK [3][-]{subsubsection.4.2.1}{Overview}{subsection.4.2}% 12
+\BOOKMARK [3][-]{subsubsection.4.2.2}{The payment Function}{subsection.4.2}% 13
+\BOOKMARK [3][-]{subsubsection.4.2.3}{The Transaction Profile}{subsection.4.2}% 14
+\BOOKMARK [2][-]{subsection.4.3}{The Order-Status Transaction}{section.4}% 15
+\BOOKMARK [3][-]{subsubsection.4.3.1}{Overview}{subsection.4.3}% 16
+\BOOKMARK [3][-]{subsubsection.4.3.2}{The osstat Function}{subsection.4.3}% 17
+\BOOKMARK [3][-]{subsubsection.4.3.3}{The Transaction Profile}{subsection.4.3}% 18
+\BOOKMARK [2][-]{subsection.4.4}{The Delivery Transaction}{section.4}% 19
+\BOOKMARK [3][-]{subsubsection.4.4.1}{Overview}{subsection.4.4}% 20
+\BOOKMARK [3][-]{subsubsection.4.4.2}{The delivery Function}{subsection.4.4}% 21
+\BOOKMARK [3][-]{subsubsection.4.4.3}{The Transaction Profile}{subsection.4.4}% 22
+\BOOKMARK [2][-]{subsection.4.5}{The Stock-Level Transaction}{section.4}% 23
+\BOOKMARK [3][-]{subsubsection.4.5.1}{Overview}{subsection.4.5}% 24
+\BOOKMARK [3][-]{subsubsection.4.5.2}{The stocklevel Function}{subsection.4.5}% 25
+\BOOKMARK [3][-]{subsubsection.4.5.3}{The Transaction Profile}{subsection.4.5}% 26
+\BOOKMARK [2][-]{subsection.4.6}{Sample Load Program}{section.4}% 27
+\BOOKMARK [3][-]{subsubsection.4.6.1}{Overview}{subsection.4.6}% 28
+\BOOKMARK [1][-]{section*.2}{Appendices}{}% 29
+\BOOKMARK [1][-]{Appendix.a.A}{Database entities \046 relationships}{}% 30
+\BOOKMARK [1][-]{Appendix.a.B}{Table layouts}{}% 31
+\BOOKMARK [2][-]{subsection.a.B.1}{WAREHOUSE Table Layout}{Appendix.a.B}% 32
+\BOOKMARK [2][-]{subsection.a.B.2}{DISTRICT Table Layout}{Appendix.a.B}% 33
+\BOOKMARK [2][-]{subsection.a.B.3}{CUSTOMER Table Layout}{Appendix.a.B}% 34
+\BOOKMARK [2][-]{subsection.a.B.4}{HISTORY Table Layout}{Appendix.a.B}% 35
+\BOOKMARK [2][-]{subsection.a.B.5}{NEW-ORDER Table Layout}{Appendix.a.B}% 36
+\BOOKMARK [2][-]{subsection.a.B.6}{ORDER Table Layout}{Appendix.a.B}% 37
+\BOOKMARK [2][-]{subsection.a.B.7}{ORDER-LINE Table Layout}{Appendix.a.B}% 38
+\BOOKMARK [2][-]{subsection.a.B.8}{ITEM Table Layout}{Appendix.a.B}% 39
+\BOOKMARK [2][-]{subsection.a.B.9}{STOCK Table Layout}{Appendix.a.B}% 40

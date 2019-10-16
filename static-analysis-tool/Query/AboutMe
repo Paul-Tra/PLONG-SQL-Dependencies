@@ -1,0 +1,21 @@
+AboutMe(uid)
+  select * from ITEMS as ret_selling
+    where uId = uid;
+  select * from BUY_NOW as ret_bnows
+    where uId = uid;
+  do{
+    select * from ITEMS as ret_bought_itms
+      where iId = item;
+    select name from USERS as ret_sellers_bn
+      where uId = seller;
+  }while((_,seller_item,_)=ret_bnows.next())
+  select iId from BIDS,ITEMS as ret_bids
+    where BIDS.uId = uid and
+          BIDS.iId = ITEMS.iId;
+do{
+  select * from ITEMS as ret_item
+    where iId = item;
+  select name from USERS as ret_sellers_bids
+    where uId = ret_item.seller;
+}while((_,item,_) = ret_bids.next())
+;

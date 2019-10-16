@@ -1,0 +1,37 @@
+\subsubsection{Overview}
+The neworder function enters a complete order through a single database transaction. During the transaction, a new order is created and added into the database, the total amount to pay is calculated, and the quantity of items in stock is changed accordingly.
+
+\subsubsection{The neworder Function}
+
+
+\lstinputlisting{code/neworder.sql}
+
+\subsubsection{The Transaction Profile}
+For a given warehouse number w\_id, district number d\_id, customer number c\_id, count of items (ol\_cnt), and for a given set of items (ol\_i\_id), supplying warehouses (ol\_supply\_w\_id), and quantities (ol\_quantity):
+
+\begin{enumerate}
+    \item The row in the DISTRICT (D) table with matching D.wId and D.dId is selected, D.tax (the district tax rate) is retrieved.
+    
+    \item D.nextOrdId (the next available order number for the district) is retrieved and incremented by 1.
+    
+    \item A new row is inserted into both the ORDERS (O) and NEW\_ORDER (NO) table to reflect the creation of the new order.
+    
+    \item \textbf{For each item on the order (comprised of \textit{o\_ol\_cnt} items): }
+    
+    \begin{enumerate}
+        \item The supply warehouse ID is selected from list of warehouses. If the supply warehouse ID is same as the home warehouse ID then O.allLocal is set to 1, otherwise O.allLocal is set to 0. The corresponding  values for ol\_i\_id and ol\_quantity is selected from the itemid and qty arrays.
+        
+        \item The row in the ITEM (I) table with matching I.iId (i.e. equals ol\_i\_id) is selected and I.price (the price of the item), I.name (the name of the item) and I.data are retrieved.
+        
+        \item The row in the STOCK (S) table with matching S.iId (i.e. equals ol\_i\_id) is selected and S.wId (i.e. equals ol\_supply\_w\_id) is selected. S.quantity (the quantity in stock), S.distxx (where xx represents the district number), and S.data are retrieved. The stock of the item is updated in the stock array.
+        
+        \item The strings in I.data and S.data are examined. If they both include the string "ORIGINAL", the brand-generic field for that item is set to "B", otherwise, the brand-generic field is set to "G".
+        
+        \item If the retrieved value for s\_quantity exceeds ol\_quantity then s\_quantity is decreased by ol\_quantity, otherwise s\_quantity is updated to (s\_quantity - ol\_quantity) + 91 (i.e. if not enough items are in stock to fulfill this order, then the item is restocked by 91 units before being subtracted by the quantity of items being purchased, otherwise the stock quantity of the item is subtracted by the quantity being purchased).
+        
+        \item ol\_amount (the amount for the item in the order) is computed as: ol\_quantity * i\_price. Adding all the items together, the total amount for the order is computed as: SUM(ol\_amount) * (1 - c\_discount) * (1 + w\_tax + d\_tax).
+        
+        \item A new row is inserted into the ORDERLINE table to reflect the item on the order. 
+        
+    \end{enumerate}
+\end{enumerate}

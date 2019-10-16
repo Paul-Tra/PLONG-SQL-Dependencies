@@ -1,0 +1,13 @@
+\subsubsection {Overview}
+
+The code for a sample load program is given on page 117-129 of the TPC-C document. It defines the global variables, loads the tables (WAREHOUSE, DISTRICT, CUSTOMER, ORDER-LINE etc.), generates data for them according to the guidelines, and handles errors.
+
+Worth noting are some contants and global variables used in some transactions above:
+
+\begin{itemize}
+    \item The maximum number of items: MAXITEMS = 100000
+    \item Customers per district: CUST\_PER\_DIST = 3000
+    \item Districts per warehouse: DIST\_PER\_WARE = 10
+    \item Orders per districts: ORD\_PER\_DIST = 3000 
+\end{itemize}
+    

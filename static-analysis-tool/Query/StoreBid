@@ -1,0 +1,5 @@
+StoreBid(iid, val)
+insert into BIDS values (_,iid,val);
+select nbids from ITEMS as n where iId = iid;
+update ITEMS set nbids = n + 1 where iId = iid;
+;

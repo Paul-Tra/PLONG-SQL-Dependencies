@@ -1,0 +1,10 @@
+ViewUser(uid)
+select * from USERS as ret_user
+  where uId = uid;
+select * from COMMENTS as ret_cmts
+  where uIdt0 = uid;
+do{
+  select name from USERS as nickname
+  where uId = from;
+}while((from,_,_,_,cmt)=ret_cmts.next())
+;

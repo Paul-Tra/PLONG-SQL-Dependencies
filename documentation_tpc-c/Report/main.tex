@@ -1,0 +1,161 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LaTeX Template: Project Titlepage Modified (v 0.1) by rcx
+%
+% Original Source: http://www.howtotex.com
+% Date: February 2014
+% 
+% This is a title page template which be used for articles & reports.
+% 
+% This is the modified version of the original Latex template from
+% aforementioned website.
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{article}
+\usepackage[toc,page]{appendix}
+\usepackage[a4paper]{geometry}
+\usepackage[myheadings]{fullpage}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{graphicx, wrapfig, subcaption, setspace, booktabs}
+\usepackage[T1]{fontenc}
+\usepackage[font=small, labelfont=bf]{caption}
+\usepackage{fourier}
+\usepackage[protrusion=true, expansion=true]{microtype}
+\usepackage[english]{babel}
+\usepackage{sectsty}
+\usepackage{url, lipsum}
+\usepackage{tgbonum}
+\usepackage{hyperref}
+\usepackage{array}
+\usepackage[table]{xcolor}
+\usepackage[utf8]{inputenc}
+\usepackage{tabu}
+\usepackage{listings}
+
+\usepackage{lmodern}  % for bold teletype font
+\usepackage{amsmath}  % for \hookrightarrow
+\usepackage{xcolor}   % for \textcolor
+\lstset{language=SQL,
+basicstyle=\ttfamily,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true}
+
+
+\newcommand{\HRule}[1]{\rule{\linewidth}{#1}}
+\onehalfspacing
+\setcounter{tocdepth}{5}
+\setcounter{secnumdepth}{5}
+
+
+
+%-------------------------------------------------------------------------------
+% HEADER & FOOTER
+%-------------------------------------------------------------------------------
+\pagestyle{fancy}
+%\fancyhf{}
+%\setlength\headheight{15pt}
+%\fancyhead[L]{Student ID: 1034511}
+\fancyhead[R]{}
+\fancyfoot[C]{Page \thepage\ of \pageref{LastPage}}
+%-------------------------------------------------------------------------------
+% TITLE PAGE
+%-------------------------------------------------------------------------------
+
+\begin{document}
+\sloppy
+
+{\fontfamily{cmr}\selectfont
+\title{ \normalsize \textsc{}
+		\\ [2.0cm]
+		\HRule{0.5pt} \\
+		\LARGE \textbf{\uppercase{TPC-C Database Transactions}
+		\HRule{2pt} \\ [0.5cm]
+		\normalsize  \vspace*{5\baselineskip}}
+		}
+
+\date{June 2019}
+
+\author{}
+
+\maketitle
+
+\newpage
+\tableofcontents
+\newpage
+
+%-------------------------------------------------------------------------------
+% Section title formatting
+\sectionfont{\scshape}
+%-------------------------------------------------------------------------------
+
+%-------------------------------------------------------------------------------
+% BODY
+%-------------------------------------------------------------------------------
+
+\section{TPC-C Benchmark Guide}
+\input{schema.tex}
+
+\section{Database generation}
+\input{genDB.tex}
+
+\section{PL/pgSQL}
+\input{PLpgSQL.tex}
+
+\section{TPC-C functions}
+The TPC-C document presents 5 transactions: new order (create new order), payment, order status, delivery, and stock level. The document also presents the code for a sample load program. 
+
+\subsection{The New-Order Transaction}
+\input{neworder.tex}
+
+\subsection{The Payment Transaction}
+\input{payment.tex}
+
+\subsection{The Order-Status Transaction}
+\input{osstat.tex}
+
+\subsection{The Delivery Transaction}
+\input{delivery.tex}
+
+\subsection{The Stock-Level Transaction}
+\input{stocklevel.tex}
+
+\subsection{Sample Load Program}
+\input{sampleloadProg.tex}
+
+
+\begin{appendices}
+\input{appendix.tex}
+\end{appendices}
+}
+%-------------------------------------------------------------------------------
+% REFERENCES
+%-------------------------------------------------------------------------------
+\newpage
+\section*{References}
+
+\begin{enumerate}
+    
+    \item TPC-C Benchmark Documentation:
+    
+    http://tpc.org/TPC\_Documents\_Current\_Versions/pdf/tpc-c\_v5.11.0.pdf
+    
+    \item PL/pgSQL Documentation:
+    
+    https://www.postgresql.org/docs/9.6/plpgsql.html
+    
+    \item Creating a function in PL/pgSQL: 
+    
+    https://www.postgresql.org/docs/9.1/sql-createfunction.html
+    
+    \item Dollar sign quotation in PL/pgSQL:
+    
+    https://www.postgresql.org/docs/10/sql-syntax-lexical.html#SQL-SYNTAX-CONSTANTS
+    
+    \item Cursors in PL/pgSQL: 
+    
+    https://www.postgresql.org/docs/10/plpgsql-cursors.html
+\end{enumerate}
+
+\end{document}

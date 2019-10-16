@@ -1,0 +1,5 @@
+ViewItem(iid)
+select * from ITEMS as ret_item where iId = iid;
+select * from BIDS as ret_bids where iId = iid;
+select * from BUY_NOW as ret_bn where iId = iid;
+;

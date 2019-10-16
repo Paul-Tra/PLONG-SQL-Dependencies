@@ -1,0 +1,5 @@
+RegUser(uname,rid)
+select name from USERS as ret_user
+where name = uname;
+if ret_user defined then abort
+else insert into USERS values (_,uname,rid);
