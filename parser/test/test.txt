@@ -1,0 +1,5 @@
+select * from test where id = 1 ;
+select * from test where id_num= 45 ;
+select * from test where id_col = 67 ;
+select * from test where id_id = 23 ;
+select * from test where id_nom = 78 ;
