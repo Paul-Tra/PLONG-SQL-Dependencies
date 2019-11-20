@@ -1,0 +1,29 @@
+﻿		JOURNAL DE BORD :
+
+semaine du 24/10 : 
+
+		OBJECTIFS POUR LA SEMAINE SUIVANTE :
+
+	_ lecture des documents liés aux CYCLES CRITIQUES
+	_ recherches sur les "CYCLES CRITIQUES"
+	_ réflexion sur l'implémentation du PROJET (langages ... )
+
+semaine du 07/11 : 
+		
+		OBJECTIFS POUR LA SEMAINE SUIVANTE :
+
+	_ Début mise en place de la fenetre d'application
+	_ recherches sur TPC-C
+
+semaine du 14/11 :
+
+		OBJECTIFS POUR LA SEMAINE SUIVANTE :
+
+	_ prise en main du fichier sur les commandes de TPC-C
+	_ debut du Parser
+
+semaine du 21/11 :
+	
+		OBJECTIFS POUR LA SEMAINE SUIVANTE :
+
+	_
