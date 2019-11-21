@@ -23,6 +23,7 @@ public class BD {
         }
     }
 
+
     /* GETTER SETTER */
     public static int getNb_Tables() {
         return nb_Tables;

@@ -25,5 +25,5 @@ semaine du 14/11 :
 semaine du 21/11 :
 	
 		OBJECTIFS POUR LA SEMAINE SUIVANTE :
-
-	_
+	_ Avancer le parser ( ! ponctuation)
+	_ Reprendre et corriger le fichier de Mae
