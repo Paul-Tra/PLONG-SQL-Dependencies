@@ -44,6 +44,19 @@ public class Main extends Application {
         Menu menu1 = new Menu("File");
         Menu menu3 = new Menu("View");
         Menu menu4 = new Menu("Naviate");
+        Menu menu_test = new Menu("Test");
+        MenuItem item5 = new MenuItem("fenetre");
+        item5.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    new Graphic();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        menu_test.getItems().addAll(item5);
         //itemMenu
         MenuItem item1 = new MenuItem("Open");
         MenuItem item3 = new MenuItem("Save as");
@@ -58,7 +71,7 @@ public class Main extends Application {
         itemE1.disableProperty().bind(rmi.selectedProperty().not());
         menu2.getItems().addAll(rmi,itemE1);
 
-        bar.getMenus().addAll(menu1,menu2,menu3,menu4);
+        bar.getMenus().addAll(menu1,menu2,menu3,menu4,menu_test);
 
 
         // create a File chooser
