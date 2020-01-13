@@ -292,6 +292,10 @@ class Parser:
 if __name__ == "__main__":
     # execute only if run as a script
     #main()
+    
+    # faire attention au clé primaire de chaque table car elle ne peut etre impacté par l'ecriture , et donc la lecture ne change rien
+    print("faire attention au clé primaire de chaque table car elle ne peut etre impacté par l'ecriture , et donc la lecture ne change rien , retirer le champs de lecture de chaque table pour leur clé primaire ")
+    print("une dependance ne peut arriver uniquement si les clé primaire sont identique , d'ou le idd = iid' , par exemple si viewitem(id) et viewitem(id') ont une contrainte , id = id' , car la clé primaire est unique ") 
     print("Dans le main : \n" )
     p = Parser("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/stocklevel.sql")
     contenu_du_fichier = p.trouve_requete()
