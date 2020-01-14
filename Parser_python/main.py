@@ -15,7 +15,11 @@ class principal:
             self.pw.append(pw)
         #print("taille :: " + str(len(self.p)) )
         #Parser("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/orderstatus.sql")
+        self.liste_file = []
+        for elt in self.l :
+            self.liste_file.append(elt.split(".")[0])
         self.liste_dependance = []
+        self.dependance = []
     
     def analyse_BD(self):
         print("Voici la liste des Tables avec leurs clés primaires ( si une table n'a pas de clé primaire , elle n'apparait pas ) : ")
@@ -61,9 +65,9 @@ class principal:
             print("- " + elt ) 
     
     def create_dep_ww_insert(self):
-        print("**************************************************************")
-        print("**************** Création des dépendances WW  ****************")
-        print("**************************************************************")
+        #print("**************************************************************")
+        #print("**************** Création des dépendances WW  ****************")
+        #print("**************************************************************")
         for i in range ( 0 , len(self.pw)) :
             liste_table_touche_par_insert = self.pw[i].liste_table_insert
             for elt in liste_table_touche_par_insert:
@@ -72,9 +76,9 @@ class principal:
                 
         
     def create_dependance_wr(self):
-        print("**************************************************************")
-        print("**************** Création des dépendances WR  ****************")
-        print("**************************************************************")
+        #print("**************************************************************")
+        #print("**************** Création des dépendances WR  ****************")
+        #print("**************************************************************")
         for lecture in range (0,len(self.p)): 
             for ecriture in range (0,len(self.pw)):
                 for table_r,attr_r in self.p[lecture].liste_finale_attribut_lecture.items() :
@@ -85,20 +89,21 @@ class principal:
                             tmp = 0
                             if ( cle in attr_r and table_w == table_r) :
                                 #print(self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr,"+table_w+"("+str(self.pk.couple[table_w])+"')."+cle)
-                                liste.append(str((self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr,"+table_w+"("+str(self.pk.couple[table_w])+"')."+cle)))
+                                liste.append(str((self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr;"+table_w+"("+str(self.pk.couple[table_w])+"')."+cle)))
                                 tmp = 1               
                         if ( len(liste) == len(self.pk.couple[table_w])):
-                            print(self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr,"+table_w+"("+str(self.pk.couple[table_w])+"').*") 
+                            #print(self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr,"+table_w+"("+str(self.pk.couple[table_w])+"').*") 
                             #print("Toute la table ajoutées")     
+                            self.liste_dependance.append(str((self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr;"+table_w+"("+str(self.pk.couple[table_w])+"').*")))
                         else :
                             #print("cas autre :: " + str(len(liste)))
                             for elt in liste:
-                                print(elt)
+                                self.liste_dependance.append(elt)
                                 
     def create_dependance_rw(self):
-        print("**************************************************************")
-        print("**************** Création des dépendances RW  ****************")
-        print("**************************************************************")
+        #print("**************************************************************")
+        #print("**************** Création des dépendances RW  ****************")
+        #print("**************************************************************")
         for ecriture in range (0,len(self.pw)):
             for lecture in range (0,len(self.p)): 
                 for table_w,attr_w in self.pw[ecriture].liste_attribut.items():
@@ -109,31 +114,92 @@ class principal:
                             tmp = 0
                             if ( cle in attr_w and table_w == table_r) :
                                 #print(self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr,"+table_w+"("+str(self.pk.couple[table_w])+"')."+cle)
-                                liste.append(str((self.p[lecture].name + " -> " + self.p[ecriture].name + " :: rw,"+table_r+"("+str(self.pk.couple[table_r])+"')."+cle)))
+                                liste.append(str((self.p[lecture].name + " -> " + self.p[ecriture].name + " :: rw;"+table_r+"("+str(self.pk.couple[table_r])+"')."+cle)))
                                 tmp = 1               
                         if ( len(liste) == len(self.pk.couple[table_r])):
-                            print(self.p[lecture].name + " -> " + self.p[ecriture].name + " :: rw,"+table_r+"("+str(self.pk.couple[table_r])+"').*") 
+                            #print(self.p[lecture].name + " -> " + self.p[ecriture].name + " :: rw,"+table_r+"("+str(self.pk.couple[table_r])+"').*") 
                             #print("Toute la table ajoutées")     
+                            self.liste_dependance.append(str(self.p[lecture].name + " -> " + self.p[ecriture].name + " :: rw;"+table_r+"("+str(self.pk.couple[table_r])+"').*"))
                         else :
                             #print("cas autre :: " + str(len(liste)))
                             for elt in liste:
-                                print(elt)
+                                self.liste_dependance.append(elt)
                                 
         
         
         
         
+    def affiche_dependance(self):    
+        for elt in self.liste_dependance :
+            print(elt)
+        
+    def parse_dependance(self):
+        for elt in self.liste_dependance :
+            new_dep = dependance()
+            new_dep.source = elt.split(".")[0]
+            new_dep.target = elt.split("->")[1].split(".")[0].strip()
+            new_dep.type = elt.split(":: ")[1].split(";")[0].strip()
+            new_dep.table = elt.split(";")[1].split("(")[0].strip()
+            new_dep.id = elt.split("(")[1].split(")")[0].strip()
+            new_dep.id = new_dep.id[:-1]
+            new_dep.complement = elt.split(".")[3]
+            
+            #print("source : " + new_dep.source)
+            #print("target : " +new_dep.target)
+            #print("type : " + new_dep.type)
+            #print("table : " +new_dep.table)
+            #print("id : " +new_dep.id)
+            #print("complement :" +new_dep.complement)
+            
+            
+            self.dependance.append(new_dep)
+            
+        
+            # <edge source="RegItem" target="RegItem">
+           #  <data key="d1">
+          #   ww,ITEMS(*).*;
+         #    cid = cid'
+        #     
+        #     </data>
+        #     <data key="d1">
+         #    ww,ITEMS(*).*;
+         #    cid = cid'
+         #    
+         #    </data>
+         #    </edge>
+                    
+        
+        
+    def generer_graphml(self):
+        with open(os.getcwd()+"/graph.graphml", "w") as fichier:
+            fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+            fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
+            fichier.write('\t<key id="d0" for="node" attr.name="weight" attr.type="string"/>\n')
+            fichier.write('\t<key id="d1" for="edge" attr.name="weight" attr.type="string"/>\n')
+            fichier.write('<graph id="G" edgedefault="directed\">\n')
+            
+            #creation node
+            for elt in self.liste_file :
+                fichier.write('<node id="'+elt+'">\n')
+                fichier.write('<data key="d0">"'+elt+'"</data>\n</node>\n')
+                for dep in self.dependance :
+                    if ( dep.source == elt ) :
+                        #<edge source="RegItem" target="RegItem">
+                        fichier.write('\n<edge source="'+dep.source+'" target="'+dep.target+'">\n')
+                        fichier.write('<data key="d1">\n')
+                        fichier.write(dep.type +';'+dep.table+'('+str(dep.id)+').'+dep.complement+'\n\n</data></edge>')
+                    
+                
+            fichier.write("</graph>\n\t</graphml>")
+            
+        
+            
         
         
         
         
-        
-        
-        
-        
-        
-        
-        
+        fichier.close()
+        self.fichier = fichier
         
         
         
@@ -145,9 +211,11 @@ if __name__ == "__main__":
     main.lanceur()
     print("-------------------------------------Dépendances---------------------")
     main.create_dep_ww_insert()
-    main.affiche_dependance()
     main.create_dependance_wr()
     main.create_dependance_rw()
+    main.affiche_dependance()
+    main.parse_dependance()
+    main.generer_graphml()
     
     
     
