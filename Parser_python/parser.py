@@ -2,7 +2,13 @@ import re
 
 class Parser:
     def __init__(self , nom_fichier ):
+        
         self.nom_fichier = nom_fichier
+        #print(nom_fichier)
+        name = nom_fichier.split("/")
+        name = name[len(name)-1]
+        self.name = name
+        #print(name)
         self.dictionnaire_attributs = {}
         # dictionnaire des tables touchées par le from , au format "Nom_table , nom_raccourcie"
         self.table_from = {}
@@ -281,11 +287,28 @@ class Parser:
                         if ( type(t) is not tuple and values not in self.liste_finale_attribut_lecture[self.table_from[t]]):
                             self.liste_finale_attribut_lecture[self.table_from[t]].append(values)
                     
-        print("Affichage final des Tables : liste Attributs .........\n" )
-        for values,table in self.liste_finale_attribut_lecture.items() :
-            print(values,table)
+        #print("Affichage final des Tables : liste Attributs ....\n" )
+        #for values,table in self.liste_finale_attribut_lecture.items() :
+            #print(values,table)
             
-        
+    def lanceur(self):
+        contenu_du_fichier = self.trouve_requete()
+        contenu_declare = self.analyse_table(contenu_du_fichier)
+        contenu_from = self.analyse_table_du_from(contenu_du_fichier)
+        contenu_select = self.analyse_select(contenu_du_fichier)
+        contenu_where = self.analyse_where(contenu_du_fichier)
+        #print("WHERE :: " + str(contenu_where) )
+        liste_from = self.determine_attributs_du_from(contenu_from)
+        liste_attributs = self.determine_attributs_du_fichier(contenu_declare)
+        liste_select = self.determine_attributs_select(contenu_select)
+        liste_where = self.determine_attributs_where(contenu_where)
+        self.cree_liste_finale()
+        #p.affiche_liste_select()
+        #p.affiche_liste_from()
+        #p.affiche_liste_attributs()
+        self.met_a_jour_liste_r()
+        #p.affiche_liste_r()
+        self.affiche_liste_finale()
 
 
 
@@ -298,22 +321,5 @@ if __name__ == "__main__":
     print("une dependance ne peut arriver uniquement si les clé primaire sont identique , d'ou le idd = iid' , par exemple si viewitem(id) et viewitem(id') ont une contrainte , id = id' , car la clé primaire est unique ") 
     print("Dans le main : \n" )
     p = Parser("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/stocklevel.sql")
-    contenu_du_fichier = p.trouve_requete()
     
-    contenu_declare = p.analyse_table(contenu_du_fichier)
-    contenu_from = p.analyse_table_du_from(contenu_du_fichier)
-    contenu_select = p.analyse_select(contenu_du_fichier)
-    contenu_where = p.analyse_where(contenu_du_fichier)
-    
-    liste_from = p.determine_attributs_du_from(contenu_from)
-    liste_attributs = p.determine_attributs_du_fichier(contenu_declare)
-    liste_select = p.determine_attributs_select(contenu_select)
-    liste_where = p.determine_attributs_where(contenu_where)
-    
-    p.cree_liste_finale()
-    #p.affiche_liste_select()
-    #p.affiche_liste_from()
-    #p.affiche_liste_attributs()
-    p.met_a_jour_liste_r()
-    #p.affiche_liste_r()
-    p.affiche_liste_finale()
+    p.lanceur()

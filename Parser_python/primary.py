@@ -69,7 +69,8 @@ class PrimaryKey :
                     pk = m.search(ligne)
                     #print(pk.group("attribut"))
                     liste = pk.group("attribut")
-                    self.couple[self.liste_table[i]] =  [liste]
+                    
+                    self.couple[self.liste_table[i]] =  [liste.strip() ]
                     i+=1
                 
                 # cas ou c'est de la forme "PRIMARY KEY (oId, dId, wId, number),"
@@ -81,24 +82,31 @@ class PrimaryKey :
                     liste = liste[1:len(liste)-1]
                     liste = liste.split(",")
                     #print(liste)
-                    self.couple[self.liste_table[i]] = liste
+                    
+                    l = [] 
+                    for elt in liste :
+                        l.append(elt.strip() )
+                    self.couple[self.liste_table[i]] = l
                     i+=1
                 
                     
         
     def affiche_couple(self):
-        for elt in self.couple.items() :
-            print(elt)
+        for elt,a in self.couple.items() :
+            print(elt,a)
+            
+    def lanceur(self):
+        self.contenue = self.lecture_file()
+        #print(fichier)
+        liste_create = self.trouve_table()
+        #print(liste_create)
+        self.liste_table(liste_create)
+        #print(self.liste_table)
+        self.trouve_primary()
+        #print(len(self.couple))
+        self.affiche_couple()
     
 if __name__ == "__main__":
-    pk = PrimaryKey("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/genDB.sql")
-    pk.contenue = pk.lecture_file()
-    #print(fichier)
-    liste_create = pk.trouve_table()
-    #print(liste_create)
-    pk.liste_table(liste_create)
-    #print(pk.liste_table)
-    pk.trouve_primary()
-    #print(len(pk.couple))
-    pk.affiche_couple()
+    pk = PrimaryKey("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/genDB.sql")
+    pk.lanceur()
    
