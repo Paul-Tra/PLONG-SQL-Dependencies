@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns='http://graphml.graphdrawing.org/xmlns'>
+	<key id="d0" for="node" attr.name="weight" attr.type="string"/>
+	<key id="d1" for="edge" attr.name="weight" attr.type="string"/>
+<graph id="G" edgedefault="directed">
+<node id="orderstatus">
+<data key="d0">"orderstatus"</data>
+</node>
+
+<edge source="orderstatus" target="payment">
+<data key="d1">
+rw;CUSTOMER(['cId', 'dId', 'wId']).*
+
+</data></edge>
+<edge source="orderstatus" target="delivery">
+<data key="d1">
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
+
+</data></edge>
+<edge source="orderstatus" target="delivery">
+<data key="d1">
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
+
+</data></edge>
+<edge source="orderstatus" target="delivery">
+<data key="d1">
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
+
+</data></edge>
+<edge source="orderstatus" target="delivery">
+<data key="d1">
+rw;CUSTOMER(['cId', 'dId', 'wId']).*
+
+</data></edge><node id="neworder">
+<data key="d0">"neworder"</data>
+</node>
+
+<edge source="neworder" target="neworder">
+<data key="d1">
+ww;ORDERS().*
+
+</data></edge>
+<edge source="neworder" target="neworder">
+<data key="d1">
+ww;NEW_ORDER().*
+
+</data></edge>
+<edge source="neworder" target="neworder">
+<data key="d1">
+ww;ORDERLINE().*
+
+</data></edge>
+<edge source="neworder" target="neworder">
+<data key="d1">
+wr;DISTRICT(['dId', 'wId']).*
+
+</data></edge>
+<edge source="neworder" target="stocklevel">
+<data key="d1">
+wr;DISTRICT(['dId', 'wId']).*
+
+</data></edge>
+<edge source="neworder" target="stocklevel">
+<data key="d1">
+wr;STOCK(['iId', 'wId']).*
+
+</data></edge>
+<edge source="neworder" target="payment">
+<data key="d1">
+wr;DISTRICT(['dId', 'wId']).*
+
+</data></edge>
+<edge source="neworder" target="neworder">
+<data key="d1">
+rw;DISTRICT(['dId', 'wId']).*
+
+</data></edge>
+<edge source="neworder" target="payment">
+<data key="d1">
+rw;WAREHOUSE(['wId']).*
+
+</data></edge>
+<edge source="neworder" target="payment">
+<data key="d1">
+rw;DISTRICT(['dId', 'wId']).*
+
+</data></edge>
+<edge source="neworder" target="payment">
+<data key="d1">
+rw;CUSTOMER(['cId', 'dId', 'wId']).*
+
+</data></edge>
+<edge source="neworder" target="delivery">
+<data key="d1">
+rw;CUSTOMER(['cId', 'dId', 'wId']).*
+
+</data></edge><node id="stocklevel">
+<data key="d0">"stocklevel"</data>
+</node>
+
+<edge source="stocklevel" target="neworder">
+<data key="d1">
+rw;DISTRICT(['dId', 'wId']).*
+
+</data></edge>
+<edge source="stocklevel" target="neworder">
+<data key="d1">
+rw;STOCK(['iId', 'wId']).*
+
+</data></edge>
+<edge source="stocklevel" target="payment">
+<data key="d1">
+rw;DISTRICT(['dId', 'wId']).*
+
+</data></edge>
+<edge source="stocklevel" target="delivery">
+<data key="d1">
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
+
+</data></edge>
+<edge source="stocklevel" target="delivery">
+<data key="d1">
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
+
+</data></edge>
+<edge source="stocklevel" target="delivery">
+<data key="d1">
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
+
+</data></edge><node id="payment">
+<data key="d0">"payment"</data>
+</node>
+
+<edge source="payment" target="payment">
+<data key="d1">
+ww;HISTORY().*
+
+</data></edge>
+<edge source="payment" target="orderstatus">
+<data key="d1">
+wr;CUSTOMER(['cId', 'dId', 'wId']).*
+
+</data></edge>
+<edge source="payment" target="neworder">
+<data key="d1">
+wr;CUSTOMER(['cId', 'dId', 'wId']).*
+
+</data></edge>
+<edge source="payment" target="neworder">
+<data key="d1">
+wr;WAREHOUSE(['wId']).*
+
+</data></edge>
+<edge source="payment" target="neworder">
+<data key="d1">
+wr;DISTRICT(['dId', 'wId']).*
+
+</data></edge>
+<edge source="payment" target="stocklevel">
+<data key="d1">
+wr;DISTRICT(['dId', 'wId']).*
+
+</data></edge>
+<edge source="payment" target="payment">
+<data key="d1">
+wr;WAREHOUSE(['wId']).*
+
+</data></edge>
+<edge source="payment" target="payment">
+<data key="d1">
+wr;DISTRICT(['dId', 'wId']).*
+
+</data></edge>
+<edge source="payment" target="payment">
+<data key="d1">
+wr;CUSTOMER(['cId', 'dId', 'wId']).*
+
+</data></edge>
+<edge source="payment" target="neworder">
+<data key="d1">
+rw;DISTRICT(['dId', 'wId']).*
+
+</data></edge>
+<edge source="payment" target="payment">
+<data key="d1">
+rw;WAREHOUSE(['wId']).*
+
+</data></edge>
+<edge source="payment" target="payment">
+<data key="d1">
+rw;DISTRICT(['dId', 'wId']).*
+
+</data></edge>
+<edge source="payment" target="payment">
+<data key="d1">
+rw;CUSTOMER(['cId', 'dId', 'wId']).*
+
+</data></edge>
+<edge source="payment" target="delivery">
+<data key="d1">
+rw;CUSTOMER(['cId', 'dId', 'wId']).*
+
+</data></edge><node id="delivery">
+<data key="d0">"delivery"</data>
+</node>
+
+<edge source="delivery" target="orderstatus">
+<data key="d1">
+wr;CUSTOMER(['cId', 'dId', 'wId']).*
+
+</data></edge>
+<edge source="delivery" target="orderstatus">
+<data key="d1">
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
+
+</data></edge>
+<edge source="delivery" target="orderstatus">
+<data key="d1">
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
+
+</data></edge>
+<edge source="delivery" target="orderstatus">
+<data key="d1">
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
+
+</data></edge>
+<edge source="delivery" target="neworder">
+<data key="d1">
+wr;CUSTOMER(['cId', 'dId', 'wId']).*
+
+</data></edge>
+<edge source="delivery" target="stocklevel">
+<data key="d1">
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
+
+</data></edge>
+<edge source="delivery" target="stocklevel">
+<data key="d1">
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
+
+</data></edge>
+<edge source="delivery" target="stocklevel">
+<data key="d1">
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
+
+</data></edge>
+<edge source="delivery" target="payment">
+<data key="d1">
+wr;CUSTOMER(['cId', 'dId', 'wId']).*
+
+</data></edge>
+<edge source="delivery" target="delivery">
+<data key="d1">
+wr;ORDERS(['oId', 'dId', 'wId']).*
+
+</data></edge>
+<edge source="delivery" target="delivery">
+<data key="d1">
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
+
+</data></edge>
+<edge source="delivery" target="delivery">
+<data key="d1">
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
+
+</data></edge>
+<edge source="delivery" target="delivery">
+<data key="d1">
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
+
+</data></edge>
+<edge source="delivery" target="delivery">
+<data key="d1">
+rw;ORDERS(['oId', 'dId', 'wId']).*
+
+</data></edge>
+<edge source="delivery" target="delivery">
+<data key="d1">
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
+
+</data></edge>
+<edge source="delivery" target="delivery">
+<data key="d1">
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
+
+</data></edge>
+<edge source="delivery" target="delivery">
+<data key="d1">
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
+
+</data></edge></graph>
+	</graphml>
