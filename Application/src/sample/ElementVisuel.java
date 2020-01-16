@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Text;
@@ -14,6 +15,7 @@ import javafx.scene.transform.Rotate;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.function.Consumer;
 
 public class ElementVisuel {
@@ -23,10 +25,12 @@ public class ElementVisuel {
     private final int TAILLE_FLECHE = 10; // taille du bout de la fleche
     private final double ANGLE_FLECHE = 45; // angle d'un cote du bout de la fleche par rapport au noeud d'arrivee
     private final double COEFFICIENT_CONTROLE = 0.3;// coefficent de longueur/hauteur pour placer les points de controles
+    private Pane pane; // panneau auquel l'element visuel est asssocié
     private Consumer<String> consumer = e -> System.out.println(e);
     ArrayList<Shape> list_shape; // listes des elements a inserer dans la vue
-    public ElementVisuel(ArrayList<Relation> l_relation, ArrayList<Transaction> l_transaction) {
+    public ElementVisuel(ArrayList<Relation> l_relation, ArrayList<Transaction> l_transaction, Pane p) {
         list_shape = new ArrayList<>();
+        pane = p;
         createShape(l_relation,l_transaction);
     }
 
@@ -35,10 +39,13 @@ public class ElementVisuel {
             for (Transaction transaction : l_transaction) {
                 Rectangle r = createNodeRectange(transaction);
                 Text text = new Text(transaction.id);
+                text.setManaged(false);
                 text.setX(r.getX());
                 text.setY(r.getY());
+                text.setLayoutX(r.getLayoutX());
+                text.setLayoutY(r.getLayoutY());
                 // on "colle" le text avec le rectangle
-                // text.xProperty().bind(Bindings.add(DEFAULT_MARGE_X_NOM_NODE, r.xProperty()));
+                //text.xProperty().bind(Bindings.add(DEFAULT_MARGE_X_NOM_NODE, r.xProperty()));
                 //text.yProperty().bind(Bindings.add((text.getLayoutBounds().getHeight() + DEFAULT_MARGE_Y_NOM_NODE / 2), r.yProperty()));
                 text.layoutXProperty().bind(r.layoutXProperty().add(DEFAULT_MARGE_X_NOM_NODE));
                 text.layoutYProperty().bind(r.layoutYProperty().add((DEFAULT_MARGE_Y_NOM_NODE/2)+text.getLayoutBounds().getHeight()));
@@ -80,12 +87,19 @@ public class ElementVisuel {
         r.setFill(Color.TRANSPARENT);
         r.setStroke(Color.BLACK);
         r.setStrokeWidth(2);
-        r.setX(50);
-        r.setY(50);
+        r.setX(calculeCoordNode(true));
+        r.setY(calculeCoordNode(false));
         consumer.accept(text.getText());
         r.setAccessibleText(text.getText());
         //addHandlerRectangle(r);
         return r;
+    }
+    private double calculeCoordNode(boolean x) {
+        if (x) {// alors coordonne horizontale
+            return new Random().nextDouble() * pane.getWidth();
+        }else { // alors coordonnée verticale
+            return new Random().nextDouble() * pane.getHeight();
+        }
     }
     private void addHandlerRectangle(Rectangle rectangle) {
         rectangle.setOnMousePressed(new EventHandler<MouseEvent>() {
