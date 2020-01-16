@@ -20,6 +20,7 @@ class principal:
             self.liste_file.append(elt.split(".")[0])
         self.liste_dependance = []
         self.dependance = []
+        self.dep_sans_doublons = dict()
     
     def analyse_BD(self):
         print("Voici la liste des Tables avec leurs clés primaires ( si une table n'a pas de clé primaire , elle n'apparait pas ) : ")
@@ -169,9 +170,27 @@ class principal:
          #    </edge>
                     
         
+    def genere_couple_source_target(self):
+        # init du disctionnaire { ( source , target ) : [ liste de contraintes ....]
+        for elt in self.dependance :
+            self.dep_sans_doublons[elt.source,elt.target] = None
+            
+        for elt in self.dependance :
+            if self.dep_sans_doublons[elt.source,elt.target] != None:
+                li = []
+                for a in self.dep_sans_doublons[elt.source,elt.target] :
+                    #print("a::::::: " + a)
+                    li.append(a)
+                li.append(elt.type +';'+elt.table+'('+str(elt.id)+').'+elt.complement)
+                self.dep_sans_doublons[elt.source,elt.target] = li
+            else :
+                self.dep_sans_doublons[elt.source,elt.target] = [elt.type +';'+elt.table+'('+str(elt.id)+').'+elt.complement]
+            
+            
+        
         
     def generer_graphml(self):
-        with open(os.getcwd()+"/graph.graphml", "w") as fichier:
+        with open(os.getcwd()+"/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/graph.graphml", "w") as fichier:
             fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
             fichier.write('\t<key id="d0" for="node" attr.name="weight" attr.type="string"/>\n')
@@ -191,32 +210,53 @@ class principal:
                     
                 
             fichier.write("</graph>\n\t</graphml>")
+        fichier.close()
+        self.fichier = fichier
+    
+    def genere_graphml_sans_doublons(self):
+        with open(os.getcwd()+"/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/graph.graphml", "w") as fichier:
+            fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+            fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
+            fichier.write('\t<key id="d0" for="node" attr.name="weight" attr.type="string"/>\n')
+            fichier.write('\t<key id="d1" for="edge" attr.name="weight" attr.type="string"/>\n')
+            fichier.write('<graph id="G" edgedefault="directed\">\n')
             
-        
-            
-        
-        
-        
-        
+            #creation node
+            for cle , value in self.dep_sans_doublons.items() :
+                fichier.write('\n<node id="'+cle[0]+'">\n')
+                fichier.write('<data key="d0">"'+cle[0]+'"</data>\n</node>')
+                fichier.write('\n<edge source="'+cle[0]+'" target="'+cle[1]+'">\n')
+                fichier.write('<data key="d1">\n')
+                # on traite ensuite toutes les dependances une a une 
+                for v in value :
+                    fichier.write(v+'\n')
+                fichier.write('\n\n</data>\n</edge>')    
+            fichier.write("</graph>\n\t</graphml>")
         fichier.close()
         self.fichier = fichier
         
+    def affiche_lise_sans_doublon(self):
+        for cle,value in self.dep_sans_doublons.items():
+            print(cle,value)
         
-        
-        
+    def lanceur_f(self):
+        self.lanceur()
+        print("-------------------------------------Dépendances---------------------")
+        self.create_dep_ww_insert()
+        self.create_dependance_wr()
+        self.create_dependance_rw()
+        self.affiche_dependance()
+        self.parse_dependance()
+        self.generer_graphml()
+        self.genere_couple_source_target()
+        print("############################################")
+        self.affiche_lise_sans_doublon()
+        self.genere_graphml_sans_doublons()
         
         
 if __name__ == "__main__":
     main = principal()
-    main.lanceur()
-    print("-------------------------------------Dépendances---------------------")
-    main.create_dep_ww_insert()
-    main.create_dependance_wr()
-    main.create_dependance_rw()
-    main.affiche_dependance()
-    main.parse_dependance()
-    main.generer_graphml()
-    
+    main.lanceur_f()
     
     
     
