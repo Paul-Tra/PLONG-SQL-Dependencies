@@ -43,6 +43,11 @@ public class Controller {
         }
     }
 
+    @FXML
+    private void doClear(ActionEvent actionEvent) { // netoyage de la vue (effacement du grpahe)
+        anchorPane.getChildren().clear();
+    }
+
     private void fill_listView(Parser p) {
         NodeList nodeList = p.nodeList;
         for (Transaction transaction : p.list_transaction) {
@@ -55,7 +60,7 @@ public class Controller {
     }
 
     private void fillPane(ArrayList<Relation> l_relation, ArrayList<Transaction> l_transaction) {
-        ElementVisuel elementVisuel = new ElementVisuel(l_relation, l_transaction);
+        ElementVisuel elementVisuel = new ElementVisuel(l_relation, l_transaction,anchorPane);
         for (Shape shape : elementVisuel.list_shape) {
             anchorPane.getChildren().add(shape);
         }
