@@ -27,7 +27,7 @@ public class ElementVisuel {
     private double oldX, oldY;
     private final int DEFAULT_MARGE_X_NOM_NODE = 10;
     private final int DEFAULT_MARGE_Y_NOM_NODE = 5;
-    private final int TAILLE_FLECHE = 10; // taille du bout de la fleche
+    private final int TAILLE_FLECHE = 8; // taille du bout de la fleche
     private final double ANGLE_FLECHE = 45; // angle d'un cote du bout de la fleche par rapport au noeud d'arrivee
     private final double COEFFICIENT_CONTROLE = 0.3;// coefficent de longueur/hauteur pour placer les points de controles
     private Pane pane; // panneau auquel l'element visuel est asssocié
@@ -70,11 +70,12 @@ public class ElementVisuel {
                     consumer.accept("source ou destination null");
                     continue;
                 }
-                //  TODO: recup cote
+                consumer.accept("depart coord x,y" + r_source.getX() + ";" + r_source.getY());
+                consumer.accept("depart layout x,y" + r_source.getLayoutX() + ";" + r_source.getLayoutY());
                 int cote_arrivee = getCoteNodeArrivee(r_source, r_dest);
                 double tab_coord_arrivee[] = getCoordPointFleche(r_dest,cote_arrivee);
                 double tab_coord_depart[] = getCoordPointFleche(r_source, (cote_arrivee + 2) % 4);
-                Path p = createFleche(relation.nom, tab_coord_depart[0], tab_coord_depart[1], tab_coord_arrivee[0], tab_coord_arrivee[1], cote_arrivee);
+                Path p = createFleche(relation.nom, tab_coord_depart[0], tab_coord_depart[1], tab_coord_arrivee[0], tab_coord_arrivee[1],r_source,r_dest, cote_arrivee);
                 list_shape.add(p);
             }
         }else{
@@ -170,25 +171,28 @@ public class ElementVisuel {
         });
     }
     // cree une "fleche" entre un point s source et un point d destination
-    private Path createFleche(String nom,double s_x,double s_y,double d_x,double d_y, int cote) {
+    private Path createFleche(String nom,double s_x,double s_y,double d_x,double d_y,Rectangle r_source,Rectangle r_dest, int cote) {
         Path fleche = new Path();
         fleche.setAccessibleText(nom);
         MoveTo mt = new MoveTo();
+        mt.xProperty().bind(r_source.layoutXProperty().add(s_x));
+        mt.yProperty().bind(r_source.layoutYProperty().add(s_y));
         CubicCurveTo cct = new CubicCurveTo();
+        cct.xProperty().bind(r_dest.layoutXProperty().add(d_x));
+        cct.yProperty().bind(r_dest.layoutYProperty().add(d_y));
         createCourbe(mt,cct,s_x,s_y,d_x,d_y);
         //ajout de la courbe a la fleche
         fleche.getElements().add(mt);
         fleche.getElements().add(cct);
         // on ajout le bout de la fleche
-        createBoutFleche(fleche, d_x, d_y, cote, true); // |\ <- oui c'est bien un bout de fleche
-        createBoutFleche(fleche, d_x, d_y, cote, false);// /| <- ici aussi  /| + |\ = /|\ en gros /\
+        createBoutFleche(fleche,r_dest, d_x, d_y, cote, true); // |\ <- oui c'est bien un bout de fleche
+        createBoutFleche(fleche,r_dest, d_x, d_y, cote, false);// /| <- ici aussi  /| + |\ = /|\ en gros /\
         fleche.setStroke(Color.BLACK);
         fleche.setStrokeWidth(1);
         return fleche;
     }
-
     // s'occupe de creer le bout de la fleche au niveau du point de destination
-    private void createBoutFleche(Path p, double d_x, double d_y, int cote,boolean premier) {
+    private void createBoutFleche(Path p,Rectangle r_dest, double d_x, double d_y, int cote,boolean premier) {
         if (cote < 0 || cote >= 4) {// 0_BAS , 1_GAUCHE , 2_HAUT , 3_DROITE
             return;
         }
@@ -197,14 +201,14 @@ public class ElementVisuel {
             angle += 90;
         }
         MoveTo mv = new MoveTo();
-        mv.setX(d_x);
-        mv.setY(d_y);
+        mv.xProperty().bind(r_dest.layoutXProperty().add(d_x));
+        mv.yProperty().bind(r_dest.layoutYProperty().add(d_y));
         LineTo lineTo = new LineTo();
         double coord_x = d_x + TAILLE_FLECHE;
         double coord_y = d_y;
         double tab[] = calcul_rotation(d_x, d_y, coord_x, coord_y, angle);
-        lineTo.setX(tab[0]);
-        lineTo.setY(tab[1]);
+        lineTo.xProperty().bind(r_dest.layoutXProperty().add(tab[0]));
+        lineTo.yProperty().bind(r_dest.layoutYProperty().add(tab[1]));
         p.getElements().add(mv);
         p.getElements().add(lineTo);
     }
@@ -222,10 +226,10 @@ public class ElementVisuel {
 
     private void createCourbe(MoveTo mt, CubicCurveTo cct, double s_x, double s_y, double d_x, double d_y) {
         //gestion des points depart/arrivee
-        mt.setX(s_x);// depart
-        mt.setY(s_y);
-        cct.setX(d_x);// arrivee
-        cct.setY(d_y);
+        //mt.setX(s_x);// depart
+        //mt.setY(s_y);
+        //cct.setX(d_x);// arrivee
+        //cct.setY(d_y);
         //gestion des points de controles
         ArrayList<Double> list_coord = gestionPointControle(s_x, s_y, d_x, d_y);
         cct.setControlX1(list_coord.get(0));
