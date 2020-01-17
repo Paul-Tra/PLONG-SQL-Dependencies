@@ -21,6 +21,7 @@ class principal:
         self.liste_dependance = []
         self.dependance = []
         self.dep_sans_doublons = dict()
+        
     
     def analyse_BD(self):
         print("Voici la liste des Tables avec leurs clés primaires ( si une table n'a pas de clé primaire , elle n'apparait pas ) : ")
@@ -36,6 +37,32 @@ class principal:
             self.affiche_cle_primaire_lecture(i)
             print("Ecriture : ")
             self.pw[i].lanceur()
+            
+            
+            
+    #
+    #   orderstatus.sql {}
+    #   neworder.sql {'DISTRICT': ['dId', 'wId'], 'STOCK': ['iId', 'wId']}
+    #   stocklevel.sql {}
+    #   payment.sql {'WAREHOUSE': ['wId'], 'DISTRICT': ['wId', 'dId'], 'CUSTOMER': ['wId', 'dId', 'cId']}
+    #   delivery.sql {'ORDERS': ['oId', 'dId', 'wId'], 'ORDERLINE': ['oId', 'dId', 'wId'], 'CUSTOMER': ['cId', 'dId', 'wId']}
+    
+    
+    def traite_dep_ww_entrefonctions(self):
+        liste_dep_ww = dict()
+        
+        for i in range (0,len(self.pw)):
+            for j in range (0,len(self.pw)):
+                for cle,val in self.pw[i].liste_attribut.items() :
+                    for clej,valj in self.pw[j].liste_attribut.items() :
+                        if ( val.sort() == valj.sort() ):
+                            if ( self.pw[i].name.split(".")[0] != self.pw[j].name.split(".")[0] ):
+                                #if ( liste_dep_ww[self.pw[i].name.split(".")[0],self.pw[j].name.split(".")[0]] != None ) :
+                                    
+                                print("ok : " + self.pw[i].name.split(".")[0] + " " + self.pw[j].name.split(".")[0] )
+                                    #liste_dep_ww[self.pw[i].name,self.pw[j].name] = val
+                                    
+
 
     def traite_cle_primaire_lecture(self):
         #print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
@@ -69,12 +96,34 @@ class principal:
         #print("**************************************************************")
         #print("**************** Création des dépendances WW  ****************")
         #print("**************************************************************")
+        liste_tmp = []
         for i in range ( 0 , len(self.pw)) :
             liste_table_touche_par_insert = self.pw[i].liste_table_insert
-            for elt in liste_table_touche_par_insert:
+            for j in range(0,len(liste_table_touche_par_insert)):
                 #print(self.pw[i].name + " :: ww;"+elt+"(*).*")
-                self.liste_dependance.append(str(self.pw[i].name + " ->  " + self.pw[i].name + " :: ww;"+elt+"(*).*"))
-                
+                table = liste_table_touche_par_insert[j].split("(")[0].strip()
+                condi = self.pw[i].liste_condition
+                print(condi[j])
+                self.liste_dependance.append(str(self.pw[i].name + " ->  " + self.pw[i].name + " :: ww;"+table+"(*).* / " + str(condi[j])))
+
+                    
+    def maj_dep_wr_rw_en_ww(self):
+        for elt in self.liste_dependance :
+            fin = elt.split(" :: ")[1]
+            src = elt.split("->")[0].strip()
+            dst = elt.split("->")[1].split("::")[0].strip()
+            wr = elt.split(":: ")[1].split(";")[0].strip()
+            
+            if ( wr == "wr" and str(dst + " -> " + src + " :: "+fin) in self.liste_dependance ) :
+                #print(str(dst + " -> " + src + " :: "+fin))
+                self.liste_dependance.remove(str(src + " -> " + dst + " :: "+fin))
+                fin2 = fin.replace("wr","rw")
+                if ( str(dst + " -> " + src + " :: "+fin2) in self.liste_dependance ) :
+                    self.liste_dependance.remove(str(dst + " -> " + src + " :: "+fin2))
+                    
+                fin = fin.replace("wr","ww")
+                self.liste_dependance.append(str(src + " -> " + dst + " :: "+fin ) )
+        #print(".................................................3")
         
     def create_dependance_wr(self):
         #print("**************************************************************")
@@ -141,33 +190,23 @@ class principal:
             new_dep.target = elt.split("->")[1].split(".")[0].strip()
             new_dep.type = elt.split(":: ")[1].split(";")[0].strip()
             new_dep.table = elt.split(";")[1].split("(")[0].strip()
-            new_dep.id = elt.split("(")[1].split(")")[0].strip()
+            new_dep.id = elt.split("(")[1].split(".")[0]
             new_dep.id = new_dep.id[:-1]
+            if ( new_dep.id[-1] == "'" ):
+                new_dep.id = new_dep.id[:-1]
             new_dep.complement = elt.split(".")[3]
-            
-            #print("source : " + new_dep.source)
-            #print("target : " +new_dep.target)
-            #print("type : " + new_dep.type)
-            #print("table : " +new_dep.table)
-            #print("id : " +new_dep.id)
-            #print("complement :" +new_dep.complement)
-            
-            
             self.dependance.append(new_dep)
             
-        
-            # <edge source="RegItem" target="RegItem">
-           #  <data key="d1">
-          #   ww,ITEMS(*).*;
-         #    cid = cid'
-        #     
-        #     </data>
-        #     <data key="d1">
-         #    ww,ITEMS(*).*;
-         #    cid = cid'
-         #    
-         #    </data>
-         #    </edge>
+         
+         
+    def verifie_dep_ww(self):
+        for cle,value in self.dep_sans_doublons.items():
+            if ( self.dep_sans_doublons[cle[1],cle[0]] != None ):
+                if ( self.dep_sans_doublons[cle[1],cle[0]] != self.dep_sans_doublons[cle[0],cle[1]] ) :
+                    #print("presence d'un WR et d'un RW + " + str(self.dep_sans_doublons[cle[1],cle[0]]) + '\n' + str(self.dep_sans_doublons[cle[0],cle[1]])  )
+                    print(cle[0],cle[1])
+                    
+                    
                     
         
     def genere_couple_source_target(self):
@@ -237,7 +276,10 @@ class principal:
         
     def affiche_lise_sans_doublon(self):
         for cle,value in self.dep_sans_doublons.items():
-            print(cle,value)
+            print("\nSource : " + cle[0] + " , Destination : " + cle[1] )
+            for v in  value : 
+                print('\t'+v)
+                
         
     def lanceur_f(self):
         self.lanceur()
@@ -245,13 +287,16 @@ class principal:
         self.create_dep_ww_insert()
         self.create_dependance_wr()
         self.create_dependance_rw()
-        self.affiche_dependance()
+        self.maj_dep_wr_rw_en_ww()
+        #self.affiche_dependance()
         self.parse_dependance()
         self.generer_graphml()
         self.genere_couple_source_target()
         print("############################################")
         self.affiche_lise_sans_doublon()
         self.genere_graphml_sans_doublons()
+        #self.verifie_dep_ww()
+        #self.traite_dep_ww_entrefonctions()
         
         
 if __name__ == "__main__":

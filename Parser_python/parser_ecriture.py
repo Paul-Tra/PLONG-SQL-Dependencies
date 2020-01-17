@@ -8,6 +8,7 @@ class parser_ecriture:
         self.liste_update = []
         self.liste_table_insert = []
         self.liste_attribut = dict()
+        self.liste_condition = []
         
     def trouve_update(self):
         data = " "
@@ -59,14 +60,19 @@ class parser_ecriture:
         #print(m)
         
     def trouve_insert(self):
-        m = re.findall("INSERT .*?\(",self.data)
+        m = re.findall("INSERT .*?\(?.*?\)",self.data)
         for elt in m :
+            condi = elt
             elt = elt.split(" ")
             elt = elt[2]
             elt = elt[:-1]
-            #print(elt)
             self.liste_table_insert.append(elt)
             #print(elt+'\n')
+            # traitement des conditions
+            liste =[]
+            liste = condi.split("(")[1].split(")")[0].split(",")
+            self.liste_condition.append(liste)
+            #print(self.liste_condition)
         
         
     def analyse_contenue(self):
@@ -78,6 +84,8 @@ class parser_ecriture:
     def affiche(self):
         for elt,a in self.liste_attribut.items():
             print(elt,a)
+        #for elt in self.liste_table_insert:
+        #    print(elt)
             
     def lanceur(self):
         self.trouve_update()
@@ -88,7 +96,7 @@ class parser_ecriture:
         self.affiche()
         
 if __name__ == "__main__":
-    p_write = parser_ecriture("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/payment.sql")
+    p_write = parser_ecriture("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/neworder.sql")
     p_write.lanceur()
     
     

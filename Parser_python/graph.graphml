@@ -9,11 +9,10 @@
 </node>
 <edge source="neworder" target="neworder">
 <data key="d1">
-ww;ORDERS().*
-ww;NEW_ORDER().*
-ww;ORDERLINE().*
-wr;DISTRICT(['dId', 'wId']).*
-rw;DISTRICT(['dId', 'wId']).*
+ww;ORDERS(*).*  ['oId', 'dId', 'wId', 'cId', 'entryDate', 'oLCnt', 'allLocal']
+ww;NEW_ORDER(*).*  ['oId', 'dId', 'wId']
+ww;ORDERLINE(*).*  ['oId', 'dId', 'wId', 'number', 'iId', 'supplyWId', 'quantity', 'amount', 'distInfo']
+ww;DISTRICT(['dId', 'wId']).* []
 
 
 </data>
@@ -23,13 +22,11 @@ rw;DISTRICT(['dId', 'wId']).*
 </node>
 <edge source="payment" target="payment">
 <data key="d1">
-ww;HISTORY().*
-wr;WAREHOUSE(['wId']).*
-wr;DISTRICT(['dId', 'wId']).*
-wr;CUSTOMER(['cId', 'dId', 'wId']).*
-rw;WAREHOUSE(['wId']).*
-rw;DISTRICT(['dId', 'wId']).*
-rw;CUSTOMER(['cId', 'dId', 'wId']).*
+ww;HISTORY(*).*  ['cDId', 'cWId', 'cId', 'dId', 'wId', 'date', 'amount', 'data']
+wr;DISTRICT(['dId', 'wId']).* []
+rw;DISTRICT(['dId', 'wId']).* []
+ww;WAREHOUSE(['wId']).* []
+ww;CUSTOMER(['cId', 'dId', 'wId']).* []
 
 
 </data>
@@ -39,7 +36,7 @@ rw;CUSTOMER(['cId', 'dId', 'wId']).*
 </node>
 <edge source="payment" target="orderstatus">
 <data key="d1">
-wr;CUSTOMER(['cId', 'dId', 'wId']).*
+wr;CUSTOMER(['cId', 'dId', 'wId']).* []
 
 
 </data>
@@ -49,10 +46,10 @@ wr;CUSTOMER(['cId', 'dId', 'wId']).*
 </node>
 <edge source="delivery" target="orderstatus">
 <data key="d1">
-wr;CUSTOMER(['cId', 'dId', 'wId']).*
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
+wr;CUSTOMER(['cId', 'dId', 'wId']).* []
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId []
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId []
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId []
 
 
 </data>
@@ -62,10 +59,10 @@ wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
 </node>
 <edge source="payment" target="neworder">
 <data key="d1">
-wr;CUSTOMER(['cId', 'dId', 'wId']).*
-wr;WAREHOUSE(['wId']).*
-wr;DISTRICT(['dId', 'wId']).*
-rw;DISTRICT(['dId', 'wId']).*
+wr;CUSTOMER(['cId', 'dId', 'wId']).* []
+wr;WAREHOUSE(['wId']).* []
+rw;DISTRICT(['dId', 'wId']).* []
+ww;DISTRICT(['dId', 'wId']).* []
 
 
 </data>
@@ -75,7 +72,7 @@ rw;DISTRICT(['dId', 'wId']).*
 </node>
 <edge source="delivery" target="neworder">
 <data key="d1">
-wr;CUSTOMER(['cId', 'dId', 'wId']).*
+wr;CUSTOMER(['cId', 'dId', 'wId']).* []
 
 
 </data>
@@ -85,8 +82,8 @@ wr;CUSTOMER(['cId', 'dId', 'wId']).*
 </node>
 <edge source="neworder" target="stocklevel">
 <data key="d1">
-wr;DISTRICT(['dId', 'wId']).*
-wr;STOCK(['iId', 'wId']).*
+wr;DISTRICT(['dId', 'wId']).* []
+wr;STOCK(['iId', 'wId']).* []
 
 
 </data>
@@ -96,7 +93,7 @@ wr;STOCK(['iId', 'wId']).*
 </node>
 <edge source="payment" target="stocklevel">
 <data key="d1">
-wr;DISTRICT(['dId', 'wId']).*
+wr;DISTRICT(['dId', 'wId']).* []
 
 
 </data>
@@ -106,9 +103,9 @@ wr;DISTRICT(['dId', 'wId']).*
 </node>
 <edge source="delivery" target="stocklevel">
 <data key="d1">
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId []
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId []
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId []
 
 
 </data>
@@ -118,10 +115,9 @@ wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
 </node>
 <edge source="neworder" target="payment">
 <data key="d1">
-wr;DISTRICT(['dId', 'wId']).*
-rw;WAREHOUSE(['wId']).*
-rw;DISTRICT(['dId', 'wId']).*
-rw;CUSTOMER(['cId', 'dId', 'wId']).*
+wr;DISTRICT(['dId', 'wId']).* []
+rw;WAREHOUSE(['wId']).* []
+rw;CUSTOMER(['cId', 'dId', 'wId']).* []
 
 
 </data>
@@ -131,7 +127,7 @@ rw;CUSTOMER(['cId', 'dId', 'wId']).*
 </node>
 <edge source="delivery" target="payment">
 <data key="d1">
-wr;CUSTOMER(['cId', 'dId', 'wId']).*
+wr;CUSTOMER(['cId', 'dId', 'wId']).* []
 
 
 </data>
@@ -141,14 +137,12 @@ wr;CUSTOMER(['cId', 'dId', 'wId']).*
 </node>
 <edge source="delivery" target="delivery">
 <data key="d1">
-wr;ORDERS(['oId', 'dId', 'wId']).*
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
-rw;ORDERS(['oId', 'dId', 'wId']).*
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId []
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId []
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId []
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId []
+ww;ORDERS(['oId', 'dId', 'wId']).* []
+ww;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId []
 
 
 </data>
@@ -158,8 +152,8 @@ rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
 </node>
 <edge source="stocklevel" target="neworder">
 <data key="d1">
-rw;DISTRICT(['dId', 'wId']).*
-rw;STOCK(['iId', 'wId']).*
+rw;DISTRICT(['dId', 'wId']).* []
+rw;STOCK(['iId', 'wId']).* []
 
 
 </data>
@@ -169,7 +163,7 @@ rw;STOCK(['iId', 'wId']).*
 </node>
 <edge source="orderstatus" target="payment">
 <data key="d1">
-rw;CUSTOMER(['cId', 'dId', 'wId']).*
+rw;CUSTOMER(['cId', 'dId', 'wId']).* []
 
 
 </data>
@@ -179,7 +173,7 @@ rw;CUSTOMER(['cId', 'dId', 'wId']).*
 </node>
 <edge source="stocklevel" target="payment">
 <data key="d1">
-rw;DISTRICT(['dId', 'wId']).*
+rw;DISTRICT(['dId', 'wId']).* []
 
 
 </data>
@@ -189,10 +183,10 @@ rw;DISTRICT(['dId', 'wId']).*
 </node>
 <edge source="orderstatus" target="delivery">
 <data key="d1">
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
-rw;CUSTOMER(['cId', 'dId', 'wId']).*
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId []
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId []
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId []
+rw;CUSTOMER(['cId', 'dId', 'wId']).* []
 
 
 </data>
@@ -202,7 +196,7 @@ rw;CUSTOMER(['cId', 'dId', 'wId']).*
 </node>
 <edge source="neworder" target="delivery">
 <data key="d1">
-rw;CUSTOMER(['cId', 'dId', 'wId']).*
+rw;CUSTOMER(['cId', 'dId', 'wId']).* []
 
 
 </data>
@@ -212,9 +206,9 @@ rw;CUSTOMER(['cId', 'dId', 'wId']).*
 </node>
 <edge source="stocklevel" target="delivery">
 <data key="d1">
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId []
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId []
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId []
 
 
 </data>
@@ -224,7 +218,7 @@ rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
 </node>
 <edge source="payment" target="delivery">
 <data key="d1">
-rw;CUSTOMER(['cId', 'dId', 'wId']).*
+rw;CUSTOMER(['cId', 'dId', 'wId']).* []
 
 
 </data>

@@ -18,6 +18,7 @@ class Parser:
         self.liste_finale_attribut_lecture = {}
         self.mot_cle = ["WHERE","SELECT","INSERT","INTO","DECLARE","FOR","IF","ELSE","CURSOR","ORDER","BY","DESC;","DESC"]
         self.file = None
+        self.couple = dict()
         
     def lecture_fichier(self):
         F = open(self.nom_fichier,"r") 
