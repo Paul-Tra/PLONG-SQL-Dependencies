@@ -24,6 +24,7 @@ public class ElementVisuel {
     private static final int  GAUCHE = 1;
     private static final int  HAUT = 2;
     private static final int  DROITE = 3;
+    private final int NB_COTE=4;
     private double oldX, oldY;
     private final int DEFAULT_MARGE_X_NOM_NODE = 10;
     private final int DEFAULT_MARGE_Y_NOM_NODE = 5;
@@ -100,7 +101,7 @@ public class ElementVisuel {
         double taille=0;
         if (cote == GAUCHE || cote == DROITE) {
             taille = r.getHeight();
-        } else {
+        } else if(cote == HAUT || cote == BAS) {
             taille = r.getWidth();
         }
         return new Random().nextDouble() * taille*0.9;
@@ -180,7 +181,7 @@ public class ElementVisuel {
         CubicCurveTo cct = new CubicCurveTo();
         cct.xProperty().bind(r_dest.layoutXProperty().add(d_x));
         cct.yProperty().bind(r_dest.layoutYProperty().add(d_y));
-        createCourbe(mt,cct,s_x,s_y,d_x,d_y);
+        createCourbe(cct,s_x,s_y,d_x,d_y);
         //ajout de la courbe a la fleche
         fleche.getElements().add(mt);
         fleche.getElements().add(cct);
@@ -224,14 +225,11 @@ public class ElementVisuel {
         return tab;
     }
 
-    private void createCourbe(MoveTo mt, CubicCurveTo cct, double s_x, double s_y, double d_x, double d_y) {
-        //gestion des points depart/arrivee
-        //mt.setX(s_x);// depart
-        //mt.setY(s_y);
-        //cct.setX(d_x);// arrivee
-        //cct.setY(d_y);
-        //gestion des points de controles
+    private void createCourbe(CubicCurveTo cct, double s_x, double s_y, double d_x, double d_y) {
         ArrayList<Double> list_coord = gestionPointControle(s_x, s_y, d_x, d_y);
+        if (list_coord == null || list_coord.size() < NB_COTE) {
+            consumer.accept("liste de coordonnee null ou partielle");
+        }/*
         cct.setControlX1(list_coord.get(0));
         list_coord.remove(0);
         cct.setControlX2(list_coord.get(0));
@@ -242,11 +240,40 @@ public class ElementVisuel {
         list_coord.remove(0);
         if (list_coord == null || list_coord.size() != 0) {
             consumer.accept("on a bien utilisé tout les elements de la liste pour les points de controle");
-        }
+        }*/
+        Circle c1 =createCircleControle(list_coord.get(0),list_coord.get(2));
+        cct.controlX1Property().bind(c1.layoutXProperty().add(c1.getCenterX()));
+        cct.controlY1Property().bind(c1.layoutYProperty().add(c1.getCenterY()));
+        Circle c2 =createCircleControle(list_coord.get(1),list_coord.get(3));
+        cct.controlX2Property().bind(c2.layoutXProperty().add(c2.getCenterX()));
+        cct.controlY2Property().bind(c2.layoutYProperty().add(c2.getCenterY()));
+    }
 
+    private Circle createCircleControle(double x, double y) {
+        Circle c = new Circle();
+        c.setCenterX(x);
+        c.setCenterY(y);
+        c.setFill(Color.BLACK);
+        c.setRadius(5);
+        c.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                oldX = mouseEvent.getX();
+                oldY = mouseEvent.getY();
+            }
+        });
+        c.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                c.setLayoutX(c.getLayoutX() + mouseEvent.getX() - oldX);
+                c.setLayoutY(c.getLayoutY() + mouseEvent.getY() - oldY);
+            }
+        });
+        list_shape.add(c);
+        return c;
     }
     // calcule et renvoie les point de controle d'une fleche
-    private ArrayList<Double> gestionPointControle( double s_x, double s_y, double d_x, double d_y) {
+    private ArrayList<Double> gestionPointControle(double s_x, double s_y, double d_x, double d_y) {
         ArrayList<Double> list = new ArrayList<>();
         boolean verticale = estDirectionVerticale((d_x - s_x), (d_y - s_y));
         if (verticale) {
