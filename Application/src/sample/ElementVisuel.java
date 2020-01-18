@@ -76,8 +76,10 @@ public class ElementVisuel {
                 int cote_arrivee = getCoteNodeArrivee(r_source, r_dest);
                 double tab_coord_arrivee[] = getCoordPointFleche(r_dest,cote_arrivee);
                 double tab_coord_depart[] = getCoordPointFleche(r_source, (cote_arrivee + 2) % 4);
-                Path p = createFleche(relation.nom, tab_coord_depart[0], tab_coord_depart[1], tab_coord_arrivee[0], tab_coord_arrivee[1],r_source,r_dest, cote_arrivee);
-                list_shape.add(p);
+                Path fleche = createFleche(relation.nom, tab_coord_depart[0], tab_coord_depart[1], tab_coord_arrivee[0], tab_coord_arrivee[1], r_source, r_dest, cote_arrivee);
+                // ajout des deux circle de controle de la fleche avant (dans la focntion createFleche)
+                list_shape.add(fleche);
+                addHandlerFleche(fleche);
             }
         }else{
             consumer.accept("liste de relation null");
@@ -189,8 +191,52 @@ public class ElementVisuel {
         createBoutFleche(fleche,r_dest, d_x, d_y, cote, true); // |\ <- oui c'est bien un bout de fleche
         createBoutFleche(fleche,r_dest, d_x, d_y, cote, false);// /| <- ici aussi  /| + |\ = /|\ en gros /\
         fleche.setStroke(Color.BLACK);
-        fleche.setStrokeWidth(1);
+        fleche.setStrokeWidth(2);
         return fleche;
+    }
+    // gere l'ajout des evenemetn d'une fleche
+    private void addHandlerFleche(Path fleche) {
+        fleche.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                // on rend invisible tout les cercles de controles visible actuellement
+                setInvisbleAllCircle();
+                // on affiche les cercles de controles de notre fleche uniquement
+                setVisibleCircleControleFleche(fleche);
+            }
+        });
+    }
+
+    private void setVisibleCircleControleFleche(Path fleche) {
+        for (int i = 0; i < list_shape.size(); i++) {
+            if (list_shape.get(i).getClass() == Path.class) {
+                Path path = (Path) list_shape.get(i);
+                if (fleche.getAccessibleText().equals(path.getAccessibleText())) { // alors on a trouvé notre fleche
+                    // d'apres la procedure de creation d'une on a ajoute les cercles de controles
+                    // de la fleche juste avant elle dans la liste list_shape
+                    if (list_shape.get(i - 2).getClass() != Circle.class && list_shape.get(i - 2).getClass() != Circle.class) {
+                        //on verifie qu'on a bien
+                        // nos 2 circle juste avant dans la liste
+                        return;
+                    }
+                    Circle c1 = (Circle)list_shape.get(i - 2);
+                    Circle c2 = (Circle)list_shape.get(i - 1);
+                    if ( !c1.isVisible()&& !c2.isVisible()) {
+                        c1.setVisible(true);
+                        c2.setVisible(true);
+                    }
+                }
+            }
+        }
+    }
+
+    private void setInvisbleAllCircle() {
+        for (Shape shape : list_shape) {
+            if (shape.getClass() == Circle.class) {
+                Circle c = (Circle) shape;
+                c.setVisible(false);
+            }
+        }
     }
     // s'occupe de creer le bout de la fleche au niveau du point de destination
     private void createBoutFleche(Path p,Rectangle r_dest, double d_x, double d_y, int cote,boolean premier) {
@@ -242,11 +288,13 @@ public class ElementVisuel {
             consumer.accept("on a bien utilisé tout les elements de la liste pour les points de controle");
         }*/
         Circle c1 =createCircleControle(list_coord.get(0),list_coord.get(2));
+        Circle c2 =createCircleControle(list_coord.get(1),list_coord.get(3));
         cct.controlX1Property().bind(c1.layoutXProperty().add(c1.getCenterX()));
         cct.controlY1Property().bind(c1.layoutYProperty().add(c1.getCenterY()));
-        Circle c2 =createCircleControle(list_coord.get(1),list_coord.get(3));
         cct.controlX2Property().bind(c2.layoutXProperty().add(c2.getCenterX()));
         cct.controlY2Property().bind(c2.layoutYProperty().add(c2.getCenterY()));
+        c1.setVisible(false);// cercle de congtrole invisible au depart
+        c2.setVisible(false);
     }
 
     private Circle createCircleControle(double x, double y) {
