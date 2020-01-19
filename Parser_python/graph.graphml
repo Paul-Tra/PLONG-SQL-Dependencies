@@ -13,6 +13,8 @@ ww;ORDERS(*).*
 ww;NEW_ORDER(*).* 
 ww;ORDERLINE(*).* 
 ww;DISTRICT(['dId', 'wId']).*
+neworder.d_id = neworder.d_id
+neworder.ol_i_id = neworder.ol_i_id
 
 
 </data>
@@ -27,6 +29,9 @@ wr;DISTRICT(['dId', 'wId']).*
 rw;DISTRICT(['dId', 'wId']).*
 ww;WAREHOUSE(['wId']).*
 ww;CUSTOMER(['cId', 'dId', 'wId']).*
+payment.w_id = payment.w_id
+payment.d_id = payment.d_id
+payment.c_id = payment.c_id
 
 
 </data>
@@ -37,6 +42,9 @@ ww;CUSTOMER(['cId', 'dId', 'wId']).*
 <edge source="payment" target="orderstatus">
 <data key="d1">
 wr;CUSTOMER(['cId', 'dId', 'wId']).*
+payment.c_w_id = orderstatus.w_Id
+payment.c_d_id = orderstatus.d_Id
+payment.c_id = orderstatus.c_id
 
 
 </data>
@@ -50,6 +58,9 @@ wr;CUSTOMER(['cId', 'dId', 'wId']).*
 wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
 wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
 wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
+delivery.d_id = orderstatus.d_Id
+delivery.c_id = orderstatus.c_id
+delivery.w_Id = orderstatus.w_Id
 
 
 </data>
@@ -63,6 +74,10 @@ wr;CUSTOMER(['cId', 'dId', 'wId']).*
 wr;WAREHOUSE(['wId']).*
 rw;DISTRICT(['dId', 'wId']).*
 ww;DISTRICT(['dId', 'wId']).*
+payment.w_id = neworder.w_id
+payment.d_id = neworder.d_id
+payment.c_d_id = neworder.d_id
+payment.c_id = neworder.c_Id
 
 
 </data>
@@ -73,6 +88,8 @@ ww;DISTRICT(['dId', 'wId']).*
 <edge source="delivery" target="neworder">
 <data key="d1">
 wr;CUSTOMER(['cId', 'dId', 'wId']).*
+delivery.d_id = neworder.d_id
+delivery.c_id = neworder.c_Id
 
 
 </data>
@@ -84,6 +101,9 @@ wr;CUSTOMER(['cId', 'dId', 'wId']).*
 <data key="d1">
 wr;DISTRICT(['dId', 'wId']).*
 wr;STOCK(['iId', 'wId']).*
+neworder.d_id = stocklevel.d_id
+neworder.w_id = stocklevel.w_id
+neworder.ol_supply_w_id = stocklevel.w_id
 
 
 </data>
@@ -94,6 +114,8 @@ wr;STOCK(['iId', 'wId']).*
 <edge source="payment" target="stocklevel">
 <data key="d1">
 wr;DISTRICT(['dId', 'wId']).*
+payment.w_id = stocklevel.w_id
+payment.d_id = stocklevel.d_id
 
 
 </data>
@@ -106,6 +128,8 @@ wr;DISTRICT(['dId', 'wId']).*
 wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
 wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
 wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
+delivery.d_id = stocklevel.d_id
+delivery.w_id = stocklevel.w_id
 
 
 </data>
@@ -118,6 +142,10 @@ wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
 wr;DISTRICT(['dId', 'wId']).*
 rw;WAREHOUSE(['wId']).*
 rw;CUSTOMER(['cId', 'dId', 'wId']).*
+neworder.d_id = payment.d_id
+neworder.d_id = payment.c_d_id
+neworder.c_Id = payment.c_id
+neworder.w_id = payment.w_id
 
 
 </data>
@@ -128,6 +156,8 @@ rw;CUSTOMER(['cId', 'dId', 'wId']).*
 <edge source="delivery" target="payment">
 <data key="d1">
 wr;CUSTOMER(['cId', 'dId', 'wId']).*
+delivery.d_id = payment.c_d_id
+delivery.c_id = payment.c_id
 
 
 </data>
@@ -143,6 +173,8 @@ rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
 rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
 ww;ORDERS(['oId', 'dId', 'wId']).*
 ww;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
+delivery.w_id = delivery.w_id
+delivery.d_id = delivery.d_id
 
 
 </data>
@@ -154,6 +186,9 @@ ww;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
 <data key="d1">
 rw;DISTRICT(['dId', 'wId']).*
 rw;STOCK(['iId', 'wId']).*
+stocklevel.w_id = neworder.w_id
+stocklevel.w_id = neworder.ol_supply_w_id
+stocklevel.d_id = neworder.d_id
 
 
 </data>
@@ -164,6 +199,9 @@ rw;STOCK(['iId', 'wId']).*
 <edge source="orderstatus" target="payment">
 <data key="d1">
 rw;CUSTOMER(['cId', 'dId', 'wId']).*
+orderstatus.d_Id = payment.c_d_id
+orderstatus.w_Id = payment.c_w_id
+orderstatus.c_id = payment.c_id
 
 
 </data>
@@ -174,6 +212,8 @@ rw;CUSTOMER(['cId', 'dId', 'wId']).*
 <edge source="stocklevel" target="payment">
 <data key="d1">
 rw;DISTRICT(['dId', 'wId']).*
+stocklevel.w_id = payment.w_id
+stocklevel.d_id = payment.d_id
 
 
 </data>
@@ -187,6 +227,9 @@ rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
 rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
 rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
 rw;CUSTOMER(['cId', 'dId', 'wId']).*
+orderstatus.d_Id = delivery.d_id
+orderstatus.w_Id = delivery.w_Id
+orderstatus.c_id = delivery.c_id
 
 
 </data>
@@ -197,6 +240,8 @@ rw;CUSTOMER(['cId', 'dId', 'wId']).*
 <edge source="neworder" target="delivery">
 <data key="d1">
 rw;CUSTOMER(['cId', 'dId', 'wId']).*
+neworder.d_id = delivery.d_id
+neworder.c_Id = delivery.c_id
 
 
 </data>
@@ -209,6 +254,8 @@ rw;CUSTOMER(['cId', 'dId', 'wId']).*
 rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
 rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
 rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
+stocklevel.w_id = delivery.w_id
+stocklevel.d_id = delivery.d_id
 
 
 </data>
@@ -219,6 +266,8 @@ rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
 <edge source="payment" target="delivery">
 <data key="d1">
 rw;CUSTOMER(['cId', 'dId', 'wId']).*
+payment.c_id = delivery.c_id
+payment.c_d_id = delivery.d_id
 
 
 </data>

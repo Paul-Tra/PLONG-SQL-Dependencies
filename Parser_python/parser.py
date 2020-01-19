@@ -338,7 +338,7 @@ class Parser:
         #print(m)
         n = re.findall("\(.*?\)",str(m))
         #print(n)
-        m = re.findall("[a-z]+[_]*[A-Za-z]+",str(n))
+        m = re.findall("[a-z]+[_]*[A-Za-z]+[_]*[A-Za-z]+",str(n))
         #print(m)
         print("\nListe des parametre de la fonction : " )
         for elt in m :
@@ -420,6 +420,7 @@ class Parser:
         print("Liste des parametres de fonction qui touche les clés primaires des tables suivantes : " )
         for a,b in self.couple_dependance.items():
             self.couple_dependance[a] =list(set(b))
+            print(a,b)
             
             
             

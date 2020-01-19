@@ -181,8 +181,8 @@ class principal:
         
     def affiche_dependance(self):    
         for elt in self.liste_dependance :
-            print(elt)
-        
+            #print(elt)
+            a=1
     def parse_dependance(self):
         for elt in self.liste_dependance :
             new_dep = dependance()
@@ -208,7 +208,7 @@ class principal:
                     new_dep.condition.append(a)
                     
             self.dependance.append(new_dep)
-            print(new_dep.source , new_dep.target , new_dep.table ,str(new_dep.condition))
+            #print(new_dep.source , new_dep.target , new_dep.table ,str(new_dep.condition))
             
          
          
@@ -216,8 +216,8 @@ class principal:
         for cle,value in self.dep_sans_doublons.items():
             if ( self.dep_sans_doublons[cle[1],cle[0]] != None ):
                 if ( self.dep_sans_doublons[cle[1],cle[0]] != self.dep_sans_doublons[cle[0],cle[1]] ) :
-                    print(cle[0],cle[1])
-                    
+                    #print(cle[0],cle[1])
+                    a=1
                     
     
     def genere_couple_source_target(self):
@@ -239,6 +239,23 @@ class principal:
     def genere_condition_dep(self):
         print("\n")
         for src in self.p :
+            for dst in self.pw : 
+                source = src.name.split(".")[0]
+                target = dst.name.split(".")[0]
+                #print("----------"+name +"-------------")
+                for a1,b1 in src.couple_dependance.items():
+                    for  a2,b2 in dst.couple_dependance.items():
+                        for el in b1 :
+                            for e in b2 :
+                                if ( el == e and (source,target) in self.dep_sans_doublons.keys()):
+                                    #print("a1 = " + a1 )
+                                    #print("a2 = " + a2 )
+                                    el = el.replace(" : " , ":")
+                                    e =e.replace(" : ",":")
+                                    if ( ["Param src : " + a1 + " =  Param dst " + a2 ] not in self.dep_sans_doublons[source,target] ) :
+                                        self.dep_sans_doublons[source,target] = self.dep_sans_doublons[source,target] + ["RW Param src : ("+ el + ") " + a1 + " =  Param dst (" + e +") " +  a2 ]
+                                    
+        for src in self.pw :
             for dst in self.p : 
                 source = src.name.split(".")[0]
                 target = dst.name.split(".")[0]
@@ -253,12 +270,7 @@ class principal:
                                     el = el.replace(" : " , ":")
                                     e =e.replace(" : ",":")
                                     if ( ["Param src : " + a1 + " =  Param dst " + a2 ] not in self.dep_sans_doublons[source,target] ) :
-                                        self.dep_sans_doublons[source,target] = self.dep_sans_doublons[source,target] + ["Param src : ("+ el + ") " + a1 + " =  Param dst (" + e +") " +  a2 ]
-                                    #self.dep_sans_doublons[source,target] = self.dep_sans_doublons[source,target] =list(set(self.dep_sans_doublons[source,target]))
-                    
-        #for cle,value in self.dep_sans_doublons.items():
-            
-        
+                                        self.dep_sans_doublons[source,target] = self.dep_sans_doublons[source,target] + ["WR Param src : ("+ el + ") " + a1 + " =  Param dst (" + e +") " +  a2 ]
     def generer_graphml(self):
         with open(os.getcwd()+"/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/graph.graphml", "w") as fichier:
             fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
@@ -309,6 +321,7 @@ class principal:
     def affiche_lise_sans_doublon(self):
         for cle,value in self.dep_sans_doublons.items():
             print("\nSource : " + cle[0] + " , Destination : " + cle[1] )
+            value = list(set(value))
             for v in  value : 
                 print('\t'+v.replace("/ ",""))
                 
@@ -326,11 +339,12 @@ class principal:
         self.genere_couple_source_target()
         print("############################################")
         
-        self.genere_graphml_sans_doublons()
+        
         #self.verifie_dep_ww()
         #self.traite_dep_ww_entrefonctions()
         self.genere_condition_dep()
         self.affiche_lise_sans_doublon()
+        self.genere_graphml_sans_doublons()
         
 if __name__ == "__main__":
     main = principal()
