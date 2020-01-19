@@ -230,19 +230,33 @@ class principal:
                 li = []
                 for a in self.dep_sans_doublons[elt.source,elt.target] :
                     li.append(a)
-                li.append(elt.type +';'+elt.table+'('+str(elt.id)+').'+elt.complement + " " + str(elt.condition))
+                li.append(elt.type +';'+elt.table+'('+str(elt.id)+').'+elt.complement )
                 self.dep_sans_doublons[elt.source,elt.target] = li
             else :
-                self.dep_sans_doublons[elt.source,elt.target] = [elt.type +';'+elt.table+'('+str(elt.id)+').'+elt.complement +" "+str(elt.condition)]
+                self.dep_sans_doublons[elt.source,elt.target] = [elt.type +';'+elt.table+'('+str(elt.id)+').'+elt.complement ]
             
             
     def genere_condition_dep(self):
         print("\n")
         for src in self.p :
-            print("----------"+src.name +"-------------")
-            for a,b in src.couple_dependance.items():
-                print(a,b)
-                
+            for dst in self.p : 
+                source = src.name.split(".")[0]
+                target = dst.name.split(".")[0]
+                #print("----------"+name +"-------------")
+                for a1,b1 in src.couple_dependance.items():
+                    for  a2,b2 in dst.couple_dependance.items():
+                        for el in b1 :
+                            for e in b2 :
+                                if ( el == e and (source,target) in self.dep_sans_doublons.keys()):
+                                    #print("a1 = " + a1 )
+                                    #print("a2 = " + a2 )
+                                    el = el.replace(" : " , ":")
+                                    e =e.replace(" : ",":")
+                                    if ( ["Param src : " + a1 + " =  Param dst " + a2 ] not in self.dep_sans_doublons[source,target] ) :
+                                        self.dep_sans_doublons[source,target] = self.dep_sans_doublons[source,target] + ["Param src : ("+ el + ") " + a1 + " =  Param dst (" + e +") " +  a2 ]
+                                    #self.dep_sans_doublons[source,target] = self.dep_sans_doublons[source,target] =list(set(self.dep_sans_doublons[source,target]))
+                    
+        #for cle,value in self.dep_sans_doublons.items():
             
         
     def generer_graphml(self):
@@ -311,12 +325,12 @@ class principal:
         self.generer_graphml()
         self.genere_couple_source_target()
         print("############################################")
-        self.affiche_lise_sans_doublon()
+        
         self.genere_graphml_sans_doublons()
         #self.verifie_dep_ww()
         #self.traite_dep_ww_entrefonctions()
         self.genere_condition_dep()
-        
+        self.affiche_lise_sans_doublon()
         
 if __name__ == "__main__":
     main = principal()
