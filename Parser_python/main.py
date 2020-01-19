@@ -103,7 +103,7 @@ class principal:
                 #print(self.pw[i].name + " :: ww;"+elt+"(*).*")
                 table = liste_table_touche_par_insert[j].split("(")[0].strip()
                 condi = self.pw[i].liste_condition
-                print(condi[j])
+                #print(condi[j])
                 self.liste_dependance.append(str(self.pw[i].name + " ->  " + self.pw[i].name + " :: ww;"+table+"(*).* / " + str(condi[j])))
 
                     
@@ -194,8 +194,21 @@ class principal:
             new_dep.id = new_dep.id[:-1]
             if ( new_dep.id[-1] == "'" ):
                 new_dep.id = new_dep.id[:-1]
-            new_dep.complement = elt.split(".")[3]
+            new_dep.complement = elt.split(".")[3].split("/")[0]
+            
+            if ( "/" in elt ) :
+                condi = elt.split("/")[1]
+                condi = condi.split(",")
+                #print(str(condi))
+                for elt in condi :
+                    #print(elt.replace("'","").replace("[","").replace("]","").strip())
+                    a = ""
+                    a = elt.replace("'","").replace("[","").replace("]","").strip()
+                    #print("aaaaaaaaaaaaaaaaaaaaaaa : "+  a)
+                    new_dep.condition.append(a)
+                    
             self.dependance.append(new_dep)
+            print(new_dep.source , new_dep.target , new_dep.table ,str(new_dep.condition))
             
          
          
@@ -203,12 +216,10 @@ class principal:
         for cle,value in self.dep_sans_doublons.items():
             if ( self.dep_sans_doublons[cle[1],cle[0]] != None ):
                 if ( self.dep_sans_doublons[cle[1],cle[0]] != self.dep_sans_doublons[cle[0],cle[1]] ) :
-                    #print("presence d'un WR et d'un RW + " + str(self.dep_sans_doublons[cle[1],cle[0]]) + '\n' + str(self.dep_sans_doublons[cle[0],cle[1]])  )
                     print(cle[0],cle[1])
                     
                     
-                    
-        
+    
     def genere_couple_source_target(self):
         # init du disctionnaire { ( source , target ) : [ liste de contraintes ....]
         for elt in self.dependance :
@@ -218,15 +229,21 @@ class principal:
             if self.dep_sans_doublons[elt.source,elt.target] != None:
                 li = []
                 for a in self.dep_sans_doublons[elt.source,elt.target] :
-                    #print("a::::::: " + a)
                     li.append(a)
-                li.append(elt.type +';'+elt.table+'('+str(elt.id)+').'+elt.complement)
+                li.append(elt.type +';'+elt.table+'('+str(elt.id)+').'+elt.complement + " " + str(elt.condition))
                 self.dep_sans_doublons[elt.source,elt.target] = li
             else :
-                self.dep_sans_doublons[elt.source,elt.target] = [elt.type +';'+elt.table+'('+str(elt.id)+').'+elt.complement]
+                self.dep_sans_doublons[elt.source,elt.target] = [elt.type +';'+elt.table+'('+str(elt.id)+').'+elt.complement +" "+str(elt.condition)]
             
             
-        
+    def genere_condition_dep(self):
+        print("\n")
+        for src in self.p :
+            print("----------"+src.name +"-------------")
+            for a,b in src.couple_dependance.items():
+                print(a,b)
+                
+            
         
     def generer_graphml(self):
         with open(os.getcwd()+"/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/graph.graphml", "w") as fichier:
@@ -269,6 +286,7 @@ class principal:
                 # on traite ensuite toutes les dependances une a une 
                 for v in value :
                     fichier.write(v+'\n')
+                
                 fichier.write('\n\n</data>\n</edge>')    
             fichier.write("</graph>\n\t</graphml>")
         fichier.close()
@@ -278,7 +296,7 @@ class principal:
         for cle,value in self.dep_sans_doublons.items():
             print("\nSource : " + cle[0] + " , Destination : " + cle[1] )
             for v in  value : 
-                print('\t'+v)
+                print('\t'+v.replace("/ ",""))
                 
         
     def lanceur_f(self):
@@ -297,6 +315,7 @@ class principal:
         self.genere_graphml_sans_doublons()
         #self.verifie_dep_ww()
         #self.traite_dep_ww_entrefonctions()
+        self.genere_condition_dep()
         
         
 if __name__ == "__main__":

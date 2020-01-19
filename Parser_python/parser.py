@@ -19,6 +19,10 @@ class Parser:
         self.mot_cle = ["WHERE","SELECT","INSERT","INTO","DECLARE","FOR","IF","ELSE","CURSOR","ORDER","BY","DESC;","DESC"]
         self.file = None
         self.couple = dict()
+        self.data = ""
+        self.liste_param_fonction = []
+        # on va stocker les couples de dependance [ table : parametre de fonction ] on sait au préalable que la correspondance avec la / les clés primaire sont correctes
+        self.couple_dependance = dict()
         
     def lecture_fichier(self):
         F = open(self.nom_fichier,"r") 
@@ -44,6 +48,7 @@ class Parser:
                     #print(sans_saut)
         # on se retrouve avec une tres grande ligne , que l'on va pouvoir parser .
         # privée des espaces inutiles , et des retours chariot
+        self.data = data
         return data
     
     #..................................................................................................................
@@ -304,15 +309,120 @@ class Parser:
         liste_select = self.determine_attributs_select(contenu_select)
         liste_where = self.determine_attributs_where(contenu_where)
         self.cree_liste_finale()
-        #p.affiche_liste_select()
-        #p.affiche_liste_from()
-        #p.affiche_liste_attributs()
+        #self.affiche_liste_select()
+        self.affiche_liste_from()
+        #self.affiche_liste_attributs()
         self.met_a_jour_liste_r()
-        #p.affiche_liste_r()
+        #self.affiche_liste_r()
         self.affiche_liste_finale()
+        
+        self.pkey = PrimaryKey("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/genDB.sql")
+        self.pkey.lanceur()
+        self.trouve_cle_primaire_associe_au_from()
+        self.trouve_attribut_de_fonction()
+        self.trouve_cle_dep_possible()
+        self.affiche_couple_dep()
 
+    def trouve_cle_primaire_associe_au_from(self):
+        print("\nassociation clé primaire -> table utilisée ")
+        for nom,type in self.table_from.items() : # on recuperer le nom et le type de l'attribut
+            #print(nom + " : " + type )
+            print(type + " utilisé " + str(self.pkey.couple[type]) )
+            
+            
+    def trouve_attribut_de_fonction(self):
+        #print("\nrecherche des attributs de fonction")
+        self.data = self.data.replace("NUMERIC(2)","INTEGER")
+        self.data = self.data.replace("VARCHAR(16)","INTEGER")
+        m = re.findall("FUNCTION .*?[{]*? RETURNS",self.data)
+        #print(m)
+        n = re.findall("\(.*?\)",str(m))
+        #print(n)
+        m = re.findall("[a-z]+[_]*[A-Za-z]+",str(n))
+        #print(m)
+        print("\nListe des parametre de la fonction : " )
+        for elt in m :
+            self.liste_param_fonction.append(elt)
+            print(elt )
+            self.couple_dependance[elt] = []
+        
+            
+    def trouve_cle_dep_possible (self):
+        #print('\n'+self.data)
+        #print("\n")
+        #print(self.liste_param_fonction)
+        #print("\n")
+        m = re.findall("WHERE .*?;",self.data)
+        print("")
+        #print(m)
+        for elt in m :
+            elt = elt.replace("WHERE","")
+            elt = elt.replace(" AND ",",")
+            elt = elt.replace(" OR ",",")
+            elt = elt.strip().replace(" ","").replace(";","")
+            #print(elt)
+            liste = elt.split(",")
+            #print(str(liste))
+            # on separe les clause du where : D.wid=w_id , pour regarder si la clause contient un parametre de la fonction
+            for i in liste :
+                #print(" i ==== " + i )
+                for item in self.liste_param_fonction :
+                    l = i.split("=")
+                    if ( item in l ):
+                        #print(item + " présent dans " + str(l) )
+                        self.aux(l)
+                    else :
+                        l = i.split("<")
+                        if ( item in l ):
+                            #print(item + " présent dans " + str(l) )
+                            self.aux(l)
+                        else:
+                            l = i.split(">")
+                            if ( item in l ):
+                                #print(item + " présent dans " + str(l) )
+                                self.aux(l)
+                            else:
+                                l = i.split(">=")
+                                if ( item in l ):
+                                    #print(item + " présent dans " + str(l) )
+                                    self.aux(l)
+                                else:
+                                    l = i.split("<=")
+                                    if ( item in l ):
+                                        #print(item + " présent dans " + str(l) )
+                                        self.aux(l)
+                    #if ( ( l[0].split(".")[1] in self.pkey.couple[self.table_from[l[0].split(".")[0]]]  ) or ( l[0].split(".") in self.pkey.couple[l[0].split(".")[0]] ) ):
+                    
+                        #self.couple_dependance[self.table_from[l[0].split(".")[0]]] = [l[1]]
+                    #elif ( l[0].split(".")[1] in self.pkey.couple[l[0].split(".")[0]] ):
+                     #   print("dependance de clé primaire trouvé")
+    
+    def aux(self,l):
+        cle = l[0].split(".")[1]
+        table = l[0].split(".")[0]
+        attr = l[1]
+        if ( table in self.table_from.keys() ) :
+            #print("ok")
+            table = self.table_from[table]
+        if ( cle in self.pkey.couple[table] ) :
+            #print("Clé primaire : " + cle + " / " + attr + " dans : " + table)
+            # on va ajouter a un dico les couple ( arg : [table touché] ) car nous savons deja que les clé touchés sont des clés primaires
+            if ( self.couple_dependance[attr] == "" ):
+                self.couple_dependance[attr] = str(table + " : " + cle)
+            else :
+                tmp = self.couple_dependance[attr]
+                tmp.append(str(table + " : " + cle) )
+                self.couple_dependance[attr] = tmp
+                
+            
 
-
+    def affiche_couple_dep(self):
+        print("Liste des parametres de fonction qui touche les clés primaires des tables suivantes : " )
+        for a,b in self.couple_dependance.items():
+            self.couple_dependance[a] =list(set(b))
+            
+            
+            
 if __name__ == "__main__":
     # execute only if run as a script
     #main()
