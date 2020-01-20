@@ -12,6 +12,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
+
+//TODO: gerer le cas des double boucle (voir pourquoi si plusieurs boucle sur 1 mm Node, 1 seul est representé dans notre schema)
 public class Parser {
     Consumer<String> consumer = e -> System.out.println(e);
     File file;

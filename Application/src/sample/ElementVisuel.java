@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 
 public class ElementVisuel {
     // 0_BAS , 1_GAUCHE , 2_HAUT , 3_DROITE
+    private final double DEFAULT_DISTANCE_BOUCLE = 30;
     private static final int BAS = 0;
     private static final int  GAUCHE = 1;
     private static final int  HAUT = 2;
@@ -73,10 +74,22 @@ public class ElementVisuel {
                 }
                 consumer.accept("depart coord x,y" + r_source.getX() + ";" + r_source.getY());
                 consumer.accept("depart layout x,y" + r_source.getLayoutX() + ";" + r_source.getLayoutY());
-                int cote_arrivee = getCoteNodeArrivee(r_source, r_dest);
-                double tab_coord_arrivee[] = getCoordPointFleche(r_dest,cote_arrivee);
-                double tab_coord_depart[] = getCoordPointFleche(r_source, (cote_arrivee + 2) % 4);
-                Path fleche = createFleche(relation.nom, tab_coord_depart[0], tab_coord_depart[1], tab_coord_arrivee[0], tab_coord_arrivee[1], r_source, r_dest, cote_arrivee);
+                int cote_arrivee;
+                double tab_coord_arrivee[];
+                double tab_coord_depart[];
+                Path fleche;
+                if (r_source.getAccessibleText().equals(r_dest.getAccessibleText())) {// si la relation s'effectue sur une seule et meme transaction
+                    consumer.accept("mon text"+r_source.getAccessibleText());
+                    cote_arrivee = new Random().nextInt(NB_COTE);
+                    tab_coord_depart = getCoordPointFleche(r_source, cote_arrivee, true, true);
+                    tab_coord_arrivee = getCoordPointFleche(r_dest, cote_arrivee, true, false);
+                    fleche = createFleche(relation.nom, tab_coord_depart[0], tab_coord_depart[1], tab_coord_arrivee[0], tab_coord_arrivee[1], r_source, r_dest, cote_arrivee, true);
+                } else {
+                    cote_arrivee = getCoteNodeArrivee(r_source, r_dest);
+                    tab_coord_depart = getCoordPointFleche(r_source, (cote_arrivee + 2) % 4, false, false);
+                    tab_coord_arrivee = getCoordPointFleche(r_dest, cote_arrivee, false, false);
+                    fleche = createFleche(relation.nom, tab_coord_depart[0], tab_coord_depart[1], tab_coord_arrivee[0], tab_coord_arrivee[1], r_source, r_dest, cote_arrivee,false);
+                }
                 // ajout des deux circle de controle de la fleche avant (dans la focntion createFleche)
                 list_shape.add(fleche);
                 addHandlerFleche(fleche);
@@ -85,27 +98,31 @@ public class ElementVisuel {
             consumer.accept("liste de relation null");
         }
     }
+
     // renvoie les coordonnée de depart/arrivée d'une fleche sur un Node
-    private double[] getCoordPointFleche(Rectangle r, int cote) {
-        double rand = randPointCote(r, cote);
-        if (cote == BAS) {
-            return new double[]{r.getX() + rand, r.getY() + r.getHeight()};
-        } else if (cote == HAUT) {
-            return new double[]{r.getX() + rand, r.getY()};
-        } else if (cote == GAUCHE) {
-            return new double[]{r.getX() , r.getY() + rand};
+    private double[] getCoordPointFleche(Rectangle r, int cote, boolean boucle, boolean depart) {
+        double rand = 0;
+        if (!boucle) {
+            rand = randPointCote(r, cote);
         }else {
-            return new double[]{r.getX() + r.getWidth() , r.getY() + rand};
+            if (!depart) {
+                if (cote == BAS || cote == HAUT) rand += r.getWidth();
+                else rand += r.getHeight();
+            }
         }
+        if (cote == BAS) return new double[]{r.getX() + rand, r.getY() + r.getHeight()};
+        else if (cote == HAUT) return new double[]{r.getX() + rand, r.getY()};
+        else if (cote == GAUCHE) return new double[]{r.getX(), r.getY() + rand};
+        else return new double[]{r.getX() + r.getWidth(), r.getY() + rand};
     }
+
     // renvoie une coord d'un point aleatoire sur une cote d'un node en fonction du cote donné entree
     private double randPointCote(Rectangle r, int cote) {
-        double taille=0;
-        if (cote == GAUCHE || cote == DROITE) {
-            taille = r.getHeight();
-        } else if(cote == HAUT || cote == BAS) {
-            taille = r.getWidth();
-        }
+        double taille = 0;
+
+        if (cote == GAUCHE || cote == DROITE) taille = r.getHeight();
+        else if(cote == HAUT || cote == BAS) taille = r.getWidth();
+
         return new Random().nextDouble() * taille*0.9;
     }
 
@@ -174,7 +191,7 @@ public class ElementVisuel {
         });
     }
     // cree une "fleche" entre un point s source et un point d destination
-    private Path createFleche(String nom,double s_x,double s_y,double d_x,double d_y,Rectangle r_source,Rectangle r_dest, int cote) {
+    private Path createFleche(String nom,double s_x,double s_y,double d_x,double d_y,Rectangle r_source,Rectangle r_dest, int cote, boolean boucle) {
         Path fleche = new Path();
         fleche.setAccessibleText(nom);
         MoveTo mt = new MoveTo();
@@ -183,7 +200,7 @@ public class ElementVisuel {
         CubicCurveTo cct = new CubicCurveTo();
         cct.xProperty().bind(r_dest.layoutXProperty().add(d_x));
         cct.yProperty().bind(r_dest.layoutYProperty().add(d_y));
-        createCourbe(cct,s_x,s_y,d_x,d_y);
+        createCourbe(cct,s_x,s_y,d_x,d_y,boucle,cote);
         //ajout de la courbe a la fleche
         fleche.getElements().add(mt);
         fleche.getElements().add(cct);
@@ -191,7 +208,7 @@ public class ElementVisuel {
         createBoutFleche(fleche,r_dest, d_x, d_y, cote, true); // |\ <- oui c'est bien un bout de fleche
         createBoutFleche(fleche,r_dest, d_x, d_y, cote, false);// /| <- ici aussi  /| + |\ = /|\ en gros /\
         fleche.setStroke(Color.BLACK);
-        fleche.setStrokeWidth(2);
+        fleche.setStrokeWidth(3);
         return fleche;
     }
     // gere l'ajout des evenemetn d'une fleche
@@ -271,8 +288,8 @@ public class ElementVisuel {
         return tab;
     }
 
-    private void createCourbe(CubicCurveTo cct, double s_x, double s_y, double d_x, double d_y) {
-        ArrayList<Double> list_coord = gestionPointControle(s_x, s_y, d_x, d_y);
+    private void createCourbe(CubicCurveTo cct, double s_x, double s_y, double d_x, double d_y,boolean boucle,int cote) {
+        ArrayList<Double> list_coord = gestionPointControle(s_x, s_y, d_x, d_y,boucle,cote);
         if (list_coord == null || list_coord.size() < NB_COTE) {
             consumer.accept("liste de coordonnee null ou partielle");
         }/*
@@ -321,19 +338,24 @@ public class ElementVisuel {
         return c;
     }
     // calcule et renvoie les point de controle d'une fleche
-    private ArrayList<Double> gestionPointControle(double s_x, double s_y, double d_x, double d_y) {
+    private ArrayList<Double> gestionPointControle(double s_x, double s_y, double d_x, double d_y,boolean boucle,int cote) {
         ArrayList<Double> list = new ArrayList<>();
+        double distance_boucle = 0; // sert donner a la fleche une fore de boucle si elle partet arrive sur le meme Node
+        if (boucle) {
+            distance_boucle = DEFAULT_DISTANCE_BOUCLE*3;
+            if( cote == GAUCHE || cote == HAUT) distance_boucle = -distance_boucle;
+        }
         boolean verticale = estDirectionVerticale((d_x - s_x), (d_y - s_y));
         if (verticale) {
-            list.add(s_x);
-            list.add(d_x);
+            list.add(s_x+ distance_boucle);
+            list.add(d_x+ distance_boucle);
             list.add(calculCoordonneeControle(s_y, (d_y - s_y), true));// y point de controle 1
             list.add(calculCoordonneeControle(d_y, (d_y - s_y), false));// y point de controle 2
         }else{
             list.add(calculCoordonneeControle(s_x, (d_x - s_x), true));
             list.add(calculCoordonneeControle(d_x, (d_x - s_x), false));
-            list.add(s_y);
-            list.add(d_y);
+            list.add(s_y+ distance_boucle);
+            list.add(d_y+ distance_boucle);
         }
         return list;
     }
