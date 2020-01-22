@@ -1,0 +1,9 @@
+* <21/01/2020>
+** Fait:
+   - Un parseur avec de bug appramment pas tros difficiles à trouver
+   - GUI de base
+** A faire:
+   - Ajouter dependences à la GUI
+   - Corriger les bug dans le parseur
+   - Ajouter dans README.md un manuel pour l'utilisateur
+   - Chercher des applications en PgSQL et tester le parseur

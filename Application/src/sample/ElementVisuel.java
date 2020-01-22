@@ -27,8 +27,8 @@ public class ElementVisuel {
     private static final int  DROITE = 3;
     private final int NB_COTE=4;
     private double oldX, oldY;
-    private final int DEFAULT_MARGE_X_NOM_NODE = 10;
-    private final int DEFAULT_MARGE_Y_NOM_NODE = 5;
+    private final int DEFAULT_MARGE_X_NOM_NODE = 20;
+    private final int DEFAULT_MARGE_Y_NOM_NODE = 10;
     private final int TAILLE_FLECHE = 8; // taille du bout de la fleche
     private final double ANGLE_FLECHE = 45; // angle d'un cote du bout de la fleche par rapport au noeud d'arrivee
     private final double COEFFICIENT_CONTROLE = 0.3;// coefficent de longueur/hauteur pour placer les points de controles
@@ -78,7 +78,7 @@ public class ElementVisuel {
                 double tab_coord_arrivee[];
                 double tab_coord_depart[];
                 Path fleche;
-                if (r_source.getAccessibleText().equals(r_dest.getAccessibleText())) {// si la relation s'effectue sur une seule et meme transaction
+                if (r_source.getAccessibleText().equals(r_dest.getAccessibleText())) {// si la relation s'effectue sur une seule et meme transaction (Node)
                     consumer.accept("mon text"+r_source.getAccessibleText());
                     cote_arrivee = new Random().nextInt(NB_COTE);
                     tab_coord_depart = getCoordPointFleche(r_source, cote_arrivee, true, true);
@@ -86,6 +86,7 @@ public class ElementVisuel {
                     fleche = createFleche(relation.nom, tab_coord_depart[0], tab_coord_depart[1], tab_coord_arrivee[0], tab_coord_arrivee[1], r_source, r_dest, cote_arrivee, true);
                 } else {
                     cote_arrivee = getCoteNodeArrivee(r_source, r_dest);
+                    consumer.accept("cote depart : (cote_arrivee + 2) % 4 ,("+cote_arrivee+") =" + (cote_arrivee + 2) % 4);
                     tab_coord_depart = getCoordPointFleche(r_source, (cote_arrivee + 2) % 4, false, false);
                     tab_coord_arrivee = getCoordPointFleche(r_dest, cote_arrivee, false, false);
                     fleche = createFleche(relation.nom, tab_coord_depart[0], tab_coord_depart[1], tab_coord_arrivee[0], tab_coord_arrivee[1], r_source, r_dest, cote_arrivee,false);
@@ -123,7 +124,7 @@ public class ElementVisuel {
         if (cote == GAUCHE || cote == DROITE) taille = r.getHeight();
         else if(cote == HAUT || cote == BAS) taille = r.getWidth();
 
-        return new Random().nextDouble() * taille*0.9;
+        return new Random().nextDouble() * taille*0.8+(taille*0.1);
     }
 
     private int getCoteNodeArrivee(Rectangle r_depart, Rectangle r_arrivee) {
@@ -144,11 +145,18 @@ public class ElementVisuel {
     }
     // renvoie "direction" suivie par la fleche en fonction des diff de position de 2 Node
     private boolean estDirectionVerticale(double diff_X, double diff_Y) {
-        if (Math.abs(diff_X) < Math.abs(diff_Y)) {
+        if (Math.abs(diff_X) <= Math.abs(diff_Y)) {
             return true;
         } else {
             return false;
         }
+    }
+    // renvoie la "direction" suivie par la fleche en fonctio du cote passé en parametre
+    private boolean estDirectionVerticale(int cote) {
+        if (cote == HAUT || cote == BAS) {
+            return true;
+        }
+        return false;
     }
     private Rectangle createNodeRectange(Transaction transaction) {
         Text text = new Text(transaction.id); // text utile pour avoir la taille du rectangle en fonction du nom du Node
@@ -187,8 +195,21 @@ public class ElementVisuel {
             public void handle(MouseEvent mouseEvent) {
                 rectangle.setLayoutX(rectangle.getLayoutX() + mouseEvent.getX() - oldX);
                 rectangle.setLayoutY(rectangle.getLayoutY() + mouseEvent.getY() - oldY);
+                //gestion du suivie des flechesarrivant et sortant de ce Node
+                gestionSuiviNode(rectangle,(mouseEvent.getX() - oldX),(mouseEvent.getY() - oldY));
             }
         });
+    }
+    //gere le suivi de l'integralite des fleche entrante et sortante du node en focntion du deplacement de ce Node
+    private void gestionSuiviNode(Rectangle rectangle, double distance_x,double distance_Y) {
+        // distance_x == valeurde translation sur l'axe des X
+        for (Shape shape : list_shape) {
+            if (shape.getClass() == Path.class) {
+                Path fleche = (Path) shape;
+
+            }
+        }
+
     }
     // cree une "fleche" entre un point s source et un point d destination
     private Path createFleche(String nom,double s_x,double s_y,double d_x,double d_y,Rectangle r_source,Rectangle r_dest, int cote, boolean boucle) {
@@ -200,7 +221,7 @@ public class ElementVisuel {
         CubicCurveTo cct = new CubicCurveTo();
         cct.xProperty().bind(r_dest.layoutXProperty().add(d_x));
         cct.yProperty().bind(r_dest.layoutYProperty().add(d_y));
-        createCourbe(cct,s_x,s_y,d_x,d_y,boucle,cote);
+        createCourbe(mt,cct,s_x,s_y,d_x,d_y,boucle,cote,nom);
         //ajout de la courbe a la fleche
         fleche.getElements().add(mt);
         fleche.getElements().add(cct);
@@ -211,7 +232,7 @@ public class ElementVisuel {
         fleche.setStrokeWidth(3);
         return fleche;
     }
-    // gere l'ajout des evenemetn d'une fleche
+    // gere l'ajout des evenements d'une fleche
     private void addHandlerFleche(Path fleche) {
         fleche.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -223,26 +244,25 @@ public class ElementVisuel {
             }
         });
     }
-
+    // rend les cercles de cotroles d'une fleche visible
     private void setVisibleCircleControleFleche(Path fleche) {
+        consumer.accept("dans setVisibleCIRCLEcONTROLEfLECHE");
+        int cpt=0;
         for (int i = 0; i < list_shape.size(); i++) {
-            if (list_shape.get(i).getClass() == Path.class) {
-                Path path = (Path) list_shape.get(i);
-                if (fleche.getAccessibleText().equals(path.getAccessibleText())) { // alors on a trouvé notre fleche
-                    // d'apres la procedure de creation d'une on a ajoute les cercles de controles
-                    // de la fleche juste avant elle dans la liste list_shape
-                    if (list_shape.get(i - 2).getClass() != Circle.class && list_shape.get(i - 2).getClass() != Circle.class) {
-                        //on verifie qu'on a bien
-                        // nos 2 circle juste avant dans la liste
-                        return;
-                    }
-                    Circle c1 = (Circle)list_shape.get(i - 2);
-                    Circle c2 = (Circle)list_shape.get(i - 1);
-                    if ( !c1.isVisible()&& !c2.isVisible()) {
-                        c1.setVisible(true);
-                        c2.setVisible(true);
+            if (cpt >= 2) {
+                consumer.accept("cpt == 2");
+                return;
+            }
+            if (list_shape.get(i).getClass() == Circle.class) { // si c'est un cercle
+                Circle c = (Circle) list_shape.get(i);
+                if (c.getAccessibleText().equals(fleche.getAccessibleText())) {
+                    consumer.accept("c.text = fleche.text :"+c.getAccessibleText());
+                    cpt++;
+                    if (!c.isVisible()) {
+                        c.setVisible(true);
                     }
                 }
+
             }
         }
     }
@@ -288,38 +308,39 @@ public class ElementVisuel {
         return tab;
     }
 
-    private void createCourbe(CubicCurveTo cct, double s_x, double s_y, double d_x, double d_y,boolean boucle,int cote) {
+    private void createCourbe(MoveTo mt,CubicCurveTo cct, double s_x, double s_y, double d_x, double d_y,boolean boucle,int cote,String nom) {
         ArrayList<Double> list_coord = gestionPointControle(s_x, s_y, d_x, d_y,boucle,cote);
         if (list_coord == null || list_coord.size() < NB_COTE) {
             consumer.accept("liste de coordonnee null ou partielle");
-        }/*
-        cct.setControlX1(list_coord.get(0));
-        list_coord.remove(0);
-        cct.setControlX2(list_coord.get(0));
-        list_coord.remove(0);
-        cct.setControlY1(list_coord.get(0));
-        list_coord.remove(0);
-        cct.setControlY2(list_coord.get(0));
-        list_coord.remove(0);
-        if (list_coord == null || list_coord.size() != 0) {
-            consumer.accept("on a bien utilisé tout les elements de la liste pour les points de controle");
-        }*/
-        Circle c1 =createCircleControle(list_coord.get(0),list_coord.get(2));
-        Circle c2 =createCircleControle(list_coord.get(1),list_coord.get(3));
-        cct.controlX1Property().bind(c1.layoutXProperty().add(c1.getCenterX()));
-        cct.controlY1Property().bind(c1.layoutYProperty().add(c1.getCenterY()));
-        cct.controlX2Property().bind(c2.layoutXProperty().add(c2.getCenterX()));
-        cct.controlY2Property().bind(c2.layoutYProperty().add(c2.getCenterY()));
+        }
+        Circle c1 =createCircleControle(list_coord.get(0),list_coord.get(2),nom);
+        Circle c2 =createCircleControle(list_coord.get(1),list_coord.get(3),nom);
+        c1.centerXProperty().bind(mt.xProperty().add((list_coord.get(0)-mt.getX())));
+        c1.centerYProperty().bind(mt.yProperty().add((list_coord.get(2)-mt.getY())));
+        c2.centerXProperty().bind(cct.xProperty().add((list_coord.get(1)-cct.getX())));
+        c2.centerYProperty().bind(cct.yProperty().add((list_coord.get(3)-cct.getY())));
+        cct.controlX1Property().bind(c1.layoutXProperty().add(c1.centerXProperty()));
+        cct.controlY1Property().bind(c1.layoutYProperty().add(c1.centerYProperty()));
+        cct.controlX2Property().bind(c2.layoutXProperty().add(c2.centerXProperty()));
+        cct.controlY2Property().bind(c2.layoutYProperty().add(c2.centerYProperty()));
         c1.setVisible(false);// cercle de congtrole invisible au depart
         c2.setVisible(false);
+        if (estDirectionVerticale(cote)) {
+            c1.setFill(Color.BLUE);
+            c2.setFill(Color.LIGHTGREEN);
+        } else {
+            c1.setFill(Color.RED);
+            c2.setFill(Color.SALMON);
+        }
     }
 
-    private Circle createCircleControle(double x, double y) {
+    private Circle createCircleControle(double x, double y,String nom) {
         Circle c = new Circle();
         c.setCenterX(x);
         c.setCenterY(y);
         c.setFill(Color.BLACK);
         c.setRadius(5);
+        c.setAccessibleText(nom);
         c.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -345,17 +366,26 @@ public class ElementVisuel {
             distance_boucle = DEFAULT_DISTANCE_BOUCLE*3;
             if( cote == GAUCHE || cote == HAUT) distance_boucle = -distance_boucle;
         }
-        boolean verticale = estDirectionVerticale((d_x - s_x), (d_y - s_y));
-        if (verticale) {
-            list.add(s_x+ distance_boucle);
-            list.add(d_x+ distance_boucle);
-            list.add(calculCoordonneeControle(s_y, (d_y - s_y), true));// y point de controle 1
-            list.add(calculCoordonneeControle(d_y, (d_y - s_y), false));// y point de controle 2
+        if (estDirectionVerticale(cote)) {
+            list.add(s_x);
+            list.add(d_x);
+            if (d_y < s_y) { // arrivee au dessus du depart
+                list.add(calculCoordonneeControle(s_y, (d_y - s_y), false) + distance_boucle);// y point de controle 1
+                list.add(calculCoordonneeControle(d_y, (d_y - s_y), true) + distance_boucle);
+            }else{
+                list.add(calculCoordonneeControle(s_y, (d_y - s_y), true) + distance_boucle);// y point de controle 1
+                list.add(calculCoordonneeControle(d_y, (d_y - s_y), false) + distance_boucle);// y point de controle 2
+            }
         }else{
-            list.add(calculCoordonneeControle(s_x, (d_x - s_x), true));
-            list.add(calculCoordonneeControle(d_x, (d_x - s_x), false));
-            list.add(s_y+ distance_boucle);
-            list.add(d_y+ distance_boucle);
+            if (d_x < s_x) {
+                list.add(calculCoordonneeControle(s_x, (d_x - s_x), false) + distance_boucle);
+                list.add(calculCoordonneeControle(d_x, (d_x - s_x), true) + distance_boucle);
+            } else {
+                list.add(calculCoordonneeControle(s_x, (d_x - s_x), true) + distance_boucle);
+                list.add(calculCoordonneeControle(d_x, (d_x - s_x), false) + distance_boucle);
+            }
+            list.add(s_y);
+            list.add(d_y);
         }
         return list;
     }
@@ -365,9 +395,9 @@ public class ElementVisuel {
     private double calculCoordonneeControle(double d,double taille, boolean addition) {
         double res = 0.0;
         if (addition) {
-            res = d + taille * COEFFICIENT_CONTROLE;
+            res = d + Math.abs(taille) * COEFFICIENT_CONTROLE;
         }else{
-            res = d - taille * COEFFICIENT_CONTROLE;
+            res = d - Math.abs(taille) * COEFFICIENT_CONTROLE;
         }
         return res;
     }
