@@ -261,7 +261,7 @@ class principal:
                                 if ( el == e and (source,target) in self.dep_sans_doublons.keys()):
                                     el = el.replace(" : " , ":")
                                     e =e.replace(" : ",":")
-                                    print("src : " + source + ' , ' + e + " // dst : " + target + " , " + el )
+                                    #print("src : " + source + ' , ' + e + " // dst : " + target + " , " + el )
                                     #if ( str(source + "." + a1 + " = " + target +"." +  a2) not in self.dep_sans_doublons[source,target] ) :
                                     self.dep_sans_doublons[source,target] = self.dep_sans_doublons[source,target] + [ source + "." + a1 + " = " + target +"." +  a2 ]
                                     

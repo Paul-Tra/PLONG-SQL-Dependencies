@@ -262,6 +262,8 @@ class Parser:
                             #print(i)
                             #if ( i not in tmp and type(i) is not tuple ) :
                              #   print(str(i) + " ajouté")
+                             
+                             
                              #   tmp.append(i)
                            
                         #print(v)
