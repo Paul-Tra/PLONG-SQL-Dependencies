@@ -13,8 +13,18 @@ class parser_ecriture:
         self.pkey = PrimaryKey("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/genDB.sql")
         self.pkey.lanceur()
         self.liste_param_fonction = []
+        self.cle_impacte_set = []
         # on va stocker les couples de dependance [ table : parametre de fonction ] on sait au préalable que la correspondance avec la / les clés primaire sont correctes
         self.couple_dependance = dict()
+        
+    def trouve_set(self):
+        m =re.findall("SET .*? =",self.data)
+        l = []
+        for elt in m :
+            elt = elt.replace("SET ","").replace(" =","")
+            #print(elt)
+            l.append(elt)
+        self.cle_impacte_set=l
         
     def trouve_update(self):
         data = " "
@@ -95,7 +105,7 @@ class parser_ecriture:
             elt =elt.replace(",","")
             self.liste_param_fonction.append(elt)
             print(elt )
-            self.couple_dependance[elt] = []
+            
             
     def trouve_cle_dep_possible (self):
         for elt in self.liste_update :
@@ -115,7 +125,7 @@ class parser_ecriture:
         #print("cle avant changement " + str(l))
         cle = l[0].split(".")[1]
         table = l[0].split(".")[0]
-        attr = l[1]
+        attr = l[1].lower()
         #print("ok cle = " + cle + ", attr : " + attr )
         #if ( table in self.table_from.keys() ) :
             #print("ok")
@@ -128,6 +138,7 @@ class parser_ecriture:
             else:
                 self.couple_dependance[attr] = [] 
                 tmp = self.couple_dependance[attr]
+                
             tmp.append(str(table + " : " + cle) )
             self.couple_dependance[attr] = tmp
                 
@@ -163,7 +174,10 @@ class parser_ecriture:
         
         #self.trouve_dependance_dans_le_update()
         self.trouve_cle_dep_possible()
+        print("------------------------------------------------")
         self.affiche()
+        self.trouve_set()
+        
 if __name__ == "__main__":
     p_write = parser_ecriture("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/neworder.sql")
     p_write.lanceur()

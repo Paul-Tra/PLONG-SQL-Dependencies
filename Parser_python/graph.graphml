@@ -13,7 +13,11 @@ ww;ORDERS(*).*
 ww;NEW_ORDER(*).* 
 ww;ORDERLINE(*).* 
 ww;DISTRICT(['dId', 'wId']).*
+neworder.w_id = neworder.w_id
 neworder.d_id = neworder.d_id
+neworder.ol_i_id = neworder.ol_i_id
+neworder.d_id = neworder.d_id
+neworder.w_id = neworder.w_id
 neworder.ol_i_id = neworder.ol_i_id
 
 
@@ -25,12 +29,26 @@ neworder.ol_i_id = neworder.ol_i_id
 <edge source="payment" target="payment">
 <data key="d1">
 ww;HISTORY(*).* 
-wr;DISTRICT(['dId', 'wId']).*
-rw;DISTRICT(['dId', 'wId']).*
-ww;WAREHOUSE(['wId']).*
-ww;CUSTOMER(['cId', 'dId', 'wId']).*
+wr;CUSTOMER(['cId', 'dId', 'wId']).dYTD
+wr;CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
+rw;CUSTOMER(['cId', 'dId', 'wId']).dYTD
+rw;CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
+ww;CUSTOMER(['cId', 'dId', 'wId']).wYTD
+ww;CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
+ww;CUSTOMER(['cId', 'dId', 'wId']).balance
+payment.w_id = payment.w_id
 payment.w_id = payment.w_id
 payment.d_id = payment.d_id
+payment.c_id = payment.c_id
+payment.c_id = payment.c_id
+payment.c_id = payment.c_id
+payment.c_id = payment.c_id
+payment.w_id = payment.w_id
+payment.w_id = payment.w_id
+payment.d_id = payment.d_id
+payment.c_id = payment.c_id
+payment.c_id = payment.c_id
+payment.c_id = payment.c_id
 payment.c_id = payment.c_id
 
 
@@ -41,9 +59,22 @@ payment.c_id = payment.c_id
 </node>
 <edge source="payment" target="orderstatus">
 <data key="d1">
-wr;CUSTOMER(['cId', 'dId', 'wId']).*
+wr;CUSTOMER(['cId', 'dId', 'wId']).wYTD
+wr;CUSTOMER(['cId', 'dId', 'wId']).dYTD
+wr;CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
+wr;CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
+wr;CUSTOMER(['cId', 'dId', 'wId']).balance
+payment.c_w_id = orderstatus.w_Id
+payment.c_w_id = orderstatus.w_Id
+payment.c_w_id = orderstatus.w_Id
 payment.c_w_id = orderstatus.w_Id
 payment.c_d_id = orderstatus.d_Id
+payment.c_d_id = orderstatus.d_Id
+payment.c_d_id = orderstatus.d_Id
+payment.c_d_id = orderstatus.d_Id
+payment.c_id = orderstatus.c_id
+payment.c_id = orderstatus.c_id
+payment.c_id = orderstatus.c_id
 payment.c_id = orderstatus.c_id
 
 
@@ -54,13 +85,20 @@ payment.c_id = orderstatus.c_id
 </node>
 <edge source="delivery" target="orderstatus">
 <data key="d1">
-wr;CUSTOMER(['cId', 'dId', 'wId']).*
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
+wr;CUSTOMER(['cId', 'dId', 'wId']).carrierId
+wr;CUSTOMER(['cId', 'dId', 'wId']).deliveryDate
+wr;CUSTOMER(['cId', 'dId', 'wId']).balance
+wr;CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).carrierId
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).balance
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryCnt
 delivery.d_id = orderstatus.d_Id
+delivery.d_id = orderstatus.d_Id
+delivery.w_id = orderstatus.w_Id
+delivery.w_id = orderstatus.w_Id
 delivery.c_id = orderstatus.c_id
-delivery.w_Id = orderstatus.w_Id
+delivery.c_id = orderstatus.c_id
 
 
 </data>
@@ -70,13 +108,32 @@ delivery.w_Id = orderstatus.w_Id
 </node>
 <edge source="payment" target="neworder">
 <data key="d1">
-wr;CUSTOMER(['cId', 'dId', 'wId']).*
-wr;WAREHOUSE(['wId']).*
-rw;DISTRICT(['dId', 'wId']).*
-ww;DISTRICT(['dId', 'wId']).*
+wr;CUSTOMER(['cId', 'dId', 'wId']).wYTD
+wr;CUSTOMER(['cId', 'dId', 'wId']).dYTD
+wr;CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
+wr;CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
+wr;CUSTOMER(['cId', 'dId', 'wId']).balance
+wr;DISTRICT(['dId', 'wId']).wYTD
+wr;DISTRICT(['dId', 'wId']).dYTD
+wr;DISTRICT(['dId', 'wId']).YTDPaymt
+wr;DISTRICT(['dId', 'wId']).paymtCnt
+wr;DISTRICT(['dId', 'wId']).balance
 payment.w_id = neworder.w_id
 payment.d_id = neworder.d_id
+payment.w_id = neworder.w_id
+payment.w_id = neworder.w_id
+payment.d_id = neworder.d_id
+payment.c_w_id = neworder.w_id
+payment.c_w_id = neworder.w_id
+payment.c_w_id = neworder.w_id
+payment.c_w_id = neworder.w_id
 payment.c_d_id = neworder.d_id
+payment.c_d_id = neworder.d_id
+payment.c_d_id = neworder.d_id
+payment.c_d_id = neworder.d_id
+payment.c_id = neworder.c_Id
+payment.c_id = neworder.c_Id
+payment.c_id = neworder.c_Id
 payment.c_id = neworder.c_Id
 
 
@@ -87,8 +144,15 @@ payment.c_id = neworder.c_Id
 </node>
 <edge source="delivery" target="neworder">
 <data key="d1">
-wr;CUSTOMER(['cId', 'dId', 'wId']).*
+wr;CUSTOMER(['cId', 'dId', 'wId']).carrierId
+wr;CUSTOMER(['cId', 'dId', 'wId']).deliveryDate
+wr;CUSTOMER(['cId', 'dId', 'wId']).balance
+wr;CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
 delivery.d_id = neworder.d_id
+delivery.d_id = neworder.d_id
+delivery.w_id = neworder.w_id
+delivery.w_id = neworder.w_id
+delivery.c_id = neworder.c_Id
 delivery.c_id = neworder.c_Id
 
 
@@ -99,23 +163,10 @@ delivery.c_id = neworder.c_Id
 </node>
 <edge source="neworder" target="stocklevel">
 <data key="d1">
-wr;DISTRICT(['dId', 'wId']).*
 wr;STOCK(['iId', 'wId']).*
 neworder.d_id = stocklevel.d_id
 neworder.w_id = stocklevel.w_id
 neworder.ol_supply_w_id = stocklevel.w_id
-
-
-</data>
-</edge>
-<node id="payment">
-<data key="d0">"payment"</data>
-</node>
-<edge source="payment" target="stocklevel">
-<data key="d1">
-wr;DISTRICT(['dId', 'wId']).*
-payment.w_id = stocklevel.w_id
-payment.d_id = stocklevel.d_id
 
 
 </data>
@@ -125,27 +176,12 @@ payment.d_id = stocklevel.d_id
 </node>
 <edge source="delivery" target="stocklevel">
 <data key="d1">
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).carrierId
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).balance
+wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryCnt
 delivery.d_id = stocklevel.d_id
 delivery.w_id = stocklevel.w_id
-
-
-</data>
-</edge>
-<node id="neworder">
-<data key="d0">"neworder"</data>
-</node>
-<edge source="neworder" target="payment">
-<data key="d1">
-wr;DISTRICT(['dId', 'wId']).*
-rw;WAREHOUSE(['wId']).*
-rw;CUSTOMER(['cId', 'dId', 'wId']).*
-neworder.d_id = payment.d_id
-neworder.d_id = payment.c_d_id
-neworder.c_Id = payment.c_id
-neworder.w_id = payment.w_id
 
 
 </data>
@@ -155,8 +191,15 @@ neworder.w_id = payment.w_id
 </node>
 <edge source="delivery" target="payment">
 <data key="d1">
-wr;CUSTOMER(['cId', 'dId', 'wId']).*
+wr;CUSTOMER(['cId', 'dId', 'wId']).carrierId
+wr;CUSTOMER(['cId', 'dId', 'wId']).deliveryDate
+wr;CUSTOMER(['cId', 'dId', 'wId']).balance
+wr;CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
 delivery.d_id = payment.c_d_id
+delivery.d_id = payment.c_d_id
+delivery.d_id = payment.c_d_id
+delivery.d_id = payment.c_d_id
+delivery.c_id = payment.c_id
 delivery.c_id = payment.c_id
 
 
@@ -167,14 +210,25 @@ delivery.c_id = payment.c_id
 </node>
 <edge source="delivery" target="delivery">
 <data key="d1">
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
-wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
-ww;ORDERS(['oId', 'dId', 'wId']).*
-ww;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
+wr;ORDERS(['oId', 'dId', 'wId']).deliveryDate
+wr;ORDERS(['oId', 'dId', 'wId']).deliveryCnt
+rw;ORDERS(['oId', 'dId', 'wId']).deliveryDate
+rw;ORDERS(['oId', 'dId', 'wId']).deliveryCnt
+ww;ORDERS(['oId', 'dId', 'wId']).carrierId
+ww;ORDERS(['oId', 'dId', 'wId']).balance
+ww;ORDERLINE(['oId', 'dId', 'wId', 'number']).*
+delivery.w_id = delivery.w_id
 delivery.w_id = delivery.w_id
 delivery.d_id = delivery.d_id
+delivery.d_id = delivery.d_id
+delivery.d_id = delivery.d_id
+delivery.d_id = delivery.d_id
+delivery.d_id = delivery.d_id
+delivery.d_id = delivery.d_id
+delivery.d_id = delivery.d_id
+delivery.d_id = delivery.d_id
+delivery.w_id = delivery.w_id
+delivery.w_id = delivery.w_id
 
 
 </data>
@@ -184,7 +238,6 @@ delivery.d_id = delivery.d_id
 </node>
 <edge source="stocklevel" target="neworder">
 <data key="d1">
-rw;DISTRICT(['dId', 'wId']).*
 rw;STOCK(['iId', 'wId']).*
 stocklevel.w_id = neworder.w_id
 stocklevel.w_id = neworder.ol_supply_w_id
@@ -198,22 +251,59 @@ stocklevel.d_id = neworder.d_id
 </node>
 <edge source="orderstatus" target="payment">
 <data key="d1">
-rw;CUSTOMER(['cId', 'dId', 'wId']).*
+rw;CUSTOMER(['cId', 'dId', 'wId']).wYTD
+rw;CUSTOMER(['cId', 'dId', 'wId']).dYTD
+rw;CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
+rw;CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
+rw;CUSTOMER(['cId', 'dId', 'wId']).balance
+orderstatus.d_Id = payment.c_d_id
+orderstatus.d_Id = payment.c_d_id
+orderstatus.d_Id = payment.c_d_id
 orderstatus.d_Id = payment.c_d_id
 orderstatus.w_Id = payment.c_w_id
+orderstatus.w_Id = payment.c_w_id
+orderstatus.w_Id = payment.c_w_id
+orderstatus.w_Id = payment.c_w_id
+orderstatus.c_id = payment.c_id
+orderstatus.c_id = payment.c_id
+orderstatus.c_id = payment.c_id
 orderstatus.c_id = payment.c_id
 
 
 </data>
 </edge>
-<node id="stocklevel">
-<data key="d0">"stocklevel"</data>
+<node id="neworder">
+<data key="d0">"neworder"</data>
 </node>
-<edge source="stocklevel" target="payment">
+<edge source="neworder" target="payment">
 <data key="d1">
-rw;DISTRICT(['dId', 'wId']).*
-stocklevel.w_id = payment.w_id
-stocklevel.d_id = payment.d_id
+rw;DISTRICT(['dId', 'wId']).wYTD
+rw;DISTRICT(['dId', 'wId']).dYTD
+rw;DISTRICT(['dId', 'wId']).YTDPaymt
+rw;DISTRICT(['dId', 'wId']).paymtCnt
+rw;DISTRICT(['dId', 'wId']).balance
+rw;CUSTOMER(['cId', 'dId', 'wId']).wYTD
+rw;CUSTOMER(['cId', 'dId', 'wId']).dYTD
+rw;CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
+rw;CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
+rw;CUSTOMER(['cId', 'dId', 'wId']).balance
+neworder.w_id = payment.w_id
+neworder.w_id = payment.w_id
+neworder.w_id = payment.c_w_id
+neworder.w_id = payment.c_w_id
+neworder.w_id = payment.c_w_id
+neworder.w_id = payment.c_w_id
+neworder.d_id = payment.d_id
+neworder.d_id = payment.c_d_id
+neworder.d_id = payment.c_d_id
+neworder.d_id = payment.c_d_id
+neworder.d_id = payment.c_d_id
+neworder.c_Id = payment.c_id
+neworder.c_Id = payment.c_id
+neworder.c_Id = payment.c_id
+neworder.c_Id = payment.c_id
+neworder.d_id = payment.d_id
+neworder.w_id = payment.w_id
 
 
 </data>
@@ -223,12 +313,19 @@ stocklevel.d_id = payment.d_id
 </node>
 <edge source="orderstatus" target="delivery">
 <data key="d1">
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
-rw;CUSTOMER(['cId', 'dId', 'wId']).*
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).carrierId
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).balance
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryCnt
+rw;CUSTOMER(['cId', 'dId', 'wId']).carrierId
+rw;CUSTOMER(['cId', 'dId', 'wId']).deliveryDate
+rw;CUSTOMER(['cId', 'dId', 'wId']).balance
+rw;CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
 orderstatus.d_Id = delivery.d_id
-orderstatus.w_Id = delivery.w_Id
+orderstatus.d_Id = delivery.d_id
+orderstatus.w_Id = delivery.w_id
+orderstatus.w_Id = delivery.w_id
+orderstatus.c_id = delivery.c_id
 orderstatus.c_id = delivery.c_id
 
 
@@ -239,8 +336,15 @@ orderstatus.c_id = delivery.c_id
 </node>
 <edge source="neworder" target="delivery">
 <data key="d1">
-rw;CUSTOMER(['cId', 'dId', 'wId']).*
+rw;CUSTOMER(['cId', 'dId', 'wId']).carrierId
+rw;CUSTOMER(['cId', 'dId', 'wId']).deliveryDate
+rw;CUSTOMER(['cId', 'dId', 'wId']).balance
+rw;CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
+neworder.w_id = delivery.w_id
+neworder.w_id = delivery.w_id
 neworder.d_id = delivery.d_id
+neworder.d_id = delivery.d_id
+neworder.c_Id = delivery.c_id
 neworder.c_Id = delivery.c_id
 
 
@@ -251,9 +355,10 @@ neworder.c_Id = delivery.c_id
 </node>
 <edge source="stocklevel" target="delivery">
 <data key="d1">
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).wId
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).dId
-rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).oId
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).carrierId
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).balance
+rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryCnt
 stocklevel.w_id = delivery.w_id
 stocklevel.d_id = delivery.d_id
 
@@ -265,8 +370,15 @@ stocklevel.d_id = delivery.d_id
 </node>
 <edge source="payment" target="delivery">
 <data key="d1">
-rw;CUSTOMER(['cId', 'dId', 'wId']).*
+rw;CUSTOMER(['cId', 'dId', 'wId']).carrierId
+rw;CUSTOMER(['cId', 'dId', 'wId']).deliveryDate
+rw;CUSTOMER(['cId', 'dId', 'wId']).balance
+rw;CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
 payment.c_id = delivery.c_id
+payment.c_id = delivery.c_id
+payment.c_d_id = delivery.d_id
+payment.c_d_id = delivery.d_id
+payment.c_d_id = delivery.d_id
 payment.c_d_id = delivery.d_id
 
 

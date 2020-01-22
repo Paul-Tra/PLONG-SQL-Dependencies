@@ -23,6 +23,7 @@ class Parser:
         self.liste_param_fonction = []
         # on va stocker les couples de dependance [ table : parametre de fonction ] on sait au préalable que la correspondance avec la / les clés primaire sont correctes
         self.couple_dependance = dict()
+        self.dependance_supplementaire = dict()
         
     def lecture_fichier(self):
         F = open(self.nom_fichier,"r") 
@@ -101,10 +102,16 @@ class Parser:
         # voir por aussi gerer les orderby , ainsi que les declare en milieu de fichier 
         #................................................................................
         #print(liste_du_from)
+        #print("OKKKKKKKKKKKKKKKKK")
         for i in range (0, len(liste_du_from)):
             liste = liste_du_from[i].split()
             #print(liste)
             for j in range(0,len(liste)) :
+                #print("liste "+str(j)+" : " + str(liste[j]) )
+                if ( len(liste) == 3 ):
+                    self.table_from[liste[j+1]] = liste[j+1]
+                    break ;
+                
                 if ( liste[j] == "FROM" or liste[j] == "WHERE" or liste[j+1] == "FROM" or liste[j+1] == "WHERE" ):
                     if ( liste[j] == "ORDER" ):
                         #j = len(liste)
@@ -170,6 +177,18 @@ class Parser:
         for i in range (0, len(liste_where)):
             liste = liste_where[i].split()
             #print(liste)
+            tmp = liste_where[i]
+            y = re.findall("[A-z]*\.[A-z]* = [A-z]*\.[A-z]*",tmp)
+            #print("YYYYYYYYYYYYYYYYYYY = " + str(y) )
+            if ( y != [] ):
+                # nous avons une relation de la forme : ['C.wId = W.wId']
+                for a in y :
+                    l = a.split(" = ")
+                    elt = l[0]
+                    elt = elt.split(".")
+                        #self.dependance_supplementaire[self.table_from[elt[0]]] = elt[1]
+                    self.dependance_supplementaire[elt[1]] = [self.table_from[elt[0]],self.table_from[l[1].split(".")[0]]]
+                
             for i in range(1,len(liste)) : # commencer a 1 pour eviter de matcher le WHERE de la clause
                 res = re.findall("[A-Z]*\.*[a-z].*[a-z]",liste[i])
                 if ( res == [] ) :
@@ -179,7 +198,7 @@ class Parser:
                     #print("operateur : " + op[0])
                 else :
                     if ( res != "WHERE" ):
-                        #print(res)
+                        print(res)
                         # on s'interresse a ce cas là pour matcher quel attributs vont aller avec quelles tables / fonctions 
                         couple_table_attributs = res[0].split(".")
                         #print(couple_table_attributs)
@@ -187,7 +206,7 @@ class Parser:
                         if ( len(couple_table_attributs) > 1 ):
                             #print("attributs : " + res[0])
                             # le cas ou le transaction regarde une autre table 
-                            if ( couple_table_attributs[1] in self.liste_r.keys() ):
+                            if ( couple_table_attributs[0] in self.liste_r.keys() ):
                                 #print("OK")
                                 self.liste_r[couple_table_attributs[1]] = self.liste_r[couple_table_attributs[1]] , couple_table_attributs[0] 
                                 #self.liste_r[couple_table_attributs[1]].append(couple_table_attributs[0] )
@@ -219,6 +238,7 @@ class Parser:
             #print(liste_finale_attribut_lecture)
             #print("---------------------------------------")
             #print(table)
+            tmp = []
             if ( table not in self.table_from.keys() ) :
                 table = [table[i] for i in range (0,len(table))]
                 #print(values,table)
@@ -417,12 +437,30 @@ class Parser:
             
 
     def affiche_couple_dep(self):
+        print("Dependance suuplementaire ::: ")
+        #print (self.dependance_supplementaire)
+        for c,d in self.dependance_supplementaire.items():
+            #print(c,d)
+            for elt in d :
+                print(str(elt + " : " + c))
+                
+            
         print("Liste des parametres de fonction qui touche les clés primaires des tables suivantes : " )
         for a,b in self.couple_dependance.items():
+            
+            for c,d in self.dependance_supplementaire.items():
+                #print(c,d)
+                for elt in d :
+                    tmp = str(elt + " : " + c)
+                    if ( tmp in b ) :
+                        print("Succes")
+                        for o in d :
+                            tmp = str(o + " : " + c)
+                            b.append(tmp)
+                        
+                
             self.couple_dependance[a] =list(set(b))
             print(a,b)
-            
-            
             
 if __name__ == "__main__":
     # execute only if run as a script
@@ -432,6 +470,6 @@ if __name__ == "__main__":
     print("faire attention au clé primaire de chaque table car elle ne peut etre impacté par l'ecriture , et donc la lecture ne change rien , retirer le champs de lecture de chaque table pour leur clé primaire ")
     print("une dependance ne peut arriver uniquement si les clé primaire sont identique , d'ou le idd = iid' , par exemple si viewitem(id) et viewitem(id') ont une contrainte , id = id' , car la clé primaire est unique ") 
     print("Dans le main : \n" )
-    p = Parser("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/stocklevel.sql")
+    p = Parser("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/neworder.sql")
     
     p.lanceur()
