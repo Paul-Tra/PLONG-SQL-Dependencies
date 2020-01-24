@@ -1,18 +1,23 @@
 import os
+from primary import *
+from parser import *
+from parser_ecriture import *
+from dependance import *
 
 class principal:
     def __init__(self):
-        self.pk = PrimaryKey("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/genDB.sql")
+        self.pk = PrimaryKey("./fichiers/genDB.sql")
         self.p = []
         self.pw = []
-        self.l = os.listdir("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/")
+        self.l = os.listdir("./fichiers/")
         #print("Liste des fichier d'entrée : ")
         #print(l)
         for elt in self.l :
-            p = Parser("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/"+elt)
-            pw = parser_ecriture("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/"+elt)
-            self.p.append(p)
-            self.pw.append(pw)
+            if ( elt != "genDB.sql" ):
+                p = Parser("./fichiers/"+elt)
+                pw = parser_ecriture("./fichiers/"+elt)
+                self.p.append(p)
+                self.pw.append(pw)
         #print("taille :: " + str(len(self.p)) )
         #Parser("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/orderstatus.sql")
         self.liste_file = []
@@ -280,7 +285,7 @@ class principal:
                                     #if ( str(source + "." + a1 + " = " + target +"." +  a2) not in self.dep_sans_doublons[source,target] ) :
                                     self.dep_sans_doublons[source,target] = self.dep_sans_doublons[source,target] + [ source + "." + a1 + " = " + target +"." +  a2 ]
     def generer_graphml(self):
-        with open(os.getcwd()+"/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/graph.graphml", "w") as fichier:
+        with open(os.getcwd()+"/graph.graphml", "w") as fichier:
             fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
             fichier.write('\t<key id="d0" for="node" attr.name="weight" attr.type="string"/>\n')
@@ -304,7 +309,7 @@ class principal:
         self.fichier = fichier
     
     def genere_graphml_sans_doublons(self):
-        with open(os.getcwd()+"/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/graph.graphml", "w") as fichier:
+        with open(os.getcwd()+"/graph.graphml", "w") as fichier:
             fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
             fichier.write('\t<key id="d0" for="node" attr.name="weight" attr.type="string"/>\n')
@@ -318,9 +323,14 @@ class principal:
                 fichier.write('\n<edge source="'+cle[0]+'" target="'+cle[1]+'">\n')
                 fichier.write('<data key="d1">\n')
                 # on traite ensuite toutes les dependances une a une 
-                
+                l = []
                 for v in value :
-                    fichier.write(v+'\n')
+                    if ( v not in l ) :
+                        l.append(v)
+                    
+                for elt in l :
+                    fichier.write(elt+'\n')
+                
                 
                 fichier.write('\n\n</data>\n</edge>')    
             fichier.write("</graph>\n\t</graphml>")

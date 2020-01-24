@@ -16,9 +16,6 @@ ww;DISTRICT(['dId', 'wId']).*
 neworder.w_id = neworder.w_id
 neworder.d_id = neworder.d_id
 neworder.ol_i_id = neworder.ol_i_id
-neworder.d_id = neworder.d_id
-neworder.w_id = neworder.w_id
-neworder.ol_i_id = neworder.ol_i_id
 
 
 </data>
@@ -37,18 +34,7 @@ ww;CUSTOMER(['cId', 'dId', 'wId']).wYTD
 ww;CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
 ww;CUSTOMER(['cId', 'dId', 'wId']).balance
 payment.w_id = payment.w_id
-payment.w_id = payment.w_id
 payment.d_id = payment.d_id
-payment.c_id = payment.c_id
-payment.c_id = payment.c_id
-payment.c_id = payment.c_id
-payment.c_id = payment.c_id
-payment.w_id = payment.w_id
-payment.w_id = payment.w_id
-payment.d_id = payment.d_id
-payment.c_id = payment.c_id
-payment.c_id = payment.c_id
-payment.c_id = payment.c_id
 payment.c_id = payment.c_id
 
 
@@ -64,17 +50,8 @@ wr;CUSTOMER(['cId', 'dId', 'wId']).dYTD
 wr;CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
 wr;CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
 wr;CUSTOMER(['cId', 'dId', 'wId']).balance
-payment.c_w_id = orderstatus.w_Id
-payment.c_w_id = orderstatus.w_Id
-payment.c_w_id = orderstatus.w_Id
-payment.c_w_id = orderstatus.w_Id
+payment.w_id = orderstatus.w_Id
 payment.c_d_id = orderstatus.d_Id
-payment.c_d_id = orderstatus.d_Id
-payment.c_d_id = orderstatus.d_Id
-payment.c_d_id = orderstatus.d_Id
-payment.c_id = orderstatus.c_id
-payment.c_id = orderstatus.c_id
-payment.c_id = orderstatus.c_id
 payment.c_id = orderstatus.c_id
 
 
@@ -94,10 +71,7 @@ wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate
 wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).balance
 wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryCnt
 delivery.d_id = orderstatus.d_Id
-delivery.d_id = orderstatus.d_Id
 delivery.w_id = orderstatus.w_Id
-delivery.w_id = orderstatus.w_Id
-delivery.c_id = orderstatus.c_id
 delivery.c_id = orderstatus.c_id
 
 
@@ -120,20 +94,7 @@ wr;DISTRICT(['dId', 'wId']).paymtCnt
 wr;DISTRICT(['dId', 'wId']).balance
 payment.w_id = neworder.w_id
 payment.d_id = neworder.d_id
-payment.w_id = neworder.w_id
-payment.w_id = neworder.w_id
-payment.d_id = neworder.d_id
-payment.c_w_id = neworder.w_id
-payment.c_w_id = neworder.w_id
-payment.c_w_id = neworder.w_id
-payment.c_w_id = neworder.w_id
 payment.c_d_id = neworder.d_id
-payment.c_d_id = neworder.d_id
-payment.c_d_id = neworder.d_id
-payment.c_d_id = neworder.d_id
-payment.c_id = neworder.c_Id
-payment.c_id = neworder.c_Id
-payment.c_id = neworder.c_Id
 payment.c_id = neworder.c_Id
 
 
@@ -149,10 +110,7 @@ wr;CUSTOMER(['cId', 'dId', 'wId']).deliveryDate
 wr;CUSTOMER(['cId', 'dId', 'wId']).balance
 wr;CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
 delivery.d_id = neworder.d_id
-delivery.d_id = neworder.d_id
 delivery.w_id = neworder.w_id
-delivery.w_id = neworder.w_id
-delivery.c_id = neworder.c_Id
 delivery.c_id = neworder.c_Id
 
 
@@ -196,10 +154,7 @@ wr;CUSTOMER(['cId', 'dId', 'wId']).deliveryDate
 wr;CUSTOMER(['cId', 'dId', 'wId']).balance
 wr;CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
 delivery.d_id = payment.c_d_id
-delivery.d_id = payment.c_d_id
-delivery.d_id = payment.c_d_id
-delivery.d_id = payment.c_d_id
-delivery.c_id = payment.c_id
+delivery.w_id = payment.w_id
 delivery.c_id = payment.c_id
 
 
@@ -218,17 +173,7 @@ ww;ORDERS(['oId', 'dId', 'wId']).carrierId
 ww;ORDERS(['oId', 'dId', 'wId']).balance
 ww;ORDERLINE(['oId', 'dId', 'wId', 'number']).*
 delivery.w_id = delivery.w_id
-delivery.w_id = delivery.w_id
 delivery.d_id = delivery.d_id
-delivery.d_id = delivery.d_id
-delivery.d_id = delivery.d_id
-delivery.d_id = delivery.d_id
-delivery.d_id = delivery.d_id
-delivery.d_id = delivery.d_id
-delivery.d_id = delivery.d_id
-delivery.d_id = delivery.d_id
-delivery.w_id = delivery.w_id
-delivery.w_id = delivery.w_id
 
 
 </data>
@@ -257,16 +202,7 @@ rw;CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
 rw;CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
 rw;CUSTOMER(['cId', 'dId', 'wId']).balance
 orderstatus.d_Id = payment.c_d_id
-orderstatus.d_Id = payment.c_d_id
-orderstatus.d_Id = payment.c_d_id
-orderstatus.d_Id = payment.c_d_id
-orderstatus.w_Id = payment.c_w_id
-orderstatus.w_Id = payment.c_w_id
-orderstatus.w_Id = payment.c_w_id
-orderstatus.w_Id = payment.c_w_id
-orderstatus.c_id = payment.c_id
-orderstatus.c_id = payment.c_id
-orderstatus.c_id = payment.c_id
+orderstatus.w_Id = payment.w_id
 orderstatus.c_id = payment.c_id
 
 
@@ -288,22 +224,9 @@ rw;CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
 rw;CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
 rw;CUSTOMER(['cId', 'dId', 'wId']).balance
 neworder.w_id = payment.w_id
-neworder.w_id = payment.w_id
-neworder.w_id = payment.c_w_id
-neworder.w_id = payment.c_w_id
-neworder.w_id = payment.c_w_id
-neworder.w_id = payment.c_w_id
 neworder.d_id = payment.d_id
 neworder.d_id = payment.c_d_id
-neworder.d_id = payment.c_d_id
-neworder.d_id = payment.c_d_id
-neworder.d_id = payment.c_d_id
 neworder.c_Id = payment.c_id
-neworder.c_Id = payment.c_id
-neworder.c_Id = payment.c_id
-neworder.c_Id = payment.c_id
-neworder.d_id = payment.d_id
-neworder.w_id = payment.w_id
 
 
 </data>
@@ -322,10 +245,7 @@ rw;CUSTOMER(['cId', 'dId', 'wId']).deliveryDate
 rw;CUSTOMER(['cId', 'dId', 'wId']).balance
 rw;CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
 orderstatus.d_Id = delivery.d_id
-orderstatus.d_Id = delivery.d_id
 orderstatus.w_Id = delivery.w_id
-orderstatus.w_Id = delivery.w_id
-orderstatus.c_id = delivery.c_id
 orderstatus.c_id = delivery.c_id
 
 
@@ -341,10 +261,7 @@ rw;CUSTOMER(['cId', 'dId', 'wId']).deliveryDate
 rw;CUSTOMER(['cId', 'dId', 'wId']).balance
 rw;CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
 neworder.w_id = delivery.w_id
-neworder.w_id = delivery.w_id
 neworder.d_id = delivery.d_id
-neworder.d_id = delivery.d_id
-neworder.c_Id = delivery.c_id
 neworder.c_Id = delivery.c_id
 
 
@@ -374,11 +291,8 @@ rw;CUSTOMER(['cId', 'dId', 'wId']).carrierId
 rw;CUSTOMER(['cId', 'dId', 'wId']).deliveryDate
 rw;CUSTOMER(['cId', 'dId', 'wId']).balance
 rw;CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
+payment.w_id = delivery.w_id
 payment.c_id = delivery.c_id
-payment.c_id = delivery.c_id
-payment.c_d_id = delivery.d_id
-payment.c_d_id = delivery.d_id
-payment.c_d_id = delivery.d_id
 payment.c_d_id = delivery.d_id
 
 

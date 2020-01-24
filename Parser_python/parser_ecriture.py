@@ -1,3 +1,12 @@
+import pathlib
+import os
+from pathlib import Path
+from primary import *
+from parser import *
+from parser_ecriture import *
+from dependance import *
+
+
 class parser_ecriture:
     def __init__(self,nom_fichier):
         self.nom_fichier = nom_fichier
@@ -10,7 +19,7 @@ class parser_ecriture:
         self.liste_attribut = dict()
         self.liste_condition = []
         self.data = ""
-        self.pkey = PrimaryKey("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/genDB.sql")
+        self.pkey = PrimaryKey("./fichiers/genDB.sql")
         self.pkey.lanceur()
         self.liste_param_fonction = []
         self.cle_impacte_set = []

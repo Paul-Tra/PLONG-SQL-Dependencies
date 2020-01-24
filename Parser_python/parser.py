@@ -1,4 +1,8 @@
 import re
+from primary import *
+from parser import *
+from parser_ecriture import *
+from dependance import *
 
 class Parser:
     def __init__(self , nom_fichier ):
@@ -308,7 +312,7 @@ class Parser:
                     #print(t)
                     #print(values)
                     #print(self.table_from[t])
-                    p#rint("On lit : " + t + " ( "+ self.table_from[t] + " ) -> " + values )
+                    #print("On lit : " + t + " ( "+ self.table_from[t] + " ) -> " + values )
                     #print(values)
                     if ( t not in self.liste_finale_attribut_lecture.keys() ) :
                         #if ( type(t) is not tuple and values not in self.liste_finale_attribut_lecture[self.table_from[t]]):
@@ -338,7 +342,7 @@ class Parser:
         #self.affiche_liste_r()
         self.affiche_liste_finale()
         
-        self.pkey = PrimaryKey("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/genDB.sql")
+        self.pkey = PrimaryKey("./fichiers/genDB.sql")
         self.pkey.lanceur()
         self.trouve_cle_primaire_associe_au_from()
         self.trouve_attribut_de_fonction()
@@ -472,6 +476,6 @@ if __name__ == "__main__":
     print("faire attention au clé primaire de chaque table car elle ne peut etre impacté par l'ecriture , et donc la lecture ne change rien , retirer le champs de lecture de chaque table pour leur clé primaire ")
     print("une dependance ne peut arriver uniquement si les clé primaire sont identique , d'ou le idd = iid' , par exemple si viewitem(id) et viewitem(id') ont une contrainte , id = id' , car la clé primaire est unique ") 
     print("Dans le main : \n" )
-    p = Parser("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/neworder.sql")
+    p = Parser("./fichiers/neworder.sql")
     
     p.lanceur()
