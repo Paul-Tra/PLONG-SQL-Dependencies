@@ -6,6 +6,8 @@ public class Transaction {
     private final int NB_COTE = 4;
     String id, nom;
     int nbRelationCote[];
+
+    public Transaction() {}
     public Transaction(String id, String nom) {
         this.id = id;
         this.nom = nom;

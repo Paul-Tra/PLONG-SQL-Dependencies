@@ -4,8 +4,10 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
+import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -13,10 +15,13 @@ import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.Consumer;
+
+import static sample.Controller.*;
 
 public class ElementVisuel {
     // 0_BAS , 1_GAUCHE , 2_HAUT , 3_DROITE
@@ -35,9 +40,14 @@ public class ElementVisuel {
     private Pane pane; // panneau auquel l'element visuel est asssocié
     private Consumer<String> consumer = e -> System.out.println(e);
     ArrayList<Shape> list_shape; // listes des elements a inserer dans la vue
+    ArrayList<Transaction> list_transaction;
+    ArrayList<Relation> list_relation;
+
     public ElementVisuel(ArrayList<Relation> l_relation, ArrayList<Transaction> l_transaction, Pane p) {
         list_shape = new ArrayList<>();
         pane = p;
+        list_relation = l_relation;
+        list_transaction = l_transaction;
         createShape(l_relation,l_transaction);
     }
 
@@ -188,6 +198,8 @@ public class ElementVisuel {
             public void handle(MouseEvent mouseEvent) {
                 oldX = mouseEvent.getX();
                 oldY = mouseEvent.getY();
+                // met a jour les informations du Node (rectangle) sur lequel on a cliqué
+                //infoNode(rectangle);
             }
         });
         rectangle.setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -200,13 +212,31 @@ public class ElementVisuel {
             }
         });
     }
+    // a partir d'une rectangle, recuppere les information du Node puis les places dans l'affichage via fillData
+    private void infoNode(Rectangle rectangle) {
+        Transaction transaction = matchTransaction(rectangle);
+        Controller c = null;
+        try {
+            c = getControllerFenetre();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        c.fillData(transaction);
+    }
+    private Transaction matchTransaction(Rectangle rectangle) {
+        for (Transaction transaction : list_transaction) {
+            if (rectangle.getAccessibleText().equals(transaction.id)) { // on a trouve la transcation correspondant au rectangle
+                return transaction;
+            }
+        }
+        return null;
+    }
     //gere le suivi de l'integralite des fleche entrante et sortante du node en focntion du deplacement de ce Node
     private void gestionSuiviNode(Rectangle rectangle, double distance_x,double distance_Y) {
         // distance_x == valeurde translation sur l'axe des X
         for (Shape shape : list_shape) {
             if (shape.getClass() == Path.class) {
                 Path fleche = (Path) shape;
-
             }
         }
 
@@ -234,16 +264,46 @@ public class ElementVisuel {
     }
     // gere l'ajout des evenements d'une fleche
     private void addHandlerFleche(Path fleche) {
-        fleche.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        fleche.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 // on rend invisible tout les cercles de controles visible actuellement
                 setInvisbleAllCircle();
                 // on affiche les cercles de controles de notre fleche uniquement
                 setVisibleCircleControleFleche(fleche);
+                // met a jour les informations de l'element visuel sur lequel on travail
+                //infoFleche(fleche);
             }
         });
     }
+    // a partir d'une path, recupere les informations de la fleche  puis les places dans l'affichage via fillData
+    private void infoFleche(Path fleche) {
+        Relation relation = matchRelation(fleche);
+        //lv_data.getItems().add(relation.nom);
+        Controller c = null;
+        try {
+            c = getControllerFenetre();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        c.fillData(relation);
+    }
+
+    private Controller getControllerFenetre() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Fenetre.fxml"));
+        Parent calcRoot = loader.load();
+        Controller controller = loader.getController();
+        return controller;
+    }
+    private Relation matchRelation(Path path) {
+        for (Relation relation : list_relation) {
+            if (path.getAccessibleText().equals(relation.nom)) { // on a trouve la transcation correspondant au rectangle
+                return relation;
+            }
+        }
+        return null;
+    }
+
     // rend les cercles de cotroles d'une fleche visible
     private void setVisibleCircleControleFleche(Path fleche) {
         consumer.accept("dans setVisibleCIRCLEcONTROLEfLECHE");
