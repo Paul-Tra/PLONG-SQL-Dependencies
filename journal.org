@@ -7,3 +7,17 @@
    - Corriger les bug dans le parseur
    - Ajouter dans README.md un manuel pour l'utilisateur
    - Chercher des applications en PgSQL et tester le parseur
+
+* <28/01/2020>
+** Fait:
+   - Corrigé le bug dans le parseur
+   - Ajouté les dependences dans le GUI
+** A faire:
+   - Ajouter dans README.md un manuel pour l'utilisateur
+     Comment compiler l'application ?
+     Comment executer l'application graphique ?
+     Comment genere un fichier GraphML par la ligne de commande ?
+
+   - Chercher des applications en PgSQL et tester le parseur
+   - Ameliorer la GUI (nottamment affichier le code qui cause les dependenace)
+   
