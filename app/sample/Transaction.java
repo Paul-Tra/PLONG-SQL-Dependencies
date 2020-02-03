@@ -1,6 +1,5 @@
 package sample;
 
-import com.sun.management.UnixOperatingSystemMXBean;
 
 public class Transaction {
     private final int NB_COTE = 4;

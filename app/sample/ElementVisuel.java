@@ -176,9 +176,7 @@ public class ElementVisuel {
         r.setStrokeWidth(2);
         r.setX(calculeCoordNode(true));
         r.setY(calculeCoordNode(false));
-        consumer.accept(text.getText());
         r.setAccessibleText(text.getText());
-        //addHandlerRectangle(r);
         return r;
     }
     private double calculeCoordNode(boolean x) {
@@ -299,20 +297,18 @@ public class ElementVisuel {
         }
         return null;
     }
-
-    // rend les cercles de cotroles d'une fleche visible
+    // set the 2 arrow's control-circles visible  
     private void setVisibleCircleControleFleche(Path fleche) {
-        consumer.accept("dans setVisibleCIRCLEcONTROLEfLECHE");
         int cpt=0;
         for (int i = 0; i < list_shape.size(); i++) {
-            if (cpt >= 2) {
-                consumer.accept("cpt == 2");
+            if (cpt >= 2) { 
+            // if we have found our 2 circles
                 return;
             }
             if (list_shape.get(i).getClass() == Circle.class) { // si c'est un cercle
                 Circle c = (Circle) list_shape.get(i);
                 if (c.getAccessibleText().equals(fleche.getAccessibleText())) {
-                    consumer.accept("c.text = fleche.text :"+c.getAccessibleText());
+                    // match between c.text and fleche.text
                     cpt++;
                     if (!c.isVisible()) {
                         c.setVisible(true);
@@ -331,9 +327,10 @@ public class ElementVisuel {
             }
         }
     }
-    // s'occupe de creer le bout de la fleche au niveau du point de destination
+    // takes care of the creation of the arrow's apex from the destination point
     private void createBoutFleche(Path p,Rectangle r_dest, double d_x, double d_y, int cote,boolean premier) {
-        if (cote < 0 || cote >= 4) {// 0_BAS , 1_GAUCHE , 2_HAUT , 3_DROITE
+        if (cote < 0 || cote >= 4) {
+        // 0_BOTTOM , 1_LEFT , 2_TOP , 3_RIGHT
             return;
         }
         double angle = ANGLE_FLECHE + (90 * cote);

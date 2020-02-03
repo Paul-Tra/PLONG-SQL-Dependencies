@@ -91,8 +91,6 @@ public class Controller {
             boolean wr = line_token.contains("wr");
             boolean rw = line_token.contains("rw");
             if (ww || wr || rw) {
-                // suppression of \n because we work per line
-                //line_token = line_token.replace("\n", "");
                 printing_lines.add(line_token);
             }
         }
@@ -113,6 +111,7 @@ public class Controller {
         shape.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                // reduction of police size in the data's listview
                 lv_data.setStyle("-fx-font-size : 10");
                 if (Rectangle.class == shape.getClass()) {
                     Rectangle rectangle = (Rectangle) shape;
