@@ -192,8 +192,7 @@ public class ElementVisuel {
             public void handle(MouseEvent mouseEvent) {
                 oldX = mouseEvent.getX();
                 oldY = mouseEvent.getY();
-                // met a jour les informations du Node (rectangle) sur lequel on a cliqué
-                //infoNode(rectangle);
+                // update the position Node data (the clicked Node)
             }
         });
         rectangle.setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -201,12 +200,10 @@ public class ElementVisuel {
             public void handle(MouseEvent mouseEvent) {
                 rectangle.setLayoutX(rectangle.getLayoutX() + mouseEvent.getX() - oldX);
                 rectangle.setLayoutY(rectangle.getLayoutY() + mouseEvent.getY() - oldY);
-                //gestion du suivie des flechesarrivant et sortant de ce Node
-                gestionSuiviNode(rectangle,(mouseEvent.getX() - oldX),(mouseEvent.getY() - oldY));
             }
         });
     }
-    // a partir d'une rectangle, recuppere les information du Node puis les places dans l'affichage via fillData
+    //recovering of the Node's data and manage them into the GUI 
     private void infoNode(Rectangle rectangle) {
         Transaction transaction = matchTransaction(rectangle);
         Controller c = null;
@@ -225,17 +222,7 @@ public class ElementVisuel {
         }
         return null;
     }
-    //gere le suivi de l'integralite des fleche entrante et sortante du node en focntion du deplacement de ce Node
-    private void gestionSuiviNode(Rectangle rectangle, double distance_x,double distance_Y) {
-        // distance_x == valeurde translation sur l'axe des X
-        for (Shape shape : list_shape) {
-            if (shape.getClass() == Path.class) {
-                Path fleche = (Path) shape;
-            }
-        }
-
-    }
-    // cree une "fleche" entre un point s source et un point d destination
+    //create an arrow between two point ( source : s ; destination : d)
     private Path createFleche(String nom,double s_x,double s_y,double d_x,double d_y,Rectangle r_source,Rectangle r_dest, int cote, boolean boucle) {
         Path fleche = new Path();
         fleche.setAccessibleText(nom);
@@ -246,43 +233,31 @@ public class ElementVisuel {
         cct.xProperty().bind(r_dest.layoutXProperty().add(d_x));
         cct.yProperty().bind(r_dest.layoutYProperty().add(d_y));
         createCourbe(mt,cct,s_x,s_y,d_x,d_y,boucle,cote,nom);
-        //ajout de la courbe a la fleche
+        //addition of the arrow's curve
         fleche.getElements().add(mt);
         fleche.getElements().add(cct);
-        // on ajout le bout de la fleche
+        // addition of the arrow's apex 
+        // creation of a side of the arrow's apex
         createBoutFleche(fleche,r_dest, d_x, d_y, cote, true); // |\ <- oui c'est bien un bout de fleche
+        // creation of the other side
         createBoutFleche(fleche,r_dest, d_x, d_y, cote, false);// /| <- ici aussi  /| + |\ = /|\ en gros /\
         fleche.setStroke(Color.BLACK);
         fleche.setStrokeWidth(3);
         return fleche;
     }
-    // gere l'ajout des evenements d'une fleche
+    // manage the event actions of the arrow
     private void addHandlerFleche(Path fleche) {
         fleche.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                // on rend invisible tout les cercles de controles visible actuellement
+                // set invisible all of the control-circles
                 setInvisbleAllCircle();
-                // on affiche les cercles de controles de notre fleche uniquement
+                // addition of only the arrow's control-circles in the view
                 setVisibleCircleControleFleche(fleche);
-                // met a jour les informations de l'element visuel sur lequel on travail
-                //infoFleche(fleche);
             }
         });
     }
-    // a partir d'une path, recupere les informations de la fleche  puis les places dans l'affichage via fillData
-    private void infoFleche(Path fleche) {
-        Relation relation = matchRelation(fleche);
-        //lv_data.getItems().add(relation.nom);
-        Controller c = null;
-        try {
-            c = getControllerFenetre();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        c.fillData(relation);
-    }
-
+    
     private Controller getControllerFenetre() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Fenetre.fxml"));
         Parent calcRoot = loader.load();
