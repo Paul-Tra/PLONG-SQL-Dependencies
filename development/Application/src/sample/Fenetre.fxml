@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400" minWidth="600" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+    <top>
+        <MenuBar BorderPane.alignment="CENTER">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Close" />
+                        <MenuItem mnemonicParsing="false" onAction="#onOpenFile" text="Open File" />
+                        <MenuItem mnemonicParsing="false" text="Choose Repo" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Delete" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+    <center>
+        <AnchorPane prefHeight="354.0" prefWidth="402.0" BorderPane.alignment="CENTER">
+            <children>
+                <AnchorPane fx:id="anchorPane" layoutX="7.0" layoutY="8.0" prefHeight="342.0" prefWidth="418.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0" />
+            </children>
+        </AnchorPane>
+    </center>
+    <left>
+        <AnchorPane prefHeight="200.0" prefWidth="150.0" style="-fx-background-color: gray;" BorderPane.alignment="CENTER">
+            <children>
+                <Label fx:id="label1" style="-fx-background-color: lightblue;" text="no file selected" textAlignment="CENTER" textFill="#3b803a" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                <Button fx:id="button1" mnemonicParsing="false" onAction="#doParsing" text="Parsing" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="30.0" />
+            <Button fx:id="button_clear" layoutX="28.0" layoutY="70.0" mnemonicParsing="false" onAction="#doClear" text="Clear" />
+            <ListView fx:id="lv_data" accessibleText="kuedhcedhdchbj" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+            </children></AnchorPane>
+    </left>
+</BorderPane>

@@ -1,4 +1,0 @@
-			LISTES DEST IDEES D'EXTENSION POSSIBLE : 
-
-_ gestion de l'edition d'un fichier contenant des requetes
-_ faire des boutons "raccourcis" pour facilité l'écriture de requete

@@ -42,7 +42,6 @@ public class Controller {
             Parser parser = new Parser(this.label1.getText());
             //fill_listView(parser);
             fillPane(parser.list_relation, parser.list_transaction);
-          //  lv_data.getItems().add("pppppppppppppppppp");
         }
     }
 
@@ -63,28 +62,55 @@ public class Controller {
         }
         //fillPane(p.list_relation,p.list_transaction);
     }
-    // rempli la listView "d'informaton" a partir d'une transaction (lorsqu'on clique dessus)
+
+    // fill the data listView from a transaction (when we do a click )
     public void fillData(Transaction t) {
         consumer.accept("DANS Fill data transaction ");
         lv_data.getItems().clear();
         lv_data.getItems().add("id :");
         lv_data.getItems().add(t.id);
         lv_data.getItems().add("nom :");
-        lv_data.getItems().add(t.nom);
-
+        String printingName = t.nom;
+        //deletion of '\n'
+        printingName = printingName.replace("\n", "");
+        lv_data.getItems().add(printingName);
     }
 
-    // rempli la listView "d'informaton" a partir d'une relation (lorsqu'on clique dessus)
+    // fill the data listView from a relation (when we do a click )
     public void fillData(Relation r) {
+        ArrayList<String> printing_lines = manageName(r.nom);
+        // pas afficher les autres lignes
         lv_data.getItems().clear();
         lv_data.getItems().add("source :");
         lv_data.getItems().add(r.source);
         lv_data.getItems().add("desstination :");
         lv_data.getItems().add(r.destination);
         lv_data.getItems().add("nom :");
-        lv_data.getItems().add(r.nom);
+        for (String line : printing_lines) {
+            consumer.accept("line :"+line+"FIN");
+            lv_data.getItems().add(line);
+        }
+    }
+    // recovering the lines available to be print in the element description
+    public ArrayList<String>  manageName(String nom){
+        consumer.accept("in manageName");
+        ArrayList<String> printing_lines = new ArrayList<String>();
+        String[] line_tokens = nom.split("\n");
+        for (String line_token : line_tokens) {
+            boolean ww = line_token.contains("ww");
+            boolean wr = line_token.contains("wr");
+            boolean rw = line_token.contains("rw");
+            if (ww || wr || rw) {
+                // suppression of \n because we work per line
+                //line_token = line_token.replace("\n", "");
+                printing_lines.add(line_token);
+            }
+        }
+        return  printing_lines;
     }
 
+
+    // put the diferents views elements into the Pane
     private void fillPane(ArrayList<Relation> l_relation, ArrayList<Transaction> l_transaction) {
         ElementVisuel elementVisuel = new ElementVisuel(l_relation, l_transaction,anchorPane);
         for (Shape shape : elementVisuel.list_shape) {
