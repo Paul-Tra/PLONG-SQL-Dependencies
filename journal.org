@@ -1,3 +1,9 @@
+
+* <04/12/2019>
+  RDV Fablab
+  Parseur: problème d'interprétation des requêtes, à voir avec Gio
+  
+
 * <21/01/2020>
 ** Fait:
    - Un parseur avec de bug appramment pas tros difficiles à trouver
@@ -8,6 +14,7 @@
    - Ajouter dans README.md un manuel pour l'utilisateur
    - Chercher des applications en PgSQL et tester le parseur
 
+<<<<<<< HEAD
 * <28/01/2020>
 ** Fait:
    - Corrigé le bug dans le parseur
@@ -21,3 +28,16 @@
    - Chercher des applications en PgSQL et tester le parseur
    - Ameliorer la GUI (nottamment affichier le code qui cause les dependenace)
    
+>>>>>>> c2af30d33a014a194a425bea82e9e2249264828f
+* <04/02/2020>
+** DONE
+   bugs corrigés (parseur)
+   partie graphique
+   
+** TODO
+   - afficher les dépendances
+   - améliorer l'esthétique
+   - Chercher des applications en PgSQL et tester le parseur
+   - trouver un algo d'affichage du graphe
+   - README.md
+   =======
