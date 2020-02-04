@@ -202,7 +202,7 @@ class Parser:
                     #print("operateur : " + op[0])
                 else :
                     if ( res != "WHERE" ):
-                        print(res)
+                        #print(res)
                         # on s'interresse a ce cas là pour matcher quel attributs vont aller avec quelles tables / fonctions 
                         couple_table_attributs = res[0].split(".")
                         #print(couple_table_attributs)

@@ -22,18 +22,25 @@ class parser_ecriture:
         self.pkey = PrimaryKey("./fichiers/genDB.sql")
         self.pkey.lanceur()
         self.liste_param_fonction = []
-        self.cle_impacte_set = []
+        self.cle_impacte_set = {}
         # on va stocker les couples de dependance [ table : parametre de fonction ] on sait au préalable que la correspondance avec la / les clés primaire sont correctes
         self.couple_dependance = dict()
         
     def trouve_set(self):
-        m =re.findall("SET .*? =",self.data)
+        m =re.findall("UPDATE .*? SET .*? =",self.data)
         l = []
         for elt in m :
-            elt = elt.replace("SET ","").replace(" =","")
-            #print(elt)
-            l.append(elt)
-        self.cle_impacte_set=l
+            elt = elt.replace(" SET "," ").replace(" =","").replace("UPDATE ","")
+            print("elt " + str(elt))
+            table = elt.split(" ")[0]
+            attr = elt.split(" ")[1]
+            if ( table in self.cle_impacte_set.keys() ) :
+                a = self.cle_impacte_set[table]
+                a.append(attr)
+                self.cle_impacte_set[table] = a 
+            else:
+                self.cle_impacte_set[table] = [attr]
+        
         
     def trouve_update(self):
         data = " "
@@ -157,7 +164,7 @@ class parser_ecriture:
         for elt in self.liste_update :
             
             elt = elt.split("WHERE")[1]
-            print(elt)
+            #print(elt)
     
     def analyse_contenue(self):
         for elt in self.liste_update :

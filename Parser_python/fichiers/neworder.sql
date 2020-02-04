@@ -93,7 +93,7 @@ BEGIN
     INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, 
     quantity, amount, distInfo)
     VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, 
-    ol_quantity, ol_amount, ol_dist_info)
+    ol_quantity, ol_amount, ol_dist_info);
   END LOOP;
 END;
 

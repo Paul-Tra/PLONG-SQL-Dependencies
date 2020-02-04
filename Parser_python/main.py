@@ -36,11 +36,11 @@ class principal:
         print("\nLancement de l'analyse des attributs de Lecture :")
         for i in range(0,len(self.p)) :
             print("\n-----------" + self.p[i].name + " ---------------" )
-            print("Lecture : ")
+            #print("Lecture : ")
             self.p[i].lanceur()
             self.traite_cle_primaire_lecture()
             self.affiche_cle_primaire_lecture(i)
-            print("Ecriture : ")
+            #print("Ecriture : ")
             self.pw[i].lanceur()
             
             
@@ -62,9 +62,10 @@ class principal:
                     for clej,valj in self.pw[j].liste_attribut.items() :
                         if ( val.sort() == valj.sort() ):
                             if ( self.pw[i].name.split(".")[0] != self.pw[j].name.split(".")[0] ):
+                                a=1
                                 #if ( liste_dep_ww[self.pw[i].name.split(".")[0],self.pw[j].name.split(".")[0]] != None ) :
                                     
-                                print("ok : " + self.pw[i].name.split(".")[0] + " " + self.pw[j].name.split(".")[0] )
+                                #print("ok : " + self.pw[i].name.split(".")[0] + " " + self.pw[j].name.split(".")[0] )
                                     #liste_dep_ww[self.pw[i].name,self.pw[j].name] = val
                                     
 
@@ -109,10 +110,9 @@ class principal:
                 #print(self.pw[i].name + " :: ww;"+elt+"(*).*")
                 table = liste_table_touche_par_insert[j].split("(")[0].strip()
                 condi = self.pw[i].liste_condition
-                for a in self.pw[i].cle_impacte_set :
-                    l.append(str(self.pw[i].name + " ->  " + self.pw[i].name + " :: ww;"+table+"(*).* / " + str(condi[j])))
-                    
-                #print(condi[j])
+                l.append(str(self.pw[i].name + " ->  " + self.pw[i].name + " :: ww;"+table+"(*).* / " + str(condi[j])))
+                        
+                    #print(condi[j])
         for elt in l :
             if ( elt not in self.liste_dependance ) :
                 self.liste_dependance.append(elt)
@@ -154,9 +154,10 @@ class principal:
                         for cle in attr_w :
                             tmp = 0
                             if ( cle in attr_r and table_w == table_r) :
-                                for a in self.pw[ecriture].cle_impacte_set :
-                                    liste.append(str((self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr;"+table_w+"("+str(self.pk.couple[table_w])+"')."+a)))
-                                tmp = 1               
+                                if ( table_w in self.pw[ecriture].cle_impacte_set.keys() ) :
+                                    for a in self.pw[ecriture].cle_impacte_set[table_w] :
+                                        liste.append(str((self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr;"+table_w+"("+str(self.pk.couple[table_w])+"')."+a)))
+                                    tmp = 1               
                         if ( len(liste) == len(self.pk.couple[table_w])):
                             self.liste_dependance.append(str((self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr;"+table_w+"("+str(self.pk.couple[table_w])+"').*")))
                         else :
@@ -179,9 +180,10 @@ class principal:
                             tmp = 0
                             if ( cle in attr_w and table_w == table_r) :
                                 #print(self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr,"+table_w+"("+str(self.pk.couple[table_w])+"')."+cle)
-                                for a in self.pw[ecriture].cle_impacte_set :
-                                    liste.append(str((self.pw[lecture].name + " -> " + self.pw[ecriture].name + " :: rw;"+table_w+"("+str(self.pk.couple[table_w])+"')."+a)))
-                                tmp = 1               
+                                if ( table_w in self.pw[ecriture].cle_impacte_set.keys() ) :
+                                    for a in self.pw[ecriture].cle_impacte_set[table_w] :
+                                        liste.append(str((self.pw[lecture].name + " -> " + self.pw[ecriture].name + " :: rw;"+table_w+"("+str(self.pk.couple[table_w])+"')."+a)))
+                                    tmp = 1               
                         if ( len(liste) == len(self.pk.couple[table_r])):
                             #print(self.p[lecture].name + " -> " + self.p[ecriture].name + " :: rw,"+table_r+"("+str(self.pk.couple[table_r])+"').*") 
                             #print("Toute la table ajoutées")     
@@ -341,9 +343,85 @@ class principal:
         for cle,value in self.dep_sans_doublons.items():
             print("\nSource : " + cle[0] + " , Destination : " + cle[1] )
             value = list(set(value))
+            i=0
             for v in  value : 
-                print('\t'+v.replace("/ ",""))
+                print('\t' + str(i) + " :: "+v.replace("/ ",""))
+                i+=1
+                self.write_raison_dependances(v,cle[0],cle[1])
                 
+    def write_raison_dependances(self,v ,src,dst):
+        #print ( src ) 
+        src = src + ".sql"
+        dst = dst + ".sql"
+        #print( dst ) 
+        
+        if ( "wr;" in v ) :
+            t = re.findall(";.*?\(",v)
+            table = t[0].replace(";","").replace("(","")
+            tmp = re.findall("\)\..*",v)
+            #print(tmp)
+            attr = tmp[0].replace(").","")
+            t = ""
+            #print(table)
+            for elt in self.p :
+                #print(elt.name)
+                if ( elt.name == dst ):
+                    print("\t\tRaison de la dependance DST : "+dst+" : ")
+                    for c,val in elt.table_from.items():
+                        if ( table in val ):
+                            t = c
+                            
+                    if ( t != "" ):
+                        tmp = "FROM .*? "+table+".*?;"
+                        #print(tmp)
+                        m = re.findall(table+".*?;",elt.data)
+                        if ( m != [] ) :
+                            for li in m :
+                                print('\t\t'+li)
+        if ( "rw;" in v ) :
+            t = re.findall(";.*?\(",v)
+            table = t[0].replace(";","").replace("(","")
+            tmp = re.findall("\)\..*",v)
+            #print(tmp)
+            attr = tmp[0].replace(").","")
+            t = ""
+            #print(table)
+            for elt in self.pw :
+                if ( elt.name == src ):
+                    tmp = "UPDATE "+table+" SET " +attr
+                    m = re.findall(tmp+".*?;",elt.data)
+                    if ( m != [] ):
+                        print("\t\tRaison de la dependance SRC : "+src+" : ")
+                        for li in m :
+                            print('\t\t'+li)
+                if ( elt.name == dst ):
+                    tmp = "UPDATE "+table+" SET " +attr
+                    m = re.findall(tmp+".*?;",elt.data)
+                    if ( m != [] ):
+                        print("\t\tRaison de la dependance DST : "+dst+" : ")
+                        for li in m :
+                            print('\t\t'+li)
+                            
+        if ( "ww;" in v ) :
+            t = re.findall(";.*?\(",v)
+            table = t[0].replace(";","").replace("(","")
+            #print(table)
+            for elt in self.pw :
+                if ( elt.name == src and src == dst):
+                    tmp = "INSERT INTO "+table
+                    #print(tmp)
+                    m = re.findall(tmp+".*?;",elt.data)
+                    if ( m != [] ):
+                        print("\t\tRaison de la dependance SRC : "+src+" : ")
+                        for li in m :
+                            print('\t\t'+li)
+                
+                
+        else :  
+            type = 'relation'
+            # du type table.attr = table.attr
+            
+            
         
     def lanceur_f(self):
         self.lanceur()
@@ -364,6 +442,7 @@ class principal:
         self.genere_condition_dep()
         self.affiche_lise_sans_doublon()
         self.genere_graphml_sans_doublons()
+        
         
 if __name__ == "__main__":
     main = principal()
