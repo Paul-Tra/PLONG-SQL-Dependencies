@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -24,7 +25,7 @@ import java.util.function.Consumer;
 import static sample.Controller.*;
 
 public class ElementVisuel {
-    // 0_BAS , 1_GAUCHE , 2_HAUT , 3_DROITE
+    // 0_BOTTOM , 1_LEFT , 2_TOP , 3_RIGHT
     private final double DEFAULT_DISTANCE_BOUCLE = 30;
     private static final int BAS = 0;
     private static final int  GAUCHE = 1;
@@ -38,6 +39,7 @@ public class ElementVisuel {
     private final double ANGLE_FLECHE = 45; // angle d'un cote du bout de la fleche par rapport au noeud d'arrivee
     private final double COEFFICIENT_CONTROLE = 0.3;// coefficent de longueur/hauteur pour placer les points de controles
     private Pane pane; // panneau auquel l'element visuel est asssocié
+    private Group group;
     private Consumer<String> consumer = e -> System.out.println(e);
     ArrayList<Shape> list_shape; // listes des elements a inserer dans la vue
     ArrayList<Transaction> list_transaction;
@@ -46,6 +48,14 @@ public class ElementVisuel {
     public ElementVisuel(ArrayList<Relation> l_relation, ArrayList<Transaction> l_transaction, Pane p) {
         list_shape = new ArrayList<>();
         pane = p;
+        list_relation = l_relation;
+        list_transaction = l_transaction;
+        createShape(l_relation,l_transaction);
+    }
+    public ElementVisuel(ArrayList<Relation> l_relation, ArrayList<Transaction> l_transaction,Pane p, Group g) {
+        list_shape = new ArrayList<>();
+        pane = p;
+        group = g;
         list_relation = l_relation;
         list_transaction = l_transaction;
         createShape(l_relation,l_transaction);
@@ -61,7 +71,7 @@ public class ElementVisuel {
                 text.setY(r.getY());
                 text.setLayoutX(r.getLayoutX());
                 text.setLayoutY(r.getLayoutY());
-                // on "colle" le text avec le rectangle
+		// wee bind the text to the rectangle
                 text.layoutXProperty().bind(r.layoutXProperty().add(DEFAULT_MARGE_X_NOM_NODE));
                 text.layoutYProperty().bind(r.layoutYProperty().add((DEFAULT_MARGE_Y_NOM_NODE/2)+text.getLayoutBounds().getHeight()));
                 addHandlerRectangle(r);
@@ -69,11 +79,10 @@ public class ElementVisuel {
                 list_shape.add(r);
             }
         }else{
-            consumer.accept("liste de translation null");
+            consumer.accept("transaction's list null");
         }
         if (l_relation != null) {
             for (Relation relation : l_relation) {
-                // TODO : faire les ligne avec des fleche
                 String source = relation.source;
                 String destination = relation.destination;
                 Rectangle r_source = matchRectangleById(source);
@@ -82,35 +91,32 @@ public class ElementVisuel {
                     consumer.accept("source ou destination null");
                     continue;
                 }
-                consumer.accept("depart coord x,y" + r_source.getX() + ";" + r_source.getY());
-                consumer.accept("depart layout x,y" + r_source.getLayoutX() + ";" + r_source.getLayoutY());
                 int cote_arrivee;
                 double tab_coord_arrivee[];
                 double tab_coord_depart[];
                 Path fleche;
-                if (r_source.getAccessibleText().equals(r_dest.getAccessibleText())) {// si la relation s'effectue sur une seule et meme transaction (Node)
-                    consumer.accept("mon text"+r_source.getAccessibleText());
+                if (r_source.getAccessibleText().equals(r_dest.getAccessibleText())) {
+//if the relation draw a loop from the same  transaction (node)
                     cote_arrivee = new Random().nextInt(NB_COTE);
                     tab_coord_depart = getCoordPointFleche(r_source, cote_arrivee, true, true);
                     tab_coord_arrivee = getCoordPointFleche(r_dest, cote_arrivee, true, false);
                     fleche = createFleche(relation.nom, tab_coord_depart[0], tab_coord_depart[1], tab_coord_arrivee[0], tab_coord_arrivee[1], r_source, r_dest, cote_arrivee, true);
                 } else {
                     cote_arrivee = getCoteNodeArrivee(r_source, r_dest);
-                    consumer.accept("cote depart : (cote_arrivee + 2) % 4 ,("+cote_arrivee+") =" + (cote_arrivee + 2) % 4);
                     tab_coord_depart = getCoordPointFleche(r_source, (cote_arrivee + 2) % 4, false, false);
                     tab_coord_arrivee = getCoordPointFleche(r_dest, cote_arrivee, false, false);
                     fleche = createFleche(relation.nom, tab_coord_depart[0], tab_coord_depart[1], tab_coord_arrivee[0], tab_coord_arrivee[1], r_source, r_dest, cote_arrivee,false);
                 }
-                // ajout des deux circle de controle de la fleche avant (dans la focntion createFleche)
+// addition to the Arrow two control circles
                 list_shape.add(fleche);
                 addHandlerFleche(fleche);
             }
         }else{
-            consumer.accept("liste de relation null");
+            consumer.accept("relation's list null");
         }
     }
 
-    // renvoie les coordonnée de depart/arrivée d'une fleche sur un Node
+// get the departure/arrival coord of an arrow on a Node
     private double[] getCoordPointFleche(Rectangle r, int cote, boolean boucle, boolean depart) {
         double rand = 0;
         if (!boucle) {
@@ -180,9 +186,7 @@ public class ElementVisuel {
         r.setStrokeWidth(2);
         r.setX(calculeCoordNode(true));
         r.setY(calculeCoordNode(false));
-        consumer.accept(text.getText());
         r.setAccessibleText(text.getText());
-        //addHandlerRectangle(r);
         return r;
     }
     private double calculeCoordNode(boolean x) {
@@ -198,8 +202,7 @@ public class ElementVisuel {
             public void handle(MouseEvent mouseEvent) {
                 oldX = mouseEvent.getX();
                 oldY = mouseEvent.getY();
-                // met a jour les informations du Node (rectangle) sur lequel on a cliqué
-                //infoNode(rectangle);
+                // update the position Node data (the clicked Node)
             }
         });
         rectangle.setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -207,12 +210,10 @@ public class ElementVisuel {
             public void handle(MouseEvent mouseEvent) {
                 rectangle.setLayoutX(rectangle.getLayoutX() + mouseEvent.getX() - oldX);
                 rectangle.setLayoutY(rectangle.getLayoutY() + mouseEvent.getY() - oldY);
-                //gestion du suivie des flechesarrivant et sortant de ce Node
-                gestionSuiviNode(rectangle,(mouseEvent.getX() - oldX),(mouseEvent.getY() - oldY));
             }
         });
     }
-    // a partir d'une rectangle, recuppere les information du Node puis les places dans l'affichage via fillData
+    //recovering of the Node's data and manage them into the GUI 
     private void infoNode(Rectangle rectangle) {
         Transaction transaction = matchTransaction(rectangle);
         Controller c = null;
@@ -231,17 +232,7 @@ public class ElementVisuel {
         }
         return null;
     }
-    //gere le suivi de l'integralite des fleche entrante et sortante du node en focntion du deplacement de ce Node
-    private void gestionSuiviNode(Rectangle rectangle, double distance_x,double distance_Y) {
-        // distance_x == valeurde translation sur l'axe des X
-        for (Shape shape : list_shape) {
-            if (shape.getClass() == Path.class) {
-                Path fleche = (Path) shape;
-            }
-        }
-
-    }
-    // cree une "fleche" entre un point s source et un point d destination
+    //create an arrow between two point ( source : s ; destination : d)
     private Path createFleche(String nom,double s_x,double s_y,double d_x,double d_y,Rectangle r_source,Rectangle r_dest, int cote, boolean boucle) {
         Path fleche = new Path();
         fleche.setAccessibleText(nom);
@@ -252,43 +243,31 @@ public class ElementVisuel {
         cct.xProperty().bind(r_dest.layoutXProperty().add(d_x));
         cct.yProperty().bind(r_dest.layoutYProperty().add(d_y));
         createCourbe(mt,cct,s_x,s_y,d_x,d_y,boucle,cote,nom);
-        //ajout de la courbe a la fleche
+        //addition of the arrow's curve
         fleche.getElements().add(mt);
         fleche.getElements().add(cct);
-        // on ajout le bout de la fleche
+        // addition of the arrow's apex 
+        // creation of a side of the arrow's apex
         createBoutFleche(fleche,r_dest, d_x, d_y, cote, true); // |\ <- oui c'est bien un bout de fleche
+        // creation of the other side
         createBoutFleche(fleche,r_dest, d_x, d_y, cote, false);// /| <- ici aussi  /| + |\ = /|\ en gros /\
         fleche.setStroke(Color.BLACK);
         fleche.setStrokeWidth(3);
         return fleche;
     }
-    // gere l'ajout des evenements d'une fleche
+    // manage the event actions of the arrow
     private void addHandlerFleche(Path fleche) {
         fleche.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                // on rend invisible tout les cercles de controles visible actuellement
+                // set invisible all of the control-circles
                 setInvisbleAllCircle();
-                // on affiche les cercles de controles de notre fleche uniquement
+                // addition of only the arrow's control-circles in the view
                 setVisibleCircleControleFleche(fleche);
-                // met a jour les informations de l'element visuel sur lequel on travail
-                //infoFleche(fleche);
             }
         });
     }
-    // a partir d'une path, recupere les informations de la fleche  puis les places dans l'affichage via fillData
-    private void infoFleche(Path fleche) {
-        Relation relation = matchRelation(fleche);
-        //lv_data.getItems().add(relation.nom);
-        Controller c = null;
-        try {
-            c = getControllerFenetre();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        c.fillData(relation);
-    }
-
+    
     private Controller getControllerFenetre() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Fenetre.fxml"));
         Parent calcRoot = loader.load();
@@ -303,20 +282,18 @@ public class ElementVisuel {
         }
         return null;
     }
-
-    // rend les cercles de cotroles d'une fleche visible
+    // set the 2 arrow's control-circles visible  
     private void setVisibleCircleControleFleche(Path fleche) {
-        consumer.accept("dans setVisibleCIRCLEcONTROLEfLECHE");
         int cpt=0;
         for (int i = 0; i < list_shape.size(); i++) {
-            if (cpt >= 2) {
-                consumer.accept("cpt == 2");
+            if (cpt >= 2) { 
+            // if we have found our 2 circles
                 return;
             }
             if (list_shape.get(i).getClass() == Circle.class) { // si c'est un cercle
                 Circle c = (Circle) list_shape.get(i);
                 if (c.getAccessibleText().equals(fleche.getAccessibleText())) {
-                    consumer.accept("c.text = fleche.text :"+c.getAccessibleText());
+                    // match between c.text and fleche.text
                     cpt++;
                     if (!c.isVisible()) {
                         c.setVisible(true);
@@ -335,9 +312,10 @@ public class ElementVisuel {
             }
         }
     }
-    // s'occupe de creer le bout de la fleche au niveau du point de destination
+    // takes care of the creation of the arrow's apex from the destination point
     private void createBoutFleche(Path p,Rectangle r_dest, double d_x, double d_y, int cote,boolean premier) {
-        if (cote < 0 || cote >= 4) {// 0_BAS , 1_GAUCHE , 2_HAUT , 3_DROITE
+        if (cote < 0 || cote >= 4) {
+        // 0_BOTTOM , 1_LEFT , 2_TOP , 3_RIGHT
             return;
         }
         double angle = ANGLE_FLECHE + (90 * cote);

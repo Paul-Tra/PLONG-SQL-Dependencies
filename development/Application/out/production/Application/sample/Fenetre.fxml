@@ -28,11 +28,10 @@
         </MenuBar>
     </top>
     <center>
-        <AnchorPane prefHeight="354.0" prefWidth="402.0" BorderPane.alignment="CENTER">
-            <children>
-                <AnchorPane fx:id="anchorPane" layoutX="7.0" layoutY="8.0" prefHeight="342.0" prefWidth="418.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0" />
-            </children>
-        </AnchorPane>
+        <AnchorPane fx:id="anchorPane" minHeight="-Infinity" minWidth="-Infinity" onScroll="#doZoom" prefHeight="371.0" prefWidth="450.0" style="-fx-background-color: LIGHTGRAY;" BorderPane.alignment="CENTER">
+         <children>
+            <AnchorPane fx:id="anchorPane2" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children></AnchorPane>
     </center>
     <left>
         <AnchorPane prefHeight="200.0" prefWidth="150.0" style="-fx-background-color: gray;" BorderPane.alignment="CENTER">
@@ -40,7 +39,7 @@
                 <Label fx:id="label1" style="-fx-background-color: lightblue;" text="no file selected" textAlignment="CENTER" textFill="#3b803a" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                 <Button fx:id="button1" mnemonicParsing="false" onAction="#doParsing" text="Parsing" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="30.0" />
             <Button fx:id="button_clear" layoutX="28.0" layoutY="70.0" mnemonicParsing="false" onAction="#doClear" text="Clear" />
-            <ListView fx:id="lv_data" accessibleText="kuedhcedhdchbj" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+            <ListView fx:id="lv_data" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
             </children></AnchorPane>
     </left>
 </BorderPane>

@@ -28,7 +28,10 @@
         </MenuBar>
     </top>
     <center>
-        <AnchorPane fx:id="anchorPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="371.0" prefWidth="450.0" style="-fx-background-color: LIGHTGRAY;" BorderPane.alignment="CENTER" />
+        <AnchorPane fx:id="anchorPane" minHeight="-Infinity" minWidth="-Infinity" onScroll="#doZoom" prefHeight="371.0" prefWidth="450.0" style="-fx-background-color: LIGHTGRAY;" BorderPane.alignment="CENTER">
+         <children>
+            <AnchorPane fx:id="anchorPane2" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children></AnchorPane>
     </center>
     <left>
         <AnchorPane prefHeight="200.0" prefWidth="150.0" style="-fx-background-color: gray;" BorderPane.alignment="CENTER">

@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -38,6 +39,7 @@ public class ElementVisuel {
     private final double ANGLE_FLECHE = 45; // angle d'un cote du bout de la fleche par rapport au noeud d'arrivee
     private final double COEFFICIENT_CONTROLE = 0.3;// coefficent de longueur/hauteur pour placer les points de controles
     private Pane pane; // panneau auquel l'element visuel est asssocié
+    private Group group;
     private Consumer<String> consumer = e -> System.out.println(e);
     ArrayList<Shape> list_shape; // listes des elements a inserer dans la vue
     ArrayList<Transaction> list_transaction;
@@ -46,6 +48,14 @@ public class ElementVisuel {
     public ElementVisuel(ArrayList<Relation> l_relation, ArrayList<Transaction> l_transaction, Pane p) {
         list_shape = new ArrayList<>();
         pane = p;
+        list_relation = l_relation;
+        list_transaction = l_transaction;
+        createShape(l_relation,l_transaction);
+    }
+    public ElementVisuel(ArrayList<Relation> l_relation, ArrayList<Transaction> l_transaction,Pane p, Group g) {
+        list_shape = new ArrayList<>();
+        pane = p;
+        group = g;
         list_relation = l_relation;
         list_transaction = l_transaction;
         createShape(l_relation,l_transaction);

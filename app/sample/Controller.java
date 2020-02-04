@@ -4,9 +4,11 @@ import com.sun.jdi.StringReference;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -35,6 +37,21 @@ public class Controller {
     @FXML
     private StackPane stackPane;
     @FXML private AnchorPane anchorPane;
+    @FXML private AnchorPane anchorPane2;
+    @FXML void doZoom(ScrollEvent event){
+        double SCALE_DELTA = 1.1;
+        if (event.getDeltaY() == 0) {
+            return;
+        }
+
+        double scaleFactor
+                = (event.getDeltaY() > 0)
+                ? SCALE_DELTA
+                : 1 / SCALE_DELTA;
+
+        anchorPane2.setScaleX(anchorPane2.getScaleX() * scaleFactor);
+        anchorPane2.setScaleY(anchorPane2.getScaleY() * scaleFactor);
+    }
     @FXML
     private void doParsing(ActionEvent actionEvent) {
         if (!this.label1.getText().equals("")) {
@@ -45,7 +62,7 @@ public class Controller {
 
     @FXML
     private void doClear(ActionEvent actionEvent) { // netoyage de la vue (effacement du grpahe)
-        anchorPane.getChildren().clear();
+        anchorPane2.getChildren().clear();
     }
 
     private void fill_listView(Parser p) {
@@ -100,9 +117,10 @@ public class Controller {
 
     // put the diferents views elements into the Pane
     private void fillPane(ArrayList<Relation> l_relation, ArrayList<Transaction> l_transaction) {
-        ElementVisuel elementVisuel = new ElementVisuel(l_relation, l_transaction,anchorPane);
+        ElementVisuel elementVisuel = new ElementVisuel(l_relation, l_transaction,anchorPane2);
         for (Shape shape : elementVisuel.list_shape) {
-            anchorPane.getChildren().add(shape);
+            anchorPane2.getChildren().add(shape);
+            //anchorPane.getChildren().add(shape);
             addHandlerShape(shape,elementVisuel);
         }
     }

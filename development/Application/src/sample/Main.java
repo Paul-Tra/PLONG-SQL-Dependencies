@@ -17,7 +17,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
         Parent root = FXMLLoader.load(getClass().getResource("Fenetre.fxml"));
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("Graph User Interface");
         primaryStage.setScene(new Scene(root, 600, 400));
         primaryStage.show();
     }

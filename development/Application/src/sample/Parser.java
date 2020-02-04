@@ -54,7 +54,6 @@ public class Parser {
             String source = e.getAttribute("source");
             String destination = e.getAttribute("target");
             String nom = e.getElementsByTagName("data").item(0).getTextContent();
-            consumer.accept("nom de la relation : "+nom);
             if (!estContenue(source,destination,nom )) {
                 Relation r = new Relation(source, destination, nom);
                 list_relation.add(r);
