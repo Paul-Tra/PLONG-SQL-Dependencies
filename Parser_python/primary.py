@@ -1,3 +1,5 @@
+import re
+
 class PrimaryKey :
     def __init__(self , nom_fichier ):
         self.file = nom_fichier
@@ -107,6 +109,6 @@ class PrimaryKey :
         self.affiche_couple()
     
 if __name__ == "__main__":
-    pk = PrimaryKey("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/genDB.sql")
+    pk = PrimaryKey("./fichiers/genDB.sql")
     pk.lanceur()
    

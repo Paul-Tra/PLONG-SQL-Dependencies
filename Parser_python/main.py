@@ -1,18 +1,23 @@
 import os
+from primary import *
+from parser import *
+from parser_ecriture import *
+from dependance import *
 
 class principal:
     def __init__(self):
-        self.pk = PrimaryKey("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/genDB.sql")
+        self.pk = PrimaryKey("./fichiers/genDB.sql")
         self.p = []
         self.pw = []
-        self.l = os.listdir("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/")
+        self.l = os.listdir("./fichiers/")
         #print("Liste des fichier d'entrée : ")
         #print(l)
         for elt in self.l :
-            p = Parser("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/"+elt)
-            pw = parser_ecriture("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/"+elt)
-            self.p.append(p)
-            self.pw.append(pw)
+            if ( elt != "genDB.sql" ):
+                p = Parser("./fichiers/"+elt)
+                pw = parser_ecriture("./fichiers/"+elt)
+                self.p.append(p)
+                self.pw.append(pw)
         #print("taille :: " + str(len(self.p)) )
         #Parser("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/fichiers/orderstatus.sql")
         self.liste_file = []
@@ -97,17 +102,23 @@ class principal:
         #print("**************** Création des dépendances WW  ****************")
         #print("**************************************************************")
         liste_tmp = []
+        l =[]
         for i in range ( 0 , len(self.pw)) :
             liste_table_touche_par_insert = self.pw[i].liste_table_insert
             for j in range(0,len(liste_table_touche_par_insert)):
                 #print(self.pw[i].name + " :: ww;"+elt+"(*).*")
                 table = liste_table_touche_par_insert[j].split("(")[0].strip()
                 condi = self.pw[i].liste_condition
+                for a in self.pw[i].cle_impacte_set :
+                    l.append(str(self.pw[i].name + " ->  " + self.pw[i].name + " :: ww;"+table+"(*).* / " + str(condi[j])))
+                    
                 #print(condi[j])
-                self.liste_dependance.append(str(self.pw[i].name + " ->  " + self.pw[i].name + " :: ww;"+table+"(*).* / " + str(condi[j])))
-
+        for elt in l :
+            if ( elt not in self.liste_dependance ) :
+                self.liste_dependance.append(elt)
                     
     def maj_dep_wr_rw_en_ww(self):
+        l = []
         for elt in self.liste_dependance :
             fin = elt.split(" :: ")[1]
             src = elt.split("->")[0].strip()
@@ -122,7 +133,12 @@ class principal:
                     self.liste_dependance.remove(str(dst + " -> " + src + " :: "+fin2))
                     
                 fin = fin.replace("wr","ww")
-                self.liste_dependance.append(str(src + " -> " + dst + " :: "+fin ) )
+                l.append(str(src + " -> " + dst + " :: "+fin ))
+        for elt in l :
+            if ( elt not in self.liste_dependance ) :
+                self.liste_dependance.append(elt)
+                    
+                    
         #print(".................................................3")
         
     def create_dependance_wr(self):
@@ -138,17 +154,16 @@ class principal:
                         for cle in attr_w :
                             tmp = 0
                             if ( cle in attr_r and table_w == table_r) :
-                                #print(self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr,"+table_w+"("+str(self.pk.couple[table_w])+"')."+cle)
-                                liste.append(str((self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr;"+table_w+"("+str(self.pk.couple[table_w])+"')."+cle)))
+                                for a in self.pw[ecriture].cle_impacte_set :
+                                    liste.append(str((self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr;"+table_w+"("+str(self.pk.couple[table_w])+"')."+a)))
                                 tmp = 1               
                         if ( len(liste) == len(self.pk.couple[table_w])):
-                            #print(self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr,"+table_w+"("+str(self.pk.couple[table_w])+"').*") 
-                            #print("Toute la table ajoutées")     
                             self.liste_dependance.append(str((self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr;"+table_w+"("+str(self.pk.couple[table_w])+"').*")))
                         else :
                             #print("cas autre :: " + str(len(liste)))
                             for elt in liste:
-                                self.liste_dependance.append(elt)
+                                if ( elt not in self.liste_dependance ) :
+                                    self.liste_dependance.append(elt)
                                 
     def create_dependance_rw(self):
         #print("**************************************************************")
@@ -164,7 +179,8 @@ class principal:
                             tmp = 0
                             if ( cle in attr_w and table_w == table_r) :
                                 #print(self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr,"+table_w+"("+str(self.pk.couple[table_w])+"')."+cle)
-                                liste.append(str((self.p[lecture].name + " -> " + self.p[ecriture].name + " :: rw;"+table_r+"("+str(self.pk.couple[table_r])+"')."+cle)))
+                                for a in self.pw[ecriture].cle_impacte_set :
+                                    liste.append(str((self.pw[lecture].name + " -> " + self.pw[ecriture].name + " :: rw;"+table_w+"("+str(self.pk.couple[table_w])+"')."+a)))
                                 tmp = 1               
                         if ( len(liste) == len(self.pk.couple[table_r])):
                             #print(self.p[lecture].name + " -> " + self.p[ecriture].name + " :: rw,"+table_r+"("+str(self.pk.couple[table_r])+"').*") 
@@ -173,7 +189,8 @@ class principal:
                         else :
                             #print("cas autre :: " + str(len(liste)))
                             for elt in liste:
-                                self.liste_dependance.append(elt)
+                                if ( elt not in self.liste_dependance ) :
+                                    self.liste_dependance.append(elt)
                                 
         
         
@@ -237,7 +254,6 @@ class principal:
             
             
     def genere_condition_dep(self):
-        print("\n")
         for src in self.p :
             for dst in self.pw : 
                 source = src.name.split(".")[0]
@@ -245,15 +261,14 @@ class principal:
                 #print("----------"+name +"-------------")
                 for a1,b1 in src.couple_dependance.items():
                     for  a2,b2 in dst.couple_dependance.items():
-                        for el in b1 :
-                            for e in b2 :
+                        for el in b2 :
+                            for e in b1 :
                                 if ( el == e and (source,target) in self.dep_sans_doublons.keys()):
-                                    #print("a1 = " + a1 )
-                                    #print("a2 = " + a2 )
                                     el = el.replace(" : " , ":")
                                     e =e.replace(" : ",":")
-                                    if ( ["Param src : " + a1 + " =  Param dst " + a2 ] not in self.dep_sans_doublons[source,target] ) :
-                                        self.dep_sans_doublons[source,target] = self.dep_sans_doublons[source,target] + ["RW Param src : ("+ el + ") " + a1 + " =  Param dst (" + e +") " +  a2 ]
+                                    #print("src : " + source + ' , ' + e + " // dst : " + target + " , " + el )
+                                    #if ( str(source + "." + a1 + " = " + target +"." +  a2) not in self.dep_sans_doublons[source,target] ) :
+                                    self.dep_sans_doublons[source,target] = self.dep_sans_doublons[source,target] + [ source + "." + a1 + " = " + target +"." +  a2 ]
                                     
         for src in self.pw :
             for dst in self.p : 
@@ -265,14 +280,12 @@ class principal:
                         for el in b1 :
                             for e in b2 :
                                 if ( el == e and (source,target) in self.dep_sans_doublons.keys()):
-                                    #print("a1 = " + a1 )
-                                    #print("a2 = " + a2 )
                                     el = el.replace(" : " , ":")
                                     e =e.replace(" : ",":")
-                                    if ( ["Param src : " + a1 + " =  Param dst " + a2 ] not in self.dep_sans_doublons[source,target] ) :
-                                        self.dep_sans_doublons[source,target] = self.dep_sans_doublons[source,target] + ["WR Param src : ("+ el + ") " + a1 + " =  Param dst (" + e +") " +  a2 ]
+                                    #if ( str(source + "." + a1 + " = " + target +"." +  a2) not in self.dep_sans_doublons[source,target] ) :
+                                    self.dep_sans_doublons[source,target] = self.dep_sans_doublons[source,target] + [ source + "." + a1 + " = " + target +"." +  a2 ]
     def generer_graphml(self):
-        with open(os.getcwd()+"/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/graph.graphml", "w") as fichier:
+        with open(os.getcwd()+"/graph.graphml", "w") as fichier:
             fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
             fichier.write('\t<key id="d0" for="node" attr.name="weight" attr.type="string"/>\n')
@@ -296,7 +309,7 @@ class principal:
         self.fichier = fichier
     
     def genere_graphml_sans_doublons(self):
-        with open(os.getcwd()+"/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python/graph.graphml", "w") as fichier:
+        with open(os.getcwd()+"/graph.graphml", "w") as fichier:
             fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
             fichier.write('\t<key id="d0" for="node" attr.name="weight" attr.type="string"/>\n')
@@ -310,8 +323,14 @@ class principal:
                 fichier.write('\n<edge source="'+cle[0]+'" target="'+cle[1]+'">\n')
                 fichier.write('<data key="d1">\n')
                 # on traite ensuite toutes les dependances une a une 
+                l = []
                 for v in value :
-                    fichier.write(v+'\n')
+                    if ( v not in l ) :
+                        l.append(v)
+                    
+                for elt in l :
+                    fichier.write(elt+'\n')
+                
                 
                 fichier.write('\n\n</data>\n</edge>')    
             fichier.write("</graph>\n\t</graphml>")

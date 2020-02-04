@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION neworder (w_Id INTEGER,d_id INTEGER,
+CREATE OR REPLACE FUNCTION neworder (w_id INTEGER,d_id INTEGER,
 c_Id INTEGER, ol_cnt NUMERIC(2), ol_i_id INTEGER, ol_supply_w_id,
 ol_quantity NUMERIC(2))
 
@@ -52,8 +52,8 @@ BEGIN
 
     SELECT I.price, I.name, I.data
     INTO i_price, i_name, i_data
-    FROM ITEM
-    WHERE ITEM.iId = ol_i_id;
+    FROM ITEM I
+    WHERE I.iId = ol_i_id;
 
     price[ol_number] := i_price;
     iname[ol_number] := i_name;
