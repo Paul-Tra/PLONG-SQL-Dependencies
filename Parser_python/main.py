@@ -372,12 +372,25 @@ class principal:
                             t = c
                             
                     if ( t != "" ):
-                        tmp = "FROM .*? "+table+".*?;"
+                        tmp = "SELECT .*? FROM .*? "+table+".*?;"
                         #print(tmp)
-                        m = re.findall(table+".*?;",elt.data)
+                        m = re.findall("SELECT.*?FROM.*?"+table+".*?;",elt.data)
                         if ( m != [] ) :
                             for li in m :
-                                print('\t\t'+li)
+                                l = li.split(";")
+                                for e in l :
+                                    if ( "SELECT" in e ):
+                                        print('\t\t\t'+e)
+            for elt in self.pw :
+                if ( elt.name == src ):
+                    tmp = "UPDATE "+table+" SET " +attr
+                    m = re.findall(tmp+".*?;",elt.data)
+                    if ( m != [] ):
+                        print("\t\tRaison de la dependance SRC : "+src+" : ")
+                        for li in m :
+                            print('\t\t\t'+li)
+                
+                            
         if ( "rw;" in v ) :
             t = re.findall(";.*?\(",v)
             table = t[0].replace(";","").replace("(","")
@@ -387,21 +400,33 @@ class principal:
             t = ""
             #print(table)
             for elt in self.pw :
-                if ( elt.name == src ):
-                    tmp = "UPDATE "+table+" SET " +attr
-                    m = re.findall(tmp+".*?;",elt.data)
-                    if ( m != [] ):
-                        print("\t\tRaison de la dependance SRC : "+src+" : ")
-                        for li in m :
-                            print('\t\t'+li)
                 if ( elt.name == dst ):
                     tmp = "UPDATE "+table+" SET " +attr
                     m = re.findall(tmp+".*?;",elt.data)
                     if ( m != [] ):
                         print("\t\tRaison de la dependance DST : "+dst+" : ")
                         for li in m :
-                            print('\t\t'+li)
+                            print('\t\t\t'+li)
                             
+            for elt in self.p :
+                #print(elt.name)
+                if ( elt.name == src ):
+                    print("\t\tRaison de la dependance SRC : "+src+" : ")
+                    for c,val in elt.table_from.items():
+                        if ( table in val ):
+                            t = c
+                            
+                    if ( t != "" ):
+                        tmp = "SELECT .*? FROM .*? "+table+".*?;"
+                        #print(tmp)
+                        m = re.findall("SELECT.*?FROM.*?"+table+".*?;",elt.data)
+                        if ( m != [] ) :
+                            for li in m :
+                                l = li.split(";")
+                                for e in l :
+                                    if ( "SELECT" in e ):
+                                        print('\t\t\t'+e)
+                                
         if ( "ww;" in v ) :
             t = re.findall(";.*?\(",v)
             table = t[0].replace(";","").replace("(","")
@@ -414,7 +439,7 @@ class principal:
                     if ( m != [] ):
                         print("\t\tRaison de la dependance SRC : "+src+" : ")
                         for li in m :
-                            print('\t\t'+li)
+                            print('\t\t\t'+li)
                 
                 
         else :  
