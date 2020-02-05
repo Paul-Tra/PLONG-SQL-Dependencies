@@ -19,7 +19,8 @@ class parser_ecriture:
         self.liste_attribut = dict()
         self.liste_condition = []
         self.data = ""
-        self.pkey = PrimaryKey("./fichiers/genDB.sql")
+        #self.pkey = PrimaryKey("./fichiers/genDB.sql")
+        self.pkey = PrimaryKey("./fichier_test/genDB.sql") # pour nos test
         self.pkey.lanceur()
         self.liste_param_fonction = []
         self.cle_impacte_set = {}

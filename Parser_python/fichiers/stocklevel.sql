@@ -1,4 +1,4 @@
-tCREATE OR REPLACE FUNCTION stocklevel(w_id INTEGER,d_id INTEGER,threshold) {
+CREATE OR REPLACE FUNCTION stocklevel(w_id INTEGER,d_id INTEGER,threshold) {
 RETURNS INTEGER AS $$
 
 DECLARE

@@ -6,16 +6,23 @@ from dependance import *
 
 class principal:
     def __init__(self):
-        self.pk = PrimaryKey("./fichiers/genDB.sql")
+        ### Nous avons changé le rep. pour verifier que notre algo est correct , en se basant sur l'exemple fournie dans l'enoncé ###
+        #self.pk = PrimaryKey("./fichiers/genDB.sql")
+        self.pk = PrimaryKey("./fichier_test/genDB.sql") # pour nos test
         self.p = []
         self.pw = []
-        self.l = os.listdir("./fichiers/")
+        #self.l = os.listdir("./fichiers/")
+        self.l = os.listdir("./fichier_test/") # pour nos test
         #print("Liste des fichier d'entrée : ")
         #print(l)
         for elt in self.l :
             if ( elt != "genDB.sql" ):
-                p = Parser("./fichiers/"+elt)
-                pw = parser_ecriture("./fichiers/"+elt)
+                #p = Parser("./fichiers/"+elt)
+                #pw = parser_ecriture("./fichiers/"+elt)
+                
+                p = Parser("./fichier_test/"+elt)# pour nos test
+                pw = parser_ecriture("./fichier_test/"+elt)# pour nos test
+                
                 self.p.append(p)
                 self.pw.append(pw)
         #print("taille :: " + str(len(self.p)) )
@@ -156,15 +163,18 @@ class principal:
                             if ( cle in attr_r and table_w == table_r) :
                                 if ( table_w in self.pw[ecriture].cle_impacte_set.keys() ) :
                                     for a in self.pw[ecriture].cle_impacte_set[table_w] :
+                                        print("aaaaa " + a )
                                         liste.append(str((self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr;"+table_w+"("+str(self.pk.couple[table_w])+"')."+a)))
-                                    tmp = 1               
-                        if ( len(liste) == len(self.pk.couple[table_w])):
-                            self.liste_dependance.append(str((self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr;"+table_w+"("+str(self.pk.couple[table_w])+"').*")))
-                        else :
+
+                        liste = list(set(liste))
+                        print("size :: " + str(len(liste)))
+                        #if ( len(liste) == len(self.pk.couple[table_w])):
+                        #    self.liste_dependance.append(str((self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr;"+table_w+"("+str(self.pk.couple[table_w])+"').*")))
+                        #else :
                             #print("cas autre :: " + str(len(liste)))
-                            for elt in liste:
-                                if ( elt not in self.liste_dependance ) :
-                                    self.liste_dependance.append(elt)
+                        for elt in liste:
+                            if ( elt not in self.liste_dependance ) :
+                                self.liste_dependance.append(elt)
                                 
     def create_dependance_rw(self):
         #print("**************************************************************")
@@ -184,15 +194,15 @@ class principal:
                                     for a in self.pw[ecriture].cle_impacte_set[table_w] :
                                         liste.append(str((self.pw[lecture].name + " -> " + self.pw[ecriture].name + " :: rw;"+table_w+"("+str(self.pk.couple[table_w])+"')."+a)))
                                     tmp = 1               
-                        if ( len(liste) == len(self.pk.couple[table_r])):
+                        #if ( len(liste) == len(self.pk.couple[table_r])):
                             #print(self.p[lecture].name + " -> " + self.p[ecriture].name + " :: rw,"+table_r+"("+str(self.pk.couple[table_r])+"').*") 
                             #print("Toute la table ajoutées")     
-                            self.liste_dependance.append(str(self.p[lecture].name + " -> " + self.p[ecriture].name + " :: rw;"+table_r+"("+str(self.pk.couple[table_r])+"').*"))
-                        else :
+                            #self.liste_dependance.append(str(self.p[lecture].name + " -> " + self.p[ecriture].name + " :: rw;"+table_r+"("+str(self.pk.couple[table_r])+"').*"))
+                        #else :
                             #print("cas autre :: " + str(len(liste)))
-                            for elt in liste:
-                                if ( elt not in self.liste_dependance ) :
-                                    self.liste_dependance.append(elt)
+                        for elt in liste:
+                            if ( elt not in self.liste_dependance ) :
+                                self.liste_dependance.append(elt)
                                 
         
         
@@ -430,6 +440,9 @@ class principal:
         if ( "ww;" in v ) :
             t = re.findall(";.*?\(",v)
             table = t[0].replace(";","").replace("(","")
+            tmp = re.findall("\)\..*",v)
+            #print(tmp)
+            attr = tmp[0].replace(").","")
             #print(table)
             for elt in self.pw :
                 if ( elt.name == src and src == dst):
@@ -440,6 +453,16 @@ class principal:
                         print("\t\tRaison de la dependance SRC : "+src+" : ")
                         for li in m :
                             print('\t\t\t'+li)
+            if ( ".*" not in t[0] ):
+                for elt in self.pw :
+                    if ( elt.name == src and src == dst):
+                        tmp = "UPDATE "+table+" SET " +attr
+                        m = re.findall(tmp+".*?;",elt.data)
+                        if ( m != [] ):
+                            print("\t\tRaison de la dependance DST : "+dst+" : ")
+                            for li in m :
+                                print('\t\t\t'+li)
+                
                 
                 
         else :  
