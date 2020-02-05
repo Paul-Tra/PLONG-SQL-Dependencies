@@ -52,15 +52,6 @@ public class ElementVisuel {
         list_transaction = l_transaction;
         createShape(l_relation,l_transaction);
     }
-    public ElementVisuel(ArrayList<Relation> l_relation, ArrayList<Transaction> l_transaction,Pane p, Group g) {
-        list_shape = new ArrayList<>();
-        pane = p;
-        group = g;
-        list_relation = l_relation;
-        list_transaction = l_transaction;
-        createShape(l_relation,l_transaction);
-    }
-
     private void createShape(ArrayList<Relation> l_relation, ArrayList<Transaction> l_transaction) {
         if (l_transaction != null) {
             for (Transaction transaction : l_transaction) {

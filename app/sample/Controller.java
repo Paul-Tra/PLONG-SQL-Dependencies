@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
@@ -31,29 +32,61 @@ import java.util.function.Consumer;
 import static sample.Main.primaryStage;
 
 public class Controller {
+    private final double deltaY = 1.1; //
     @FXML private ListView lv_data;
     @FXML private Label label1;
     private Consumer<String> consumer = e -> System.out.println(e);
-    @FXML
-    private StackPane stackPane;
     @FXML private AnchorPane anchorPane;
     @FXML private AnchorPane anchorPane2;
-    @FXML void doZoom(ScrollEvent event){
-        double SCALE_DELTA = 1.1;
+    @FXML private ScrollPane scrollPane;
+
+    @FXML
+    private void doClick(MouseEvent event) {
+        // check if twe clicked on a data-cell's Relation and note Transaction
+        if (lv_data.getAccessibleText() == null) {
+            consumer.accept("we found a Transaction");
+            // its a Transaction so no pop-up window about dependancy
+            return;
+        }
+        for (int i = 0; i < lv_data.getItems().size(); i++) {
+            if (lv_data.getItems().get(i).equals(lv_data.getSelectionModel().getSelectedItem())) {
+                if (i >= Integer.valueOf(lv_data.getAccessibleText())) {
+                    // the cell i looks after dependancy
+                    consumer.accept("We found the cell number :"+i+" looks after dependancy");
+                }else{
+                    consumer.accept("the clicked cell is not about dependancy");
+                }
+            }
+        }
+        //ArrayList<String> printing_lines = manageName();
+    }
+    // manage the scrolling and the zooming
+    @FXML void doScroll(ScrollEvent event){
+        if (event.isControlDown()) {
+            //if we pressed ctrl , we zoom/dezoom
+            doZoom(event);
+            event.consume();
+        }
+        // else we just scroll into the pane
+        // nothing to do (because we use scrollPane)
+    }
+    // look after the zooming/dezooming
+    private void doZoom(ScrollEvent event){
         if (event.getDeltaY() == 0) {
             return;
         }
-
-        double scaleFactor
-                = (event.getDeltaY() > 0)
-                ? SCALE_DELTA
-                : 1 / SCALE_DELTA;
-
-        anchorPane2.setScaleX(anchorPane2.getScaleX() * scaleFactor);
-        anchorPane2.setScaleY(anchorPane2.getScaleY() * scaleFactor);
+        double coef =deltaY;
+        if (event.getDeltaY() < 0) {
+            // if the getDeltaY -> dezooming
+            coef = 1/deltaY;
+        }
+        anchorPane2.setScaleX(anchorPane2.getScaleX() * coef);
+        anchorPane2.setScaleY(anchorPane2.getScaleY() * coef);
     }
+
     @FXML
     private void doParsing(ActionEvent actionEvent) {
+        // look after the parsing of the .graphml file
         if (!this.label1.getText().equals("")) {
             Parser parser = new Parser(this.label1.getText());
             fillPane(parser.list_relation, parser.list_transaction);
@@ -77,6 +110,7 @@ public class Controller {
     // fill the data listView from a transaction (when we do a click )
     public void fillData(Transaction t) {
         lv_data.getItems().clear();
+        lv_data.setAccessibleText(null); // use for the Relation's comparison
         lv_data.getItems().add("id :");
         lv_data.getItems().add(t.id);
         lv_data.getItems().add("nom :");
@@ -95,9 +129,14 @@ public class Controller {
         lv_data.getItems().add("desstination :");
         lv_data.getItems().add(r.destination);
         lv_data.getItems().add("nom :");
+        // put the numbre of cells which don't look after dependancies
+        int cpt = lv_data.getItems().size();
+        lv_data.setAccessibleText(String.valueOf(cpt));
         for (String line : printing_lines) {
             lv_data.getItems().add(line);
         }
+        // add event to listView's cells which contain a line from printing_lines
+
     }
     // recovering the lines available to be print in the element description
     public ArrayList<String>  manageName(String nom){
