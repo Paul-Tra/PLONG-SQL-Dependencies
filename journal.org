@@ -35,7 +35,7 @@
    partie graphique
    
 ** TODO
-   - afficher les dépendances
+   - afficher les lignes générant les dépendances
    - améliorer l'esthétique
    - Chercher des applications en PgSQL et tester le parseur
    - trouver un algo d'affichage du graphe
