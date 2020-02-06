@@ -8,7 +8,7 @@ from dependance import *
 
 
 class parser_ecriture:
-    def __init__(self,nom_fichier):
+    def __init__(self,nom_fichier,dossier):
         self.nom_fichier = nom_fichier
         #print(nom_fichier)
         name = nom_fichier.split("/")
@@ -20,7 +20,7 @@ class parser_ecriture:
         self.liste_condition = []
         self.data = ""
         #self.pkey = PrimaryKey("./fichiers/genDB.sql")
-        self.pkey = PrimaryKey("./fichier_test/genDB.sql") # pour nos test
+        self.pkey = PrimaryKey("./"+dossier+"/genDB.sql") # pour nos test
         self.pkey.lanceur()
         self.liste_param_fonction = []
         self.cle_impacte_set = {}
