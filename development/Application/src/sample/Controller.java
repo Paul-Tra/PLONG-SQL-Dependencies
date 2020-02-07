@@ -11,6 +11,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -33,10 +34,15 @@ import static sample.Main.primaryStage;
 
 public class Controller {
     private final double deltaY = 1.1; //
+    private Consumer<String> consumer = e -> System.out.println(e);
+    // borderPane left area
     @FXML private ListView lv_data;
     @FXML private Label label1;
-    private Consumer<String> consumer = e -> System.out.println(e);
-    @FXML private AnchorPane anchorPane;
+    // borderPane center area
+    @FXML private HBox hBox;
+    @FXML private ListView listViewSource;
+    @FXML private ListView listViewTarget;
+    @FXML private AnchorPane anchorPane3;
     @FXML private AnchorPane anchorPane2;
     @FXML private ScrollPane scrollPane;
 
@@ -53,12 +59,29 @@ public class Controller {
                 if (i >= Integer.valueOf(lv_data.getAccessibleText())) {
                     // the cell i looks after dependancy
                     consumer.accept("We found the cell number :"+i+" looks after dependancy");
+                    // management of the pop-up window filling
+                    String dependancy = lv_data.getSelectionModel().getSelectedItem().toString();
+                    consumer.accept("our dependancy : " + dependancy);
+                    fillPop_up(dependancy);
                 }else{
                     consumer.accept("the clicked cell is not about dependancy");
                 }
             }
         }
         //ArrayList<String> printing_lines = manageName();
+    }
+
+    // Fill the the pop-up window which shows the diferents lines causing the dependancy
+    private void fillPop_up(String dependancy) {
+        // before to fillwe have to clear
+        listViewSource.getItems().clear();
+        listViewTarget.getItems().clear();
+        // file dependancies description parsing
+        // management filling listView source
+        listViewSource.getItems().add(dependancy);
+        // management filling listView target
+        listViewTarget.getItems().add(dependancy);
+
     }
     // manage the scrolling and the zooming
     @FXML void doScroll(ScrollEvent event){
@@ -96,6 +119,9 @@ public class Controller {
     @FXML
     private void doClear(ActionEvent actionEvent) { // netoyage de la vue (effacement du grpahe)
         anchorPane2.getChildren().clear();
+        listViewSource.getItems().clear();
+        listViewTarget.getItems().clear();
+        lv_data.getItems().clear();
     }
 
     private void fill_listView(Parser p) {
@@ -126,7 +152,7 @@ public class Controller {
         lv_data.getItems().clear();
         lv_data.getItems().add("source :");
         lv_data.getItems().add(r.source);
-        lv_data.getItems().add("desstination :");
+        lv_data.getItems().add("destination :");
         lv_data.getItems().add(r.destination);
         lv_data.getItems().add("nom :");
         // put the numbre of cells which don't look after dependancies
@@ -207,7 +233,6 @@ public class Controller {
         // add filters file's extension
         fil_chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("graphml files", "*.graphml"),
-                new FileChooser.ExtensionFilter("dot files", "*.dot"),
                 new FileChooser.ExtensionFilter("All files", "*.*"));
 
         File file = fil_chooser.showOpenDialog(primaryStage);

@@ -35,6 +35,16 @@
                   <AnchorPane fx:id="anchorPane2" onScroll="#doScroll" prefHeight="371.0" prefWidth="450.0" />
                </content>
             </ScrollPane>
+            <AnchorPane fx:id="anchorPane3" maxWidth="200.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+               <children>
+                  <HBox fx:id="hBox" alignment="CENTER" style="-fx-background-color: LIGHTGREEN;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                         <ListView fx:id="listViewSource" style="-fx-background-color: RED;" AnchorPane.leftAnchor="0.0" HBox.hgrow="ALWAYS" />
+                         <ListView fx:id="listViewTarget" style="-fx-background-color: BLUE;" AnchorPane.rightAnchor="0.0" HBox.hgrow="ALWAYS"/>
+                     </children>
+                  </HBox>
+               </children>
+            </AnchorPane>
          </children></AnchorPane>
     </center>
     <left>
