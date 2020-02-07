@@ -3,16 +3,18 @@ from primary import *
 from parser import *
 from parser_ecriture import *
 from dependance import *
+import sys
 
 class principal:
-    def __init__(self):
+    def __init__(self,dossier):
         ### Nous avons changé le rep. pour verifier que notre algo est correct , en se basant sur l'exemple fournie dans l'enoncé ###
         #self.pk = PrimaryKey("./fichiers/genDB.sql")
-        self.pk = PrimaryKey("./fichier_test/genDB.sql") # pour nos test
+        print("dossier :: " + dossier )
+        self.pk = PrimaryKey("./"+dossier+"/genDB.sql") # pour nos test
         self.p = []
         self.pw = []
         #self.l = os.listdir("./fichiers/")
-        self.l = os.listdir("./fichier_test/") # pour nos test
+        self.l = os.listdir("./"+dossier+"/") # pour nos test
         #print("Liste des fichier d'entrée : ")
         #print(l)
         for elt in self.l :
@@ -20,8 +22,8 @@ class principal:
                 #p = Parser("./fichiers/"+elt)
                 #pw = parser_ecriture("./fichiers/"+elt)
                 
-                p = Parser("./fichier_test/"+elt)# pour nos test
-                pw = parser_ecriture("./fichier_test/"+elt)# pour nos test
+                p = Parser("./"+dossier+"/"+elt,dossier) # pour nos test
+                pw = parser_ecriture("./"+dossier+"/"+elt,dossier) # pour nos test
                 
                 self.p.append(p)
                 self.pw.append(pw)
@@ -163,7 +165,8 @@ class principal:
                             if ( cle in attr_r and table_w == table_r) :
                                 if ( table_w in self.pw[ecriture].cle_impacte_set.keys() ) :
                                     for a in self.pw[ecriture].cle_impacte_set[table_w] :
-                                        print("aaaaa " + a )
+                                        #if ( a in self.p[lecture].liste_attributs_read ) :
+                                         #   print("aaaaa " + a )
                                         liste.append(str((self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr;"+table_w+"("+str(self.pk.couple[table_w])+"')."+a)))
 
                         liste = list(set(liste))
@@ -192,7 +195,10 @@ class principal:
                                 #print(self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr,"+table_w+"("+str(self.pk.couple[table_w])+"')."+cle)
                                 if ( table_w in self.pw[ecriture].cle_impacte_set.keys() ) :
                                     for a in self.pw[ecriture].cle_impacte_set[table_w] :
-                                        liste.append(str((self.pw[lecture].name + " -> " + self.pw[ecriture].name + " :: rw;"+table_w+"("+str(self.pk.couple[table_w])+"')."+a)))
+                                        if ( self.p[lecture].name == self.pw[ecriture].name ):
+                                            liste.append(str((self.pw[lecture].name + " -> " + self.pw[ecriture].name + " :: ww;"+table_w+"("+str(self.pk.couple[table_w])+"')."+a)))
+                                        else:
+                                            liste.append(str((self.pw[lecture].name + " -> " + self.pw[ecriture].name + " :: rw;"+table_w+"("+str(self.pk.couple[table_w])+"')."+a)))
                                     tmp = 1               
                         #if ( len(liste) == len(self.pk.couple[table_r])):
                             #print(self.p[lecture].name + " -> " + self.p[ecriture].name + " :: rw,"+table_r+"("+str(self.pk.couple[table_r])+"').*") 
@@ -350,6 +356,8 @@ class principal:
         self.fichier = fichier
         
     def affiche_lise_sans_doublon(self):
+        with open ("./dependences.txt","w") as fichier :
+            fichier.write('## Fichier généré dans le cadre de Plong2019/2020 pour etudier les raisons de dépendances entre 2 transactions , ID = "nom_de_la_relation" SRC = "fichier_source" DST = "fichier_destination"\n## ( SRC et DST sont en rapport avec les fleches du graphes).\n\n')
         for cle,value in self.dep_sans_doublons.items():
             print("\nSource : " + cle[0] + " , Destination : " + cle[1] )
             value = list(set(value))
@@ -361,114 +369,151 @@ class principal:
                 
     def write_raison_dependances(self,v ,src,dst):
         #print ( src ) 
+        fsrc = src
+        fdst = dst
         src = src + ".sql"
         dst = dst + ".sql"
         #print( dst ) 
+        l_dep_src = []
+        l_dep_dst = []
         
-        if ( "wr;" in v ) :
-            t = re.findall(";.*?\(",v)
-            table = t[0].replace(";","").replace("(","")
-            tmp = re.findall("\)\..*",v)
-            #print(tmp)
-            attr = tmp[0].replace(").","")
-            t = ""
-            #print(table)
-            for elt in self.p :
-                #print(elt.name)
-                if ( elt.name == dst ):
-                    print("\t\tRaison de la dependance DST : "+dst+" : ")
-                    for c,val in elt.table_from.items():
-                        if ( table in val ):
-                            t = c
-                            
-                    if ( t != "" ):
-                        tmp = "SELECT .*? FROM .*? "+table+".*?;"
-                        #print(tmp)
-                        m = re.findall("SELECT.*?FROM.*?"+table+".*?;",elt.data)
-                        if ( m != [] ) :
-                            for li in m :
-                                l = li.split(";")
-                                for e in l :
-                                    if ( "SELECT" in e ):
-                                        print('\t\t\t'+e)
-            for elt in self.pw :
-                if ( elt.name == src ):
-                    tmp = "UPDATE "+table+" SET " +attr
-                    m = re.findall(tmp+".*?;",elt.data)
-                    if ( m != [] ):
-                        print("\t\tRaison de la dependance SRC : "+src+" : ")
-                        for li in m :
-                            print('\t\t\t'+li)
-                
-                            
-        if ( "rw;" in v ) :
-            t = re.findall(";.*?\(",v)
-            table = t[0].replace(";","").replace("(","")
-            tmp = re.findall("\)\..*",v)
-            #print(tmp)
-            attr = tmp[0].replace(").","")
-            t = ""
-            #print(table)
-            for elt in self.pw :
-                if ( elt.name == dst ):
-                    tmp = "UPDATE "+table+" SET " +attr
-                    m = re.findall(tmp+".*?;",elt.data)
-                    if ( m != [] ):
+        with open ("./dependences.txt","a+") as fichier :
+            
+            if ( "wr;" in v ) :
+                t = re.findall(";.*?\(",v)
+                table = t[0].replace(";","").replace("(","")
+                tmp = re.findall("\)\..*",v)
+                #print(tmp)
+                attr = tmp[0].replace(").","")
+                t = ""
+                #print(table)
+                for elt in self.p :
+                    #print(elt.name)
+                    if ( elt.name == dst ):
                         print("\t\tRaison de la dependance DST : "+dst+" : ")
-                        for li in m :
-                            print('\t\t\t'+li)
-                            
-            for elt in self.p :
-                #print(elt.name)
-                if ( elt.name == src ):
-                    print("\t\tRaison de la dependance SRC : "+src+" : ")
-                    for c,val in elt.table_from.items():
-                        if ( table in val ):
-                            t = c
-                            
-                    if ( t != "" ):
-                        tmp = "SELECT .*? FROM .*? "+table+".*?;"
-                        #print(tmp)
-                        m = re.findall("SELECT.*?FROM.*?"+table+".*?;",elt.data)
-                        if ( m != [] ) :
-                            for li in m :
-                                l = li.split(";")
-                                for e in l :
-                                    if ( "SELECT" in e ):
-                                        print('\t\t\t'+e)
+                        for c,val in elt.table_from.items():
+                            if ( table in val ):
+                                t = c
                                 
-        if ( "ww;" in v ) :
-            t = re.findall(";.*?\(",v)
-            table = t[0].replace(";","").replace("(","")
-            tmp = re.findall("\)\..*",v)
-            #print(tmp)
-            attr = tmp[0].replace(").","")
-            #print(table)
-            for elt in self.pw :
-                if ( elt.name == src and src == dst):
-                    tmp = "INSERT INTO "+table
-                    #print(tmp)
-                    m = re.findall(tmp+".*?;",elt.data)
-                    if ( m != [] ):
-                        print("\t\tRaison de la dependance SRC : "+src+" : ")
-                        for li in m :
-                            print('\t\t\t'+li)
-            if ( ".*" not in t[0] ):
+                        if ( t != "" ):
+                            tmp = "SELECT .*? FROM .*? "+table+" .*? WHERE "+attr+".*?;"
+                            #print(tmp)
+                            m = re.findall("SELECT.*?"+attr+".*?FROM.*?"+table+".*?;",elt.data)
+                            if ( m != [] ) :
+                                for li in m :
+                                    l = li.split(";")
+                                    for e in l :
+                                        if ( "SELECT" in e ):
+                                            print('\t\t\t'+e)
+                                            l_dep_dst.append(e)
                 for elt in self.pw :
-                    if ( elt.name == src and src == dst):
+                    if ( elt.name == src ):
+                        tmp = "UPDATE "+table+" SET " +attr
+                        m = re.findall(tmp+".*?;",elt.data)
+                        if ( m != [] ):
+                            print("\t\tRaison de la dependance SRC : "+src+" : ")
+                            for li in m :
+                                print('\t\t\t'+li)
+                                l_dep_src.append(li)
+                    
+                                
+            if ( "rw;" in v ) :
+                t = re.findall(";.*?\(",v)
+                table = t[0].replace(";","").replace("(","")
+                tmp = re.findall("\)\..*",v)
+                #print(tmp)
+                attr = tmp[0].replace(").","")
+                t = ""
+                #print(table)
+                for elt in self.pw :
+                    if ( elt.name == dst ):
                         tmp = "UPDATE "+table+" SET " +attr
                         m = re.findall(tmp+".*?;",elt.data)
                         if ( m != [] ):
                             print("\t\tRaison de la dependance DST : "+dst+" : ")
                             for li in m :
                                 print('\t\t\t'+li)
+                                l_dep_dst.append(li)
+                                
+                for elt in self.p :
+                    #print(elt.name)
+                    if ( elt.name == src ):
+                        print("\t\tRaison de la dependance SRC : "+src+" : ")
+                        for c,val in elt.table_from.items():
+                            if ( table in val ):
+                                t = c
+                                
+                        if ( t != "" ):
+                            tmp = "SELECT .*? FROM .*? "+table+".*?;"
+                            #print(tmp)
+                            #print("ATTRRR : " + attr )
+                            m = re.findall("SELECT.*?"+attr+".*?FROM.*?"+table+".*?;",elt.data)
+                            if ( m != [] ) :
+                                for li in m :
+                                    l = li.split(";")
+                                    for e in l :
+                                        if ( "SELECT" in e ):
+                                            print('\t\t\t'+e)
+                                            l_dep_src.append(e)
+                                    
+            if ( "ww;" in v ) :
+                t = re.findall(";.*?\(",v)
+                table = t[0].replace(";","").replace("(","")
+                tmp = re.findall("\)\..*",v)
+                #print(tmp)
+                attr = tmp[0].replace(").","")
+                #print(table)
+                for elt in self.pw :
+                    if ( elt.name == src and src == dst):
+                        tmp = "INSERT INTO "+table
+                        #print(tmp)
+                        m = re.findall(tmp+".*?;",elt.data)
+                        if ( m != [] ):
+                            print("\t\tRaison de la dependance SRC : "+src+" : ")
+                            for li in m :
+                                print('\t\t\t'+li)
+                                l_dep_src.append(li)
+                                l_dep_dst.append(li)
+                    else:
+                        tmp = "UPDATE "+table
+                        #print(tmp)
+                        m = re.findall(tmp+".*?;",elt.data)
+                        if ( m != [] ):
+                            print("\t\tRaison de la dependance SRC : "+src+" : ")
+                            for li in m :
+                                print('\t\t\t'+li)
+                                l_dep_src.append(li)
+                                l_dep_dst.append(li)
+                if ( ".*" not in t[0] ):
+                    for elt in self.pw :
+                        if ( elt.name == src and src == dst):
+                            tmp = "UPDATE "+table+" SET " +attr
+                            m = re.findall(tmp+".*?;",elt.data)
+                            if ( m != [] ):
+                                print("\t\tRaison de la dependance DST : "+dst+" : ")
+                                for li in m :
+                                    print('\t\t\t'+li)
+                                    l_dep_src.append(li)
+                                    l_dep_dst.append(li)
+                    
+                    
+                    
+            else :  
+                type = 'relation'
+                # du type table.attr = table.attr
+            if ( "=" not in v ) :
+                fichier.write('\n<Relation ID="'+v+'" SRC="'+fsrc+'" DST="'+fdst+'">\n')
+                fichier.write('<SRC>\n')
+                for elt in l_dep_src :
+                    fichier.write('\t'+elt+'\n')
+                fichier.write('</SRC>\n')
+                fichier.write('<DST>\n')
+                for elt in l_dep_dst :
+                    fichier.write('\t'+elt+'\n')
+                fichier.write('</DST>\n')
+                fichier.write('</Relation>\n\n')
                 
                 
-                
-        else :  
-            type = 'relation'
-            # du type table.attr = table.attr
-            
             
         
     def lanceur_f(self):
@@ -493,8 +538,14 @@ class principal:
         
         
 if __name__ == "__main__":
-    main = principal()
-    main.lanceur_f()
+    argv = sys.argv
+    if (len(argv) != 2 ) :
+        print("Merci d'entrer un dossier contenant : \n - un fichier genDB.sql contenant votre base de données \n - un ensemble de fichier reprensetant les transactions ( au format .sql ; PLpgSQL ) ")
+    else :
+        
+        dossier = argv[1].replace("/","")
+        main = principal(dossier)
+        main.lanceur_f()
     
     
     

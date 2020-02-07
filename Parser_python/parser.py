@@ -5,7 +5,7 @@ from parser_ecriture import *
 from dependance import *
 
 class Parser:
-    def __init__(self , nom_fichier ):
+    def __init__(self , nom_fichier , dossier ):
         
         self.nom_fichier = nom_fichier
         #print(nom_fichier)
@@ -28,6 +28,7 @@ class Parser:
         # on va stocker les couples de dependance [ table : parametre de fonction ] on sait au préalable que la correspondance avec la / les clés primaire sont correctes
         self.couple_dependance = dict()
         self.dependance_supplementaire = dict()
+        self.dossier = dossier
         
     def lecture_fichier(self):
         F = open(self.nom_fichier,"r") 
@@ -343,9 +344,9 @@ class Parser:
         self.affiche_liste_finale()
         
         #self.pkey = PrimaryKey("./fichiers/genDB.sql")
-        self.pkey = PrimaryKey("./fichier_test/genDB.sql") # pour nos test
+        self.pkey = PrimaryKey("./"+self.dossier+"/genDB.sql") # pour nos test
         self.pkey.lanceur()
-        self.trouve_cle_primaire_associe_au_from()
+        #self.trouve_cle_primaire_associe_au_from()
         self.trouve_attribut_de_fonction()
         self.trouve_cle_dep_possible()
         self.affiche_couple_dep()
