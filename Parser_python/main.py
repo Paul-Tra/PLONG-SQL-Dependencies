@@ -35,6 +35,7 @@ class principal:
         self.liste_dependance = []
         self.dependance = []
         self.dep_sans_doublons = dict()
+        self.dict_finale = dict()
         
     
     def analyse_BD(self):
@@ -210,7 +211,23 @@ class principal:
                             if ( elt not in self.liste_dependance ) :
                                 self.liste_dependance.append(elt)
                                 
-        
+    def create_dependance_ww(self):
+        #print("**************************************************************")
+        #print("**************** Création des dépendances RW  ****************")
+        #print("**************************************************************")
+        for ecriture in range (0,len(self.pw)):
+            for table_w,attr_w in self.pw[ecriture].liste_attribut.items():
+                liste = []
+                tmp = 0
+                for cle in attr_w :
+                    #print(self.pw[ecriture].name + " -> " + self.pw[lecture].name + " :: wr,"+table_w+"("+str(self.pk.couple[table_w])+"')."+cle)
+                    if ( table_w in self.pw[ecriture].cle_impacte_set.keys() ) :
+                        for a in self.pw[ecriture].cle_impacte_set[table_w] :
+                            liste.append(str((self.pw[ecriture].name + " -> " + self.pw[ecriture].name + " :: ww;"+table_w+"("+str(self.pk.couple[table_w])+"')."+a)))
+                            
+                for elt in liste:
+                    if ( elt not in self.liste_dependance ) :
+                        self.liste_dependance.append(elt)
         
         
         
@@ -326,46 +343,21 @@ class principal:
         fichier.close()
         self.fichier = fichier
     
-    def genere_graphml_sans_doublons(self):
-        with open(os.getcwd()+"/graph.graphml", "w") as fichier:
-            fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-            fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
-            fichier.write('\t<key id="d0" for="node" attr.name="weight" attr.type="string"/>\n')
-            fichier.write('\t<key id="d1" for="edge" attr.name="weight" attr.type="string"/>\n')
-            fichier.write('<graph id="G" edgedefault="directed\">\n')
-            
-            #creation node
-            for cle , value in self.dep_sans_doublons.items() :
-                fichier.write('\n<node id="'+cle[0]+'">\n')
-                fichier.write('<data key="d0">"'+cle[0]+'"</data>\n</node>')
-                fichier.write('\n<edge source="'+cle[0]+'" target="'+cle[1]+'">\n')
-                fichier.write('<data key="d1">\n')
-                # on traite ensuite toutes les dependances une a une 
-                l = []
-                for v in value :
-                    if ( v not in l ) :
-                        l.append(v)
-                    
-                for elt in l :
-                    fichier.write(elt+'\n')
-                
-                
-                fichier.write('\n\n</data>\n</edge>')    
-            fichier.write("</graph>\n\t</graphml>")
-        fichier.close()
-        self.fichier = fichier
+    
         
     def affiche_lise_sans_doublon(self):
-        with open ("./dependences.txt","w") as fichier :
+        with open ("./graphs/dependences.gogol","w") as fichier :
             fichier.write('## Fichier généré dans le cadre de Plong2019/2020 pour etudier les raisons de dépendances entre 2 transactions , ID = "nom_de_la_relation" SRC = "fichier_source" DST = "fichier_destination"\n## ( SRC et DST sont en rapport avec les fleches du graphes).\n\n')
         for cle,value in self.dep_sans_doublons.items():
             print("\nSource : " + cle[0] + " , Destination : " + cle[1] )
             value = list(set(value))
             i=0
             for v in  value : 
-                print('\t' + str(i) + " :: "+v.replace("/ ",""))
-                i+=1
                 self.write_raison_dependances(v,cle[0],cle[1])
+                #print("SIZE : " + str(len(value)) )
+                if ( v in value ):
+                    print('\t' + str(i) + " :: "+v.replace("/ ",""))
+                    i+=1
                 
     def write_raison_dependances(self,v ,src,dst):
         #print ( src ) 
@@ -377,7 +369,7 @@ class principal:
         l_dep_src = []
         l_dep_dst = []
         
-        with open ("./dependences.txt","a+") as fichier :
+        with open ("./graphs/dependences.gogol","a+") as fichier :
             
             if ( "wr;" in v ) :
                 t = re.findall(";.*?\(",v)
@@ -396,14 +388,13 @@ class principal:
                                 t = c
                                 
                         if ( t != "" ):
-                            tmp = "SELECT .*? FROM .*? "+table+" .*? WHERE "+attr+".*?;"
                             #print(tmp)
                             m = re.findall("SELECT.*?"+attr+".*?FROM.*?"+table+".*?;",elt.data)
                             if ( m != [] ) :
                                 for li in m :
                                     l = li.split(";")
                                     for e in l :
-                                        if ( "SELECT" in e ):
+                                        if ( "SELECT" in e and attr in e ):
                                             print('\t\t\t'+e)
                                             l_dep_dst.append(e)
                 for elt in self.pw :
@@ -425,6 +416,8 @@ class principal:
                 attr = tmp[0].replace(").","")
                 t = ""
                 #print(table)
+                l_dep_src = []
+                l_dep_dst = []
                 for elt in self.pw :
                     if ( elt.name == dst ):
                         tmp = "UPDATE "+table+" SET " +attr
@@ -448,11 +441,13 @@ class principal:
                             #print(tmp)
                             #print("ATTRRR : " + attr )
                             m = re.findall("SELECT.*?"+attr+".*?FROM.*?"+table+".*?;",elt.data)
+                            
                             if ( m != [] ) :
+                                print("mmmmmmmm :::::::::: " + str(m))
                                 for li in m :
                                     l = li.split(";")
                                     for e in l :
-                                        if ( "SELECT" in e ):
+                                        if ( "SELECT" in e and attr in e):
                                             print('\t\t\t'+e)
                                             l_dep_src.append(e)
                                     
@@ -491,6 +486,9 @@ class principal:
                             m = re.findall(tmp+".*?;",elt.data)
                             if ( m != [] ):
                                 print("\t\tRaison de la dependance DST : "+dst+" : ")
+                                #print("m :::: :: :: :: : : :" + str(m))
+                                l_dep_src = []
+                                l_dep_dst = []
                                 for li in m :
                                     print('\t\t\t'+li)
                                     l_dep_src.append(li)
@@ -498,23 +496,107 @@ class principal:
                     
                     
                     
-            else :  
-                type = 'relation'
-                # du type table.attr = table.attr
-            if ( "=" not in v ) :
+            if ( "=" in v ):
+                if ( (fsrc,fdst) in self.dict_finale.keys() ):
+                    self.dict_finale[fsrc,fdst].append(v)
+                    #print("VALUE : " + v )
+                else : 
+                    self.dict_finale[fsrc,fdst] = []
+                    #print("VALUE : " + v )
+                    self.dict_finale[fsrc,fdst].append(v)
+                return 0
+                
+            #print("//////////////////////////////////////")
+            #print(len(l_dep_src))
+            #print(len(l_dep_dst))
+            #print("//////////////////////////////////////")
+            
+            if ( l_dep_src == [] or l_dep_dst == [] ):
+                return -1
+            else :
+                if ( (fsrc,fdst) in self.dict_finale.keys() ):
+                    self.dict_finale[fsrc,fdst].append(v)
+                    #print("VALUE : " + v )
+                else : 
+                    self.dict_finale[fsrc,fdst] = []
+                    #print("VALUE : " + v )
+                    self.dict_finale[fsrc,fdst].append(v)
                 fichier.write('\n<Relation ID="'+v+'" SRC="'+fsrc+'" DST="'+fdst+'">\n')
                 fichier.write('<SRC>\n')
                 for elt in l_dep_src :
-                    fichier.write('\t'+elt+'\n')
+                    fichier.write('\t'+elt.strip()+'\n')
                 fichier.write('</SRC>\n')
                 fichier.write('<DST>\n')
                 for elt in l_dep_dst :
-                    fichier.write('\t'+elt+'\n')
+                    fichier.write('\t'+elt.strip()+'\n')
                 fichier.write('</DST>\n')
                 fichier.write('</Relation>\n\n')
+                return 0
                 
-                
+    def genere_graphml_sans_doublons(self):
+        with open("./graphs/graph_sous_doub.graphml", "w") as fichier:
+            fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+            fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
+            fichier.write('\t<key id="d0" for="node" attr.name="weight" attr.type="string"/>\n')
+            fichier.write('\t<key id="d1" for="edge" attr.name="weight" attr.type="string"/>\n')
+            fichier.write('<graph id="G" edgedefault="directed\">\n')
             
+            #creation node
+            for cle , value in self.dep_sans_doublons.items() :
+                fichier.write('\n<node id="'+cle[0]+'">\n')
+                fichier.write('<data key="d0">"'+cle[0]+'"</data>\n</node>')
+                fichier.write('\n<edge source="'+cle[0]+'" target="'+cle[1]+'">\n')
+                fichier.write('<data key="d1">\n')
+                # on traite ensuite toutes les dependances une a une 
+                l = []
+                
+                for v in value :
+                    if ( v not in l ) :
+                        l.append(v)
+                    
+                for elt in l :
+                    fichier.write(elt+'\n')
+                    
+                
+                    fichier.write('\n\n</data>\n</edge>')    
+            fichier.write("</graph>\n\t</graphml>")
+        fichier.close()
+        self.fichier = fichier
+            
+    def genere_graphml_sans_doublons_plus_Raisons_dependances(self):
+        with open("./graphs/graph.graphml", "w") as fichier:
+            fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+            fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
+            fichier.write('\t<key id="d0" for="node" attr.name="weight" attr.type="string"/>\n')
+            fichier.write('\t<key id="d1" for="edge" attr.name="weight" attr.type="string"/>\n')
+            fichier.write('<graph id="G" edgedefault="directed\">\n')
+            
+            #creation node
+            for cle , value in self.dict_finale.items() :
+                tmp = 0
+                for elt in value :
+                    if ( "wr" in elt or "rw" in elt or "ww" in elt ):
+                        tmp = 1
+                if ( tmp == 1 ):
+                    fichier.write('\n<node id="'+cle[0]+'">\n')
+                    fichier.write('<data key="d0">"'+cle[0]+'"</data>\n</node>')
+                    fichier.write('\n<edge source="'+cle[0]+'" target="'+cle[1]+'">\n')
+                    fichier.write('<data key="d1">\n')
+                    # on traite ensuite toutes les dependances une a une 
+                    l = []
+                    
+                    for v in value :
+                        if ( v not in l ) :
+                            l.append(v)
+                    
+                    for elt in l :
+                        fichier.write(elt+'\n')
+                        
+                
+                    fichier.write('\n</data>\n</edge>\n\n')    
+            fichier.write("</graph>\n\t</graphml>")
+        fichier.close()
+        self.fichier = fichier
         
     def lanceur_f(self):
         self.lanceur()
@@ -522,10 +604,11 @@ class principal:
         self.create_dep_ww_insert()
         self.create_dependance_wr()
         self.create_dependance_rw()
+        self.create_dependance_ww()
         self.maj_dep_wr_rw_en_ww()
         #self.affiche_dependance()
         self.parse_dependance()
-        self.generer_graphml()
+        #self.generer_graphml()
         self.genere_couple_source_target()
         print("############################################")
         
@@ -535,6 +618,7 @@ class principal:
         self.genere_condition_dep()
         self.affiche_lise_sans_doublon()
         self.genere_graphml_sans_doublons()
+        self.genere_graphml_sans_doublons_plus_Raisons_dependances()
         
         
 if __name__ == "__main__":

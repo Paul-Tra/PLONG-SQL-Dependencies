@@ -32,6 +32,7 @@ DECLARE
   c_since DATE;
   n INTEGER := 0;
 BEGIN
+  
   UPDATE WAREHOUSE SET wYTD = wYTD + h_amount
   WHERE WAREHOUSE.wId = w_id;
 

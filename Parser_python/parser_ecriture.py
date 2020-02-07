@@ -28,19 +28,22 @@ class parser_ecriture:
         self.couple_dependance = dict()
         
     def trouve_set(self):
-        m =re.findall("UPDATE .*? SET .*? =",self.data)
+        m =re.findall("UPDATE.*?SET.*?=",self.data)
         l = []
         for elt in m :
+            #print(elt)
             elt = elt.replace(" SET "," ").replace(" =","").replace("UPDATE ","")
-            print("elt " + str(elt))
+            #print("elt " + str(elt))
             table = elt.split(" ")[0]
             attr = elt.split(" ")[1]
             if ( table in self.cle_impacte_set.keys() ) :
                 a = self.cle_impacte_set[table]
                 a.append(attr)
                 self.cle_impacte_set[table] = a 
+                print(self.cle_impacte_set[table])
             else:
                 self.cle_impacte_set[table] = [attr]
+                print(self.cle_impacte_set[table])
         
         
     def trouve_update(self):
