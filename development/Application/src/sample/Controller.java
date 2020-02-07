@@ -47,35 +47,53 @@ public class Controller {
     @FXML private ScrollPane scrollPane;
 
     @FXML
+    private void graphClick() {
+        changeVisibilityPopUpWindow(true);
+    }
+    @FXML
     private void doClick(MouseEvent event) {
-        // check if twe clicked on a data-cell's Relation and note Transaction
+        // check if the data-cell clicked is a Relation or not
         if (lv_data.getAccessibleText() == null) {
-            consumer.accept("we found a Transaction");
-            // its a Transaction so no pop-up window about dependancy
+            consumer.accept("we don't find a Relation ");
+            // its a Transaction or nothing so no pop-up window about dependancy
+            doClearPopUpWindow(); // do clear if we had something in the pop-up before
+            changeVisibilityPopUpWindow(true); // hide the pop-up window
             return;
         }
         for (int i = 0; i < lv_data.getItems().size(); i++) {
             if (lv_data.getItems().get(i).equals(lv_data.getSelectionModel().getSelectedItem())) {
                 if (i >= Integer.valueOf(lv_data.getAccessibleText())) {
                     // the cell i looks after dependancy
-                    consumer.accept("We found the cell number :"+i+" looks after dependancy");
+                    consumer.accept("We found the cell number : "+i+" looks after dependancy");
                     // management of the pop-up window filling
                     String dependancy = lv_data.getSelectionModel().getSelectedItem().toString();
                     consumer.accept("our dependancy : " + dependancy);
                     fillPop_up(dependancy);
                 }else{
                     consumer.accept("the clicked cell is not about dependancy");
+                    doClearPopUpWindow();
+                    changeVisibilityPopUpWindow(true); // hide the pop-up
                 }
             }
         }
         //ArrayList<String> printing_lines = manageName();
     }
 
+    private void changeVisibilityPopUpWindow(boolean visible) {
+        if (visible) anchorPane3.setVisible(false);
+        else anchorPane3.setVisible(true);
+    }
+    // llokks after the clearing of listViews contained by the pop-up window
+    private void doClearPopUpWindow() {
+        consumer.accept("in doClearPopUpWindow");
+        listViewSource.getItems().clear();
+        listViewTarget.getItems().clear();
+    }
     // Fill the the pop-up window which shows the diferents lines causing the dependancy
     private void fillPop_up(String dependancy) {
         // before to fillwe have to clear
-        listViewSource.getItems().clear();
-        listViewTarget.getItems().clear();
+        doClearPopUpWindow();
+        changeVisibilityPopUpWindow(false); // set the pop-up visible
         // file dependancies description parsing
         // management filling listView source
         listViewSource.getItems().add(dependancy);

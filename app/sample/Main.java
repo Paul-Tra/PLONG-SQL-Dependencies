@@ -16,6 +16,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
+        primaryStage.setMinWidth(600);
+        primaryStage.setMinHeight(400);
         Parent root = FXMLLoader.load(getClass().getResource("Fenetre.fxml"));
         primaryStage.setTitle("Graph User Interface");
         primaryStage.setScene(new Scene(root, 600, 400));
