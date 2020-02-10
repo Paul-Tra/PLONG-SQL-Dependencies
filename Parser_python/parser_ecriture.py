@@ -161,6 +161,7 @@ class parser_ecriture:
                 
             tmp.append(str(table + " : " + cle) )
             self.couple_dependance[attr] = tmp
+            print("AUX :: " + str(self.couple_dependance[attr]))
                 
             
         

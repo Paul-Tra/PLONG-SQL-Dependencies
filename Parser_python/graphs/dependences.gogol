@@ -2,246 +2,42 @@
 ## ( SRC et DST sont en rapport avec les fleches du graphes).
 
 
-<Relation ID="ww;ORDERLINE(*).* " SRC="neworder" DST="neworder">
+<Relation ID="ww;ITEMS(['iId']).nbids" SRC="StoreBId" DST="StoreBId">
 <SRC>
-	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
-	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
+	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
 </SRC>
 <DST>
-	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
-	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
+	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
 </DST>
 </Relation>
 
 
-<Relation ID="ww;ORDERS(*).* " SRC="neworder" DST="neworder">
+<Relation ID="ww;BID(*).* " SRC="StoreBId" DST="StoreBId">
 <SRC>
-	INSERT INTO ORDERS(oId, dId, wId, cId, entryDate, oLCnt, allLocal) VALUES (o_id, d_Id, w_Id, c_Id, date_time, o_ol_cnt, o_all_local);
-	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
+	INSERT INTO BIDS ( iId , nbids ) VALUES ( i_id, val) ;
 </SRC>
 <DST>
-	INSERT INTO ORDERS(oId, dId, wId, cId, entryDate, oLCnt, allLocal) VALUES (o_id, d_Id, w_Id, c_Id, date_time, o_ol_cnt, o_all_local);
-	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
+	INSERT INTO BIDS ( iId , nbids ) VALUES ( i_id, val) ;
 </DST>
 </Relation>
 
 
-<Relation ID="ww;NEW_ORDER(*).* " SRC="neworder" DST="neworder">
+<Relation ID="wr;ITEMS(['iId']).nbids" SRC="StoreBId" DST="ViewItem">
 <SRC>
-	INSERT INTO NEW_ORDER(oId, dId, wId) VALUES (o_id, d_Id, w_Id);
+	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
 </SRC>
 <DST>
-	INSERT INTO NEW_ORDER(oId, dId, wId) VALUES (o_id, d_Id, w_Id);
+	SELECT I.nbids FROM ITEMS I WHERE I.iId = i_id
 </DST>
 </Relation>
 
 
-<Relation ID="ww;DISTRICT(['dId', 'wId']).nextOrdId" SRC="neworder" DST="neworder">
+<Relation ID="rw;ITEMS(['iId']).nbids" SRC="ViewItem" DST="StoreBId">
 <SRC>
-	UPDATE DISTRICT SET nextOrdId = d_next_o_id + 1 WHERE DISTRICT.dId = d_id AND DISTRICT.wId = w_id;
+	SELECT I.nbids FROM ITEMS I WHERE I.iId = i_id
 </SRC>
 <DST>
-	UPDATE DISTRICT SET nextOrdId = d_next_o_id + 1 WHERE DISTRICT.dId = d_id AND DISTRICT.wId = w_id;
-</DST>
-</Relation>
-
-
-<Relation ID="ww;STOCK(['iId', 'wId']).quantity" SRC="neworder" DST="neworder">
-<SRC>
-	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
-</SRC>
-<DST>
-	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
-</DST>
-</Relation>
-
-
-<Relation ID="ww;HISTORY(*).* " SRC="payment" DST="payment">
-<SRC>
-	INSERT INTO HISTORY(cDId, cWId, cId, dId, wId, date, amount, data) VALUES (c_d_id, w_id, c_id, c_d_id, w_id, datetime, c_amount, c_data);
-</SRC>
-<DST>
-	INSERT INTO HISTORY(cDId, cWId, cId, dId, wId, date, amount, data) VALUES (c_d_id, w_id, c_id, c_d_id, w_id, datetime, c_amount, c_data);
-</DST>
-</Relation>
-
-
-<Relation ID="ww;CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="payment" DST="payment">
-<SRC>
-	UPDATE CUSTOMER SET balance = c_balance, data = c_new_data WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-	UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-</SRC>
-<DST>
-	UPDATE CUSTOMER SET balance = c_balance, data = c_new_data WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-	UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-</DST>
-</Relation>
-
-
-<Relation ID="ww;DISTRICT(['dId', 'wId']).dYTD" SRC="payment" DST="payment">
-<SRC>
-	UPDATE DISTRICT SET dYTD = dYTD + h_amount WHERE DISTRICT.wId = w_id AND DISTRICT.dId = d_id;
-</SRC>
-<DST>
-	UPDATE DISTRICT SET dYTD = dYTD + h_amount WHERE DISTRICT.wId = w_id AND DISTRICT.dId = d_id;
-</DST>
-</Relation>
-
-
-<Relation ID="ww;CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt" SRC="payment" DST="payment">
-<SRC>
-	UPDATE CUSTOMER SET YTDPaymt = YTDPaymt + h_amount WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-</SRC>
-<DST>
-	UPDATE CUSTOMER SET YTDPaymt = YTDPaymt + h_amount WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-</DST>
-</Relation>
-
-
-<Relation ID="ww;WAREHOUSE(['wId']).wYTD" SRC="payment" DST="payment">
-<SRC>
-	UPDATE WAREHOUSE SET wYTD = wYTD + h_amount WHERE WAREHOUSE.wId = w_id;
-</SRC>
-<DST>
-	UPDATE WAREHOUSE SET wYTD = wYTD + h_amount WHERE WAREHOUSE.wId = w_id;
-</DST>
-</Relation>
-
-
-<Relation ID="ww;CUSTOMER(['cId', 'dId', 'wId']).paymtCnt" SRC="payment" DST="payment">
-<SRC>
-	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-</SRC>
-<DST>
-	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-</DST>
-</Relation>
-
-
-<Relation ID="wr;CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="payment" DST="orderstatus">
-<SRC>
-	UPDATE CUSTOMER SET balance = c_balance, data = c_new_data WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-	UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-</SRC>
-<DST>
-	DECLARE c_name CURSOR FOR SELECT balance, first, middle, cId FROM CUSTOMER C WHERE C.last = c_last AND C.dId = d_id AND C.wId = w_id ORDER BY C.first
-	SELECT balance, first, middle, last INTO c_balance, c_first, c_middle, c_last FROM CUSTOMER C WHERE C.cId = c_id AND C.dId = d_id AND C.wId = w_Id
-</DST>
-</Relation>
-
-
-<Relation ID="wr;CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="delivery" DST="orderstatus">
-<SRC>
-	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
-</SRC>
-<DST>
-	DECLARE c_name CURSOR FOR SELECT balance, first, middle, cId FROM CUSTOMER C WHERE C.last = c_last AND C.dId = d_id AND C.wId = w_id ORDER BY C.first
-	SELECT balance, first, middle, last INTO c_balance, c_first, c_middle, c_last FROM CUSTOMER C WHERE C.cId = c_id AND C.dId = d_id AND C.wId = w_Id
-</DST>
-</Relation>
-
-
-<Relation ID="wr;ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate" SRC="delivery" DST="orderstatus">
-<SRC>
-	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
-</SRC>
-<DST>
-	DECLARE c_line CURSOR FOR SELECT iId, supplyWId, quantity, amount, deliveryDate FROM ORDERLINE OL WHERE OL.oId = o_id AND OL.dId = d_id AND OL.wId = w_id
-</DST>
-</Relation>
-
-
-<Relation ID="wr;CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="delivery" DST="payment">
-<SRC>
-	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
-</SRC>
-<DST>
-	DECLARE c_byname CURSOR FOR SELECT first, middle, cId, str1, str2, city, state, zip, phone, credit, creditLim, discount,balance, since FROM CUSTOMER C WHERE C.wId = w_id AND C.dId = c_d_id AND C.last = c_last ORDER BY C.first
-	SELECT first, middle, last, str1, str2, city, state, zip, phone, credit, creditLim, discount,balance, since INTO c_first,c_middle,c_last, c_str1, c_str2, c_city, c_state, c_zip, c_phone, c_credit, c_creditLim, c_discount,c_balance,c_since FROM CUSTOMER C WHERE C.wId = w_id AND C.dId = c_d_id AND C.cId = c_id
-</DST>
-</Relation>
-
-
-<Relation ID="ww;CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="delivery" DST="delivery">
-<SRC>
-	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
-</SRC>
-<DST>
-	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
-</DST>
-</Relation>
-
-
-<Relation ID="ww;CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt" SRC="delivery" DST="delivery">
-<SRC>
-	UPDATE CUSTOMER SET deliveryCnt = deliveryCnt + 1 WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
-</SRC>
-<DST>
-	UPDATE CUSTOMER SET deliveryCnt = deliveryCnt + 1 WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
-</DST>
-</Relation>
-
-
-<Relation ID="ww;ORDERS(['oId', 'dId', 'wId']).carrierId" SRC="delivery" DST="delivery">
-<SRC>
-	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
-</SRC>
-<DST>
-	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
-</DST>
-</Relation>
-
-
-<Relation ID="ww;ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate" SRC="delivery" DST="delivery">
-<SRC>
-	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
-</SRC>
-<DST>
-	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
-</DST>
-</Relation>
-
-
-<Relation ID="rw;CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="orderstatus" DST="payment">
-<SRC>
-	DECLARE c_name CURSOR FOR SELECT balance, first, middle, cId FROM CUSTOMER C WHERE C.last = c_last AND C.dId = d_id AND C.wId = w_id ORDER BY C.first
-	SELECT balance, first, middle, last INTO c_balance, c_first, c_middle, c_last FROM CUSTOMER C WHERE C.cId = c_id AND C.dId = d_id AND C.wId = w_Id
-</SRC>
-<DST>
-	UPDATE CUSTOMER SET balance = c_balance, data = c_new_data WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-	UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-</DST>
-</Relation>
-
-
-<Relation ID="rw;ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate" SRC="orderstatus" DST="delivery">
-<SRC>
-	DECLARE c_line CURSOR FOR SELECT iId, supplyWId, quantity, amount, deliveryDate FROM ORDERLINE OL WHERE OL.oId = o_id AND OL.dId = d_id AND OL.wId = w_id
-</SRC>
-<DST>
-	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
-</DST>
-</Relation>
-
-
-<Relation ID="rw;CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="orderstatus" DST="delivery">
-<SRC>
-	DECLARE c_name CURSOR FOR SELECT balance, first, middle, cId FROM CUSTOMER C WHERE C.last = c_last AND C.dId = d_id AND C.wId = w_id ORDER BY C.first
-	SELECT balance, first, middle, last INTO c_balance, c_first, c_middle, c_last FROM CUSTOMER C WHERE C.cId = c_id AND C.dId = d_id AND C.wId = w_Id
-</SRC>
-<DST>
-	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
-</DST>
-</Relation>
-
-
-<Relation ID="rw;CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="payment" DST="delivery">
-<SRC>
-	DECLARE c_byname CURSOR FOR SELECT first, middle, cId, str1, str2, city, state, zip, phone, credit, creditLim, discount,balance, since FROM CUSTOMER C WHERE C.wId = w_id AND C.dId = c_d_id AND C.last = c_last ORDER BY C.first
-	SELECT first, middle, last, str1, str2, city, state, zip, phone, credit, creditLim, discount,balance, since INTO c_first,c_middle,c_last, c_str1, c_str2, c_city, c_state, c_zip, c_phone, c_credit, c_creditLim, c_discount,c_balance,c_since FROM CUSTOMER C WHERE C.wId = w_id AND C.dId = c_d_id AND C.cId = c_id
-</SRC>
-<DST>
-	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
+	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
 </DST>
 </Relation>
 

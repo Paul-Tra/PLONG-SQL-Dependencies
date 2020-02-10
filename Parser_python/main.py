@@ -291,6 +291,7 @@ class principal:
     def genere_condition_dep(self):
         for src in self.p :
             for dst in self.pw : 
+                print("GENERE condition Dep 1 ")
                 source = src.name.split(".")[0]
                 target = dst.name.split(".")[0]
                 #print("----------"+name +"-------------")
@@ -298,10 +299,11 @@ class principal:
                     for  a2,b2 in dst.couple_dependance.items():
                         for el in b2 :
                             for e in b1 :
+                                
                                 if ( el == e and (source,target) in self.dep_sans_doublons.keys()):
                                     el = el.replace(" : " , ":")
                                     e =e.replace(" : ",":")
-                                    #print("src : " + source + ' , ' + e + " // dst : " + target + " , " + el )
+                                    print("src : " + source + ' , ' + e + " // dst : " + target + " , " + el )
                                     #if ( str(source + "." + a1 + " = " + target +"." +  a2) not in self.dep_sans_doublons[source,target] ) :
                                     self.dep_sans_doublons[source,target] = self.dep_sans_doublons[source,target] + [ source + "." + a1 + " = " + target +"." +  a2 ]
                                     
@@ -309,14 +311,21 @@ class principal:
             for dst in self.p : 
                 source = src.name.split(".")[0]
                 target = dst.name.split(".")[0]
+                print("GENERE condition Dep 2 ")
                 #print("----------"+name +"-------------")
+                print(dst.couple_dependance)
                 for a1,b1 in src.couple_dependance.items():
+                    #print(a1,b1)
                     for  a2,b2 in dst.couple_dependance.items():
+                        print(a2,b2)
+                        print(len(b1),len(b2))
                         for el in b1 :
                             for e in b2 :
+                                print(el,e)
                                 if ( el == e and (source,target) in self.dep_sans_doublons.keys()):
                                     el = el.replace(" : " , ":")
                                     e =e.replace(" : ",":")
+                                    print("src : " + source + ' , ' + e + " // dst : " + target + " , " + el )
                                     #if ( str(source + "." + a1 + " = " + target +"." +  a2) not in self.dep_sans_doublons[source,target] ) :
                                     self.dep_sans_doublons[source,target] = self.dep_sans_doublons[source,target] + [ source + "." + a1 + " = " + target +"." +  a2 ]
     def generer_graphml(self):
@@ -443,7 +452,7 @@ class principal:
                             m = re.findall("SELECT.*?"+attr+".*?FROM.*?"+table+".*?;",elt.data)
                             
                             if ( m != [] ) :
-                                print("mmmmmmmm :::::::::: " + str(m))
+                                #print("mmmmmmmm :::::::::: " + str(m))
                                 for li in m :
                                     l = li.split(";")
                                     for e in l :
@@ -611,10 +620,8 @@ class principal:
         #self.generer_graphml()
         self.genere_couple_source_target()
         print("############################################")
-        
-        
-        #self.verifie_dep_ww()
-        #self.traite_dep_ww_entrefonctions()
+        self.verifie_dep_ww()
+        self.traite_dep_ww_entrefonctions()
         self.genere_condition_dep()
         self.affiche_lise_sans_doublon()
         self.genere_graphml_sans_doublons()

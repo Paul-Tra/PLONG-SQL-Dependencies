@@ -1,4 +1,6 @@
-CREATE OR REPLACE FUNCTION storebid( i_id INTEGER, val INTEGER) {
+CREATE OR REPLACE FUNCTION storebid(i_id INTEGER,val INTEGER) {
+
+RETURNS VOID AS $$
 
 DECLARE
 	nothing void;

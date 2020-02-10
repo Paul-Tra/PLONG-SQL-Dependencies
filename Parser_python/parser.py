@@ -359,7 +359,7 @@ class Parser:
             
             
     def trouve_attribut_de_fonction(self):
-        #print("\nrecherche des attributs de fonction")
+        print("\nrecherche des attributs de fonction")
         self.data = self.data.replace("NUMERIC(2)","INTEGER")
         self.data = self.data.replace("VARCHAR(16)","INTEGER")
         m = re.findall("FUNCTION .*?[{]*? RETURNS",self.data)
@@ -367,7 +367,7 @@ class Parser:
         n = re.findall("\(.*?\)",str(m))
         #print(n)
         m = re.findall("[a-z]+[_]*[A-Za-z]+[_]*[A-Za-z]+",str(n))
-        #print(m)
+        print(m)
         print("\nListe des parametre de la fonction : " )
         for elt in m :
             self.liste_param_fonction.append(elt)
@@ -376,13 +376,14 @@ class Parser:
         
             
     def trouve_cle_dep_possible (self):
+        print("OLOLOLLOLOLO")
         #print('\n'+self.data)
         #print("\n")
         #print(self.liste_param_fonction)
         #print("\n")
         m = re.findall("WHERE .*?;",self.data)
         print("")
-        #print(m)
+        print(m)
         for elt in m :
             elt = elt.replace("WHERE","")
             elt = elt.replace(" AND ",",")
@@ -390,34 +391,35 @@ class Parser:
             elt = elt.strip().replace(" ","").replace(";","")
             #print(elt)
             liste = elt.split(",")
-            #print(str(liste))
+            print(str(liste))
             # on separe les clause du where : D.wid=w_id , pour regarder si la clause contient un parametre de la fonction
             for i in liste :
-                #print(" i ==== " + i )
+                print(" i ==== " + i )
                 for item in self.liste_param_fonction :
+                    print("ITEM = " + item ) 
                     l = i.split("=")
                     if ( item in l ):
-                        #print(item + " présent dans " + str(l) )
+                        print(item + " présent dans " + str(l) )
                         self.aux(l)
                     else :
                         l = i.split("<")
                         if ( item in l ):
-                            #print(item + " présent dans " + str(l) )
+                            print(item + " présent dans " + str(l) )
                             self.aux(l)
                         else:
                             l = i.split(">")
                             if ( item in l ):
-                                #print(item + " présent dans " + str(l) )
+                                print(item + " présent dans " + str(l) )
                                 self.aux(l)
                             else:
                                 l = i.split(">=")
                                 if ( item in l ):
-                                    #print(item + " présent dans " + str(l) )
+                                    print(item + " présent dans " + str(l) )
                                     self.aux(l)
                                 else:
                                     l = i.split("<=")
                                     if ( item in l ):
-                                        #print(item + " présent dans " + str(l) )
+                                        print(item + " présent dans " + str(l) )
                                         self.aux(l)
                     #if ( ( l[0].split(".")[1] in self.pkey.couple[self.table_from[l[0].split(".")[0]]]  ) or ( l[0].split(".") in self.pkey.couple[l[0].split(".")[0]] ) ):
                     
@@ -426,14 +428,17 @@ class Parser:
                      #   print("dependance de clé primaire trouvé")
     
     def aux(self,l):
+        print("AUX P ")
         cle = l[0].split(".")[1]
         table = l[0].split(".")[0]
         attr = l[1]
         if ( table in self.table_from.keys() ) :
-            #print("ok")
+            print("ok")
             table = self.table_from[table]
+        else :
+            print("rip")
         if ( cle in self.pkey.couple[table] ) :
-            #print("Clé primaire : " + cle + " / " + attr + " dans : " + table)
+            print("P Clé primaire : " + cle + " / " + attr + " dans : " + table)
             # on va ajouter a un dico les couple ( arg : [table touché] ) car nous savons deja que les clé touchés sont des clés primaires
             if ( self.couple_dependance[attr] == "" ):
                 self.couple_dependance[attr] = str(table + " : " + cle)

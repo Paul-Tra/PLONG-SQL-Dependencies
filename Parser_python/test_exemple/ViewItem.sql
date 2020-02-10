@@ -1,4 +1,5 @@
 CREATE OR REPLACE FUNCTION viewitem(i_id INTEGER) {
+RETURNS VOID AS $$
 DECLARE
 	nothing void;
 BEGIN
