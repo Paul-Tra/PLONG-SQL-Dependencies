@@ -564,7 +564,7 @@ class principal:
                         l.append(v)
                     
                 for elt in l :
-                    fichier.write(elt.replace(";",",")+'\n')
+                    fichier.write(elt.strip().replace(";",",")+'\n')
                     
                 
                     fichier.write('\n\n</data>\n</edge>')    
@@ -599,7 +599,7 @@ class principal:
                             l.append(v)
                     
                     for elt in l :
-                        fichier.write(elt.replace(";",",")+'\n')
+                        fichier.write(elt.strip().replace(";",",")+'\n')
                         
                 
                     fichier.write('\n</data>\n</edge>\n\n')    

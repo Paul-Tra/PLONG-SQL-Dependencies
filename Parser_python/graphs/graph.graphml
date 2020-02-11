@@ -9,9 +9,9 @@
 </node>
 <edge source="StoreBId" target="StoreBId">
 <data key="d1">
+ww,BID(*).*
 ww,ITEMS(['iId']).nbids
 StoreBId.i_id = StoreBId.i_id
-ww,BID(*).* 
 
 </data>
 </edge>

@@ -9,7 +9,7 @@
 </node>
 <edge source="StoreBId" target="StoreBId">
 <data key="d1">
-ww,BID(*).* 
+ww,BID(*).*
 
 
 </data>
