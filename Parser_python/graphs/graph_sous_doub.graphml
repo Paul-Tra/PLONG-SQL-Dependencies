@@ -9,11 +9,11 @@
 </node>
 <edge source="StoreBId" target="StoreBId">
 <data key="d1">
-ww;BID(*).* 
+ww,BID(*).* 
 
 
 </data>
-</edge>ww;ITEMS(['iId']).nbids
+</edge>ww,ITEMS(['iId']).nbids
 
 
 </data>
@@ -27,7 +27,7 @@ ww;BID(*).*
 </node>
 <edge source="StoreBId" target="ViewItem">
 <data key="d1">
-wr;ITEMS(['iId']).nbids
+wr,ITEMS(['iId']).nbids
 
 
 </data>
@@ -41,7 +41,7 @@ wr;ITEMS(['iId']).nbids
 </node>
 <edge source="ViewItem" target="StoreBId">
 <data key="d1">
-rw;ITEMS(['iId']).nbids
+rw,ITEMS(['iId']).nbids
 
 
 </data>

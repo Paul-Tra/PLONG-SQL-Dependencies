@@ -530,7 +530,7 @@ class principal:
                     self.dict_finale[fsrc,fdst] = []
                     #print("VALUE : " + v )
                     self.dict_finale[fsrc,fdst].append(v)
-                fichier.write('\n<Relation ID="'+v.strip()+'" SRC="'+fsrc+'" DST="'+fdst+'">\n')
+                fichier.write('\n<Relation ID="'+v.strip().replace(";",",")+'" SRC="'+fsrc+'" DST="'+fdst+'">\n')
                 fichier.write('<SRC>\n')
                 for elt in l_dep_src :
                     fichier.write('\t'+elt.strip()+'\n')
@@ -564,7 +564,7 @@ class principal:
                         l.append(v)
                     
                 for elt in l :
-                    fichier.write(elt+'\n')
+                    fichier.write(elt.replace(";",",")+'\n')
                     
                 
                     fichier.write('\n\n</data>\n</edge>')    
@@ -599,7 +599,7 @@ class principal:
                             l.append(v)
                     
                     for elt in l :
-                        fichier.write(elt+'\n')
+                        fichier.write(elt.replace(";",",")+'\n')
                         
                 
                     fichier.write('\n</data>\n</edge>\n\n')    
