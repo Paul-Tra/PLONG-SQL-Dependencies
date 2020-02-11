@@ -41,3 +41,15 @@
    - trouver un algo d'affichage du graphe
    - README.md
    =======
+
+
+* <11/02/2020>
+** Fait:
+   - Amelioré l'esthétique
+   - Afficher les lignes générant les dépendances
+   - Un outils qui ne marche plus
+** A faire:
+   - Affichier le numero de ligne dans le fichier
+   - Affichier le code avec les lignes souligner
+   - Affichier les arrete RW avec une couleur pernalisé
+   - Chercher des applications en PgSQL et tester le parseur
