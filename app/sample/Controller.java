@@ -74,7 +74,7 @@ public class Controller {
                     consumer.accept("source : "+source+"FIN");
                     String target = getItemValue("destination");
                     consumer.accept("target : "+ target+"FIN");
-                    ParserG parserG = new ParserG("/home/paul/Documents/M1/Projet Long/temp/cadiou-traore-plong-1920/Parser_python/graphs/dependences.gogol");
+                    ParserG parserG = new ParserG("./dependences.gogol");
                     ArrayList<String[]> list = parserG.getRelationLines(parserG.getList_lines(),id,source,target);
                     String Id = "ww,BID(*).*";
                     String src = "StoreBId";
