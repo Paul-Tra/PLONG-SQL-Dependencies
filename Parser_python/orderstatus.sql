@@ -13,17 +13,18 @@ DECLARE
   c_last VARCHAR(16);
   i INTEGER := 0;
 
-    c_name CURSOR FOR 
-      SELECT balance, first, middle, cId
-      FROM CUSTOMER C
-      WHERE C.last = c_last AND C.dId = d_id AND C.wId = w_id
-      ORDER BY C.first;
-
 BEGIN
   IF (by_name) THEN
     SELECT COUNT(cId) INTO name_cnt
     FROM CUSTOMER C
     WHERE C.last = c_last AND C.dId = d_Id AND C.wId = w_Id;
+
+    DECLARE 
+    c_name CURSOR FOR 
+      SELECT balance, first, middle, cId
+      FROM CUSTOMER C
+      WHERE C.last = c_last AND C.dId = d_id AND C.wId = w_id
+      ORDER BY C.first;
 
     OPEN c_name;
 
@@ -33,7 +34,7 @@ BEGIN
     END IF;
     FOR n in 0 ..name_cnt/2 LOOP
       FETCH c_name 
-      INTO c_balance, c_first, c_middle, c_id ;
+      INTO c_balance, c_first, c_middle, c_id
     END LOOP;
 
     CLOSE c_name;

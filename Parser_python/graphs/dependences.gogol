@@ -2,42 +2,96 @@
 ## ( SRC et DST sont en rapport avec les fleches du graphes).
 
 
-<Relation ID="ww,BID(*).*" SRC="StoreBId" DST="StoreBId">
+<Relation ID="ww,NEW_ORDER(*).*" SRC="neworder" DST="neworder">
 <SRC>
-	INSERT INTO BIDS ( iId , nbids ) VALUES ( i_id, val) ;
+	INSERT INTO NEW_ORDER(oId, dId, wId) VALUES (o_id, d_Id, w_Id);
 </SRC>
 <DST>
-	INSERT INTO BIDS ( iId , nbids ) VALUES ( i_id, val) ;
+	INSERT INTO NEW_ORDER(oId, dId, wId) VALUES (o_id, d_Id, w_Id);
 </DST>
 </Relation>
 
 
-<Relation ID="ww,ITEMS(['iId']).nbids" SRC="StoreBId" DST="StoreBId">
+<Relation ID="ww,DISTRICT(['dId', 'wId']).nextOrdId" SRC="neworder" DST="neworder">
 <SRC>
-	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
+	UPDATE DISTRICT SET nextOrdId = d_next_o_id + 1 WHERE DISTRICT.dId = d_id AND DISTRICT.wId = w_id;
 </SRC>
 <DST>
-	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
+	UPDATE DISTRICT SET nextOrdId = d_next_o_id + 1 WHERE DISTRICT.dId = d_id AND DISTRICT.wId = w_id;
 </DST>
 </Relation>
 
 
-<Relation ID="wr,ITEMS(['iId']).nbids" SRC="StoreBId" DST="ViewItem">
+<Relation ID="ww,STOCK(['iId', 'wId']).quantity" SRC="neworder" DST="neworder">
 <SRC>
-	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
+	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
 </SRC>
 <DST>
-	SELECT I.nbids FROM ITEMS I WHERE I.iId = i_id
+	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
 </DST>
 </Relation>
 
 
-<Relation ID="rw,ITEMS(['iId']).nbids" SRC="ViewItem" DST="StoreBId">
+<Relation ID="ww,ORDERLINE(*).*" SRC="neworder" DST="neworder">
 <SRC>
-	SELECT I.nbids FROM ITEMS I WHERE I.iId = i_id
+	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
+	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
 </SRC>
 <DST>
-	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
+	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
+	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
+</DST>
+</Relation>
+
+
+<Relation ID="ww,ORDERS(*).*" SRC="neworder" DST="neworder">
+<SRC>
+	INSERT INTO ORDERS(oId, dId, wId, cId, entryDate, oLCnt, allLocal) VALUES (o_id, d_Id, w_Id, c_Id, date_time, o_ol_cnt, o_all_local);
+	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
+</SRC>
+<DST>
+	INSERT INTO ORDERS(oId, dId, wId, cId, entryDate, oLCnt, allLocal) VALUES (o_id, d_Id, w_Id, c_Id, date_time, o_ol_cnt, o_all_local);
+	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
+</DST>
+</Relation>
+
+
+<Relation ID="ww,CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="delivery" DST="delivery">
+<SRC>
+	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
+</SRC>
+<DST>
+	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
+</DST>
+</Relation>
+
+
+<Relation ID="ww,ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate" SRC="delivery" DST="delivery">
+<SRC>
+	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
+</SRC>
+<DST>
+	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
+</DST>
+</Relation>
+
+
+<Relation ID="ww,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt" SRC="delivery" DST="delivery">
+<SRC>
+	UPDATE CUSTOMER SET deliveryCnt = deliveryCnt + 1 WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
+</SRC>
+<DST>
+	UPDATE CUSTOMER SET deliveryCnt = deliveryCnt + 1 WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
+</DST>
+</Relation>
+
+
+<Relation ID="ww,ORDERS(['oId', 'dId', 'wId']).carrierId" SRC="delivery" DST="delivery">
+<SRC>
+	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
+</SRC>
+<DST>
+	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
 </DST>
 </Relation>
 
