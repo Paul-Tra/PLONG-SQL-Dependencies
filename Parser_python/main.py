@@ -377,6 +377,7 @@ class principal:
         #print( dst ) 
         l_dep_src = []
         l_dep_dst = []
+        #print("------------------- " + v )
         
         with open ("./graphs/dependences.gogol","a+") as fichier :
             
@@ -404,7 +405,7 @@ class principal:
                                     l = li.split(";")
                                     for e in l :
                                         if ( "SELECT" in e and attr in e ):
-                                            print('\t\t\t'+e)
+                                            #print('\t\t\t'+e)
                                             l_dep_dst.append(e)
                 for elt in self.pw :
                     if ( elt.name == src ):
@@ -413,7 +414,7 @@ class principal:
                         if ( m != [] ):
                             #print("\t\tRaison de la dependance SRC : "+src+" : ")
                             for li in m :
-                                print('\t\t\t'+li)
+                                #print('\t\t\t'+li)
                                 l_dep_src.append(li)
                     
                                 
@@ -434,7 +435,7 @@ class principal:
                         if ( m != [] ):
                             #print("\t\tRaison de la dependance DST : "+dst+" : ")
                             for li in m :
-                                print('\t\t\t'+li)
+                                #print('\t\t\t'+li)
                                 l_dep_dst.append(li)
                                 
                 for elt in self.p :
@@ -457,7 +458,7 @@ class principal:
                                     l = li.split(";")
                                     for e in l :
                                         if ( "SELECT" in e and attr in e):
-                                            print('\t\t\t'+e)
+                                            #print('\t\t\t'+e)
                                             l_dep_src.append(e)
                                     
             if ( "ww;" in v ) :
@@ -467,6 +468,107 @@ class principal:
                 #print(tmp)
                 attr = tmp[0].replace(").","")
                 #print(table)
+                
+                ## test ##
+                attr = attr.strip()
+                l_dep_src = []
+                l_dep_dst = []
+                #print("ATTR =" + attr +".")
+                for lect in self.p :
+                    if ( attr != "*" ):
+                        #print("!= * , "+attr)
+                        m = re.search("SELECT.*?"+attr+".*?;",lect.data)
+                        #print((fsrc,lect.name.split(".")[0]))
+                        if (m != None and m[0] != None):
+                            a = m[0].split(";")
+                            for elt in a :
+                                r = re.findall(" "+attr+" ",elt )
+                                if ( r == [] ):
+                                    break 
+                                if ( attr in elt ):
+                                    #print(elt)
+                                    a = (fsrc,lect.name.split(".")[0]) 
+                                    g = (lect.name.split(".")[0],fsrc) 
+                                    #print(a)
+                                    if ( a in self.dict_finale.keys() ):
+                                        #print("OK , elt = " + elt)
+                                        b = v.replace("ww","wr")
+                                        h = v.replace("ww","rw")
+                                        #print(b)
+                                        self.dict_finale[a].append(b)
+                                        self.dict_finale[g].append(h)
+                                        #print(";;;;;;;;;;;;;;" + str(self.dict_finale[a]))
+                                        l_dep_src.append(v)
+                                        l_dep_dst.append(elt)
+
+                                        print(self.dict_finale[g] )
+                                        print(self.dict_finale[a])
+                                        
+                                    else : 
+                                        #print("Pas OK , elt = " + elt)
+                                        #print(a)
+                                        b = v.replace("ww","wr")
+                                        h = v.replace("ww","rw")
+                                        print(b)
+                                        self.dict_finale[a] = []
+                                        self.dict_finale[a].append(b)
+                                        self.dict_finale[g] = []
+                                        self.dict_finale[g].append(h)
+                                        print(self.dict_finale[g] )
+                                        print(self.dict_finale[a])
+                                        l_dep_src.append(v)
+                                        l_dep_dst.append(elt)
+                                                        
+                    else :
+                        #print("*******************************************")
+                        m = re.search("SELECT.*?"+table+".*?;",lect.data)
+                        #print((fsrc,lect.name.split(".")[0]))
+                        print("//"+ str(m))
+                        if ( m != None and m[0] != None):
+                            a = m[0].split(";")
+                            for elt in a :
+                                if ( table in elt and "SELECT" in elt ) :
+                                    print(elt)
+                                    a = (fsrc,lect.name.split(".")[0]) 
+                                    g = (lect.name.split(".")[0],fsrc) 
+                                    #print(a)
+                                    if ( a in self.dict_finale.keys() ):
+                                        #print("OK , elt = " + elt)
+                                        b = v.replace("ww","wr")
+                                        h = v.replace("ww","rw")
+                                        #print(b)
+                                        if ( b not in self.dict_finale[a] ):
+                                            self.dict_finale[a].append(b)
+                                        if ( h not in self.dict_finale[g] ):
+                                            self.dict_finale[g].append(h)
+                                        #print(";;;;;;;;;;;;;;" + str(self.dict_finale[a]))
+                                        l_dep_src.append(v)
+                                        l_dep_dst.append(elt)
+
+                                        print(self.dict_finale[g] )
+                                        print(self.dict_finale[a])
+                                        
+                                    else : 
+                                        #print("Pas OK , elt = " + elt)
+                                        #print(a)
+                                        b = v.replace("ww","wr")
+                                        h = v.replace("ww","rw")
+                                        print(b)
+                                        self.dict_finale[a] = []
+                                        if ( b not in self.dict_finale[a] ):
+                                            self.dict_finale[a].append(b)
+                                        self.dict_finale[g] = []
+                                        if ( h not in self.dict_finale[g] ):
+                                            self.dict_finale[g].append(h)
+                                        print(self.dict_finale[g] )
+                                        print(self.dict_finale[a])
+                                        l_dep_src.append(v)
+                                        l_dep_dst.append(elt)
+                            
+                            
+                        
+                ## fin test
+                
                 for elt in self.pw :
                     if ( elt.name == src and src == dst):
                         tmp = "INSERT INTO "+table
@@ -475,7 +577,7 @@ class principal:
                         if ( m != [] ):
                             #print("\t\tRaison de la dependance SRC : "+src+" : ")
                             for li in m :
-                                print('\t\t\t'+li)
+                                #print('\t\t\t'+li)
                                 l_dep_src.append(li)
                                 l_dep_dst.append(li)
                     else:
@@ -485,9 +587,10 @@ class principal:
                         if ( m != [] ):
                             #print("\t\tRaison de la dependance SRC : "+src+" : ")
                             for li in m :
-                                print('\t\t\t'+li)
+                                #print('\t\t\t'+li)
                                 l_dep_src.append(li)
                                 l_dep_dst.append(li)
+                
                 if ( ".*" not in t[0] ):
                     for elt in self.pw :
                         if ( elt.name == src and src == dst):
@@ -499,7 +602,7 @@ class principal:
                                 l_dep_src = []
                                 l_dep_dst = []
                                 for li in m :
-                                    print('\t\t\t'+li)
+                                    #print('\t\t\t'+li)
                                     l_dep_src.append(li)
                                     l_dep_dst.append(li)
                     
@@ -515,13 +618,19 @@ class principal:
                     self.dict_finale[fsrc,fdst].append(v)
                 return 0
                 
+                
+                
             #print("//////////////////////////////////////")
             #print(len(l_dep_src))
             #print(len(l_dep_dst))
             #print("//////////////////////////////////////")
             
-            if ( l_dep_src == [] or l_dep_dst == [] ):
-                return -1
+            #if ( l_dep_src == [] or l_dep_dst == [] ):
+            #    
+            #    print("RIP")
+            #    return -1
+            if ( 1 == 0 ):
+                a=1
             else :
                 if ( (fsrc,fdst) in self.dict_finale.keys() ):
                     self.dict_finale[fsrc,fdst].append(v)
@@ -577,27 +686,38 @@ class principal:
         l = []
         d = dict()
         for c1 , v1 in self.dict_finale.items() :
+            #print(c1)
             for elt in v1 :
                 if ( "ww" in elt ) :
                     t = re.findall("ww;.*?\(",elt)
                     tmp = t[0]
-                    print("WW trouvé : " + tmp )
+                    #print("WW trouvé : " + tmp )
                     for c2 , v2 in self.dict_finale.items() :
                         for el in v2 :
                             if ( tmp in el ):
                                 l.append(tmp)
-                                d[c1[0],c2[0]] = tmp+"*).*"
+                                if ( (c1[0],c2[0]) in d.keys() ) :
+                                    d[c1[0],c2[0]].append(tmp+"*).*")
+                                else :
+                                    d[c1[0],c2[0]] = [tmp+"*).*"]
                                 
         for c,v in d.items() :
             print("- " + c[0],c[1] + " - " + str(v)  )
-            self.dict_finale[c[0],c[1]].append(str(v))
-            print(str(self.dict_finale[c[0],c[1]])+'\n')
-            
+            for elt in v :
+                if ( elt not in self.dict_finale[c[0],c[1]] ) :
+                    self.dict_finale[c[0],c[1]].append(elt)
+            #print(str(self.dict_finale[c[0],c[1]])+'\n')
+        
+        
+        #for cle , value in self.dict_finale.items() :
+        #    self.dict_finale[cle] = list(set(value))
         
          
         # c = c1[0],c2[0]
         # self.dict_finale[c].append(tmp)
-              
+        
+        for c1 , v1 in self.dict_finale.items() :
+            self.dict_finale[c1] = list(set(v1))
         
         
         
@@ -621,7 +741,7 @@ class principal:
                     fichier.write('<data key="d1">\n')
                     # on traite ensuite toutes les dependances une a une 
                     l = []
-                    
+                    #print("°°°°°°°°°°°°° " + str(value)) 
                     for v in value :
                         if ( v not in l ) :
                             l.append(v)
