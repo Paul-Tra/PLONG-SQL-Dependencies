@@ -2,22 +2,22 @@
 ## ( SRC et DST sont en rapport avec les fleches du graphes).
 
 
+<Relation ID="ww;BID(*).*" SRC="StoreBId" DST="StoreBId">
+<SRC>
+	INSERT INTO BIDS ( iId , nbids ) VALUES ( i_id, val) ;
+</SRC>
+<DST>
+	INSERT INTO BIDS ( iId , nbids ) VALUES ( i_id, val) ;
+</DST>
+</Relation>
+
+
 <Relation ID="ww;ITEMS(['iId']).nbids" SRC="StoreBId" DST="StoreBId">
 <SRC>
 	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
 </SRC>
 <DST>
 	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
-</DST>
-</Relation>
-
-
-<Relation ID="ww;BID(*).* " SRC="StoreBId" DST="StoreBId">
-<SRC>
-	INSERT INTO BIDS ( iId , nbids ) VALUES ( i_id, val) ;
-</SRC>
-<DST>
-	INSERT INTO BIDS ( iId , nbids ) VALUES ( i_id, val) ;
 </DST>
 </Relation>
 
