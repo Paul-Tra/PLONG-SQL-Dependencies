@@ -28,6 +28,7 @@ import org.w3c.dom.css.Rect;
 import javax.lang.model.element.AnnotationValue;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 import static sample.Main.primaryStage;
@@ -66,9 +67,23 @@ public class Controller {
                     // the cell i looks after dependancy
                     consumer.accept("We found the cell number : "+i+" looks after dependancy");
                     // management of the pop-up window filling
-                    String dependancy = lv_data.getSelectionModel().getSelectedItem().toString();
-                    consumer.accept("our dependancy : " + dependancy);
-                    fillPop_up(dependancy);
+                    String id = lv_data.getSelectionModel().getSelectedItem().toString();
+                    // the clicked cell will be the ID of the dependancy
+                    consumer.accept("id : "+id+"FIN");
+                    String source = getItemValue("source");
+                    consumer.accept("source : "+source+"FIN");
+                    String target = getItemValue("destination");
+                    consumer.accept("target : "+ target+"FIN");
+                    ParserG parserG = new ParserG("/home/paul/Documents/M1/Projet Long/temp/cadiou-traore-plong-1920/Parser_python/graphs/dependences.gogol");
+                    ArrayList<String[]> list = parserG.getRelationLines(parserG.getList_lines(),id,source,target);
+                    String Id = "ww,BID(*).*";
+                    String src = "StoreBId";
+                    String dst = "StoreBId";
+                   // ArrayList<String[]> list = parserG.getRelationLines(parserG.getList_lines(),Id,src,dst);
+
+                    //String dependancy = lv_data.getSelectionModel().getSelectedItem().toString();
+                    //consumer.accept("our dependancy : " + dependancy);
+                    fillPop_up(list.get(0),list.get(1));
                 }else{
                     consumer.accept("the clicked cell is not about dependancy");
                     doClearPopUpWindow();
@@ -79,6 +94,20 @@ public class Controller {
         //ArrayList<String> printing_lines = manageName();
     }
 
+    // use to find anything in the data's ListView
+    // return the of the 'item' which is located at the next cell of the lv_data
+    private String getItemValue(String item) {
+        for (int i = 0; i < lv_data.getItems().size(); i++) {
+            if (lv_data.getItems().get(i).getClass() == String.class) {
+                String s = (String) lv_data.getItems().get(i);
+                if (s.contains(item)) {
+                    //we found the cell of the item
+                    return (String) lv_data.getItems().get(i+1);
+                }
+            }
+        }
+        return null;
+    }
     private void changeVisibilityPopUpWindow(boolean visible) {
         if (visible) anchorPane3.setVisible(false);
         else anchorPane3.setVisible(true);
@@ -90,16 +119,19 @@ public class Controller {
         listViewTarget.getItems().clear();
     }
     // Fill the the pop-up window which shows the diferents lines causing the dependancy
-    private void fillPop_up(String dependancy) {
-        // before to fillwe have to clear
+    private void fillPop_up(String[] lines1, String[] lines2) {
+        // before to fill we have to clear
         doClearPopUpWindow();
         changeVisibilityPopUpWindow(false); // set the pop-up visible
         // file dependancies description parsing
         // management filling listView source
-        listViewSource.getItems().add(dependancy);
+        for (String s : lines1) {
+            listViewSource.getItems().add(s);
+        }
         // management filling listView target
-        listViewTarget.getItems().add(dependancy);
-
+        for (String s : lines2) {
+            listViewTarget.getItems().add(s);
+        }
     }
     // manage the scrolling and the zooming
     @FXML void doScroll(ScrollEvent event){
@@ -129,6 +161,8 @@ public class Controller {
     private void doParsing(ActionEvent actionEvent) {
         // look after the parsing of the .graphml file
         if (!this.label1.getText().equals("")) {
+            doClearPopUpWindow();
+            changeVisibilityPopUpWindow(true);
             Parser parser = new Parser(this.label1.getText());
             fillPane(parser.list_relation, parser.list_transaction);
         }
@@ -137,8 +171,8 @@ public class Controller {
     @FXML
     private void doClear(ActionEvent actionEvent) { // netoyage de la vue (effacement du grpahe)
         anchorPane2.getChildren().clear();
-        listViewSource.getItems().clear();
-        listViewTarget.getItems().clear();
+        doClearPopUpWindow();
+        changeVisibilityPopUpWindow(true);
         lv_data.getItems().clear();
     }
 
@@ -182,7 +216,7 @@ public class Controller {
         // add event to listView's cells which contain a line from printing_lines
 
     }
-    // recovering the lines available to be print in the element description
+    // recovering the lines available to be print in the element description (data's ListView)
     public ArrayList<String>  manageName(String nom){
         ArrayList<String> printing_lines = new ArrayList<String>();
         String[] line_tokens = nom.split("\n");

@@ -69,14 +69,17 @@ public class Controller {
                     // management of the pop-up window filling
                     String id = lv_data.getSelectionModel().getSelectedItem().toString();
                     // the clicked cell will be the ID of the dependancy
+                    consumer.accept("id : "+id+"FIN");
                     String source = getItemValue("source");
+                    consumer.accept("source : "+source+"FIN");
                     String target = getItemValue("destination");
+                    consumer.accept("target : "+ target+"FIN");
                     ParserG parserG = new ParserG("/home/paul/Documents/M1/Projet Long/temp/cadiou-traore-plong-1920/Parser_python/graphs/dependences.gogol");
-                    //ArrayList<String[]> list = parserG.getRelationLines(parserG.getList_lines(),id,source,target);
-                   String Id = "wr;ITEMS(['iId']).nbids";
+                    ArrayList<String[]> list = parserG.getRelationLines(parserG.getList_lines(),id,source,target);
+                    String Id = "ww,BID(*).*";
                     String src = "StoreBId";
-                    String dst = "ViewItem";
-                    ArrayList<String[]> list = parserG.getRelationLines(parserG.getList_lines(),Id,src,dst);
+                    String dst = "StoreBId";
+                   // ArrayList<String[]> list = parserG.getRelationLines(parserG.getList_lines(),Id,src,dst);
 
                     //String dependancy = lv_data.getSelectionModel().getSelectedItem().toString();
                     //consumer.accept("our dependancy : " + dependancy);
@@ -158,6 +161,8 @@ public class Controller {
     private void doParsing(ActionEvent actionEvent) {
         // look after the parsing of the .graphml file
         if (!this.label1.getText().equals("")) {
+            doClearPopUpWindow();
+            changeVisibilityPopUpWindow(true);
             Parser parser = new Parser(this.label1.getText());
             fillPane(parser.list_relation, parser.list_transaction);
         }
@@ -166,8 +171,8 @@ public class Controller {
     @FXML
     private void doClear(ActionEvent actionEvent) { // netoyage de la vue (effacement du grpahe)
         anchorPane2.getChildren().clear();
-        listViewSource.getItems().clear();
-        listViewTarget.getItems().clear();
+        doClearPopUpWindow();
+        changeVisibilityPopUpWindow(true);
         lv_data.getItems().clear();
     }
 
