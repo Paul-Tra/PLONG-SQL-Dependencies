@@ -391,7 +391,7 @@ class principal:
                 for elt in self.p :
                     #print(elt.name)
                     if ( elt.name == dst ):
-                        print("\t\tRaison de la dependance DST : "+dst+" : ")
+                        #print("\t\tRaison de la dependance DST : "+dst+" : ")
                         for c,val in elt.table_from.items():
                             if ( table in val ):
                                 t = c
@@ -411,7 +411,7 @@ class principal:
                         tmp = "UPDATE "+table+" SET " +attr
                         m = re.findall(tmp+".*?;",elt.data)
                         if ( m != [] ):
-                            print("\t\tRaison de la dependance SRC : "+src+" : ")
+                            #print("\t\tRaison de la dependance SRC : "+src+" : ")
                             for li in m :
                                 print('\t\t\t'+li)
                                 l_dep_src.append(li)
@@ -432,7 +432,7 @@ class principal:
                         tmp = "UPDATE "+table+" SET " +attr
                         m = re.findall(tmp+".*?;",elt.data)
                         if ( m != [] ):
-                            print("\t\tRaison de la dependance DST : "+dst+" : ")
+                            #print("\t\tRaison de la dependance DST : "+dst+" : ")
                             for li in m :
                                 print('\t\t\t'+li)
                                 l_dep_dst.append(li)
@@ -440,7 +440,7 @@ class principal:
                 for elt in self.p :
                     #print(elt.name)
                     if ( elt.name == src ):
-                        print("\t\tRaison de la dependance SRC : "+src+" : ")
+                        #print("\t\tRaison de la dependance SRC : "+src+" : ")
                         for c,val in elt.table_from.items():
                             if ( table in val ):
                                 t = c
@@ -473,7 +473,7 @@ class principal:
                         #print(tmp)
                         m = re.findall(tmp+".*?;",elt.data)
                         if ( m != [] ):
-                            print("\t\tRaison de la dependance SRC : "+src+" : ")
+                            #print("\t\tRaison de la dependance SRC : "+src+" : ")
                             for li in m :
                                 print('\t\t\t'+li)
                                 l_dep_src.append(li)
@@ -483,7 +483,7 @@ class principal:
                         #print(tmp)
                         m = re.findall(tmp+".*?;",elt.data)
                         if ( m != [] ):
-                            print("\t\tRaison de la dependance SRC : "+src+" : ")
+                            #print("\t\tRaison de la dependance SRC : "+src+" : ")
                             for li in m :
                                 print('\t\t\t'+li)
                                 l_dep_src.append(li)
@@ -494,7 +494,7 @@ class principal:
                             tmp = "UPDATE "+table+" SET " +attr
                             m = re.findall(tmp+".*?;",elt.data)
                             if ( m != [] ):
-                                print("\t\tRaison de la dependance DST : "+dst+" : ")
+                                #print("\t\tRaison de la dependance DST : "+dst+" : ")
                                 #print("m :::: :: :: :: : : :" + str(m))
                                 l_dep_src = []
                                 l_dep_dst = []
@@ -573,6 +573,34 @@ class principal:
         self.fichier = fichier
             
     def genere_graphml_sans_doublons_plus_Raisons_dependances(self):
+        print("OK")
+        l = []
+        d = dict()
+        for c1 , v1 in self.dict_finale.items() :
+            for elt in v1 :
+                if ( "ww" in elt ) :
+                    t = re.findall("ww;.*?\(",elt)
+                    tmp = t[0]
+                    print("WW trouvé : " + tmp )
+                    for c2 , v2 in self.dict_finale.items() :
+                        for el in v2 :
+                            if ( tmp in el ):
+                                l.append(tmp)
+                                d[c1[0],c2[0]] = tmp+"*).*"
+                                
+        for c,v in d.items() :
+            print("- " + c[0],c[1] + " - " + str(v)  )
+            self.dict_finale[c[0],c[1]].append(str(v))
+            print(str(self.dict_finale[c[0],c[1]])+'\n')
+            
+        
+         
+        # c = c1[0],c2[0]
+        # self.dict_finale[c].append(tmp)
+              
+        
+        
+        
         with open("./graphs/graph.graphml", "w") as fichier:
             fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
