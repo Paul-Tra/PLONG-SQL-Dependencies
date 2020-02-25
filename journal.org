@@ -50,6 +50,22 @@
    - Un outils qui ne marche plus
 ** A faire:
    - Affichier le numero de ligne dans le fichier
-   - Affichier le code avec les lignes souligner
+   - Affichier le code avec les lignes souligné
    - Affichier les arrete RW avec une couleur pernalisé
    - Chercher des applications en PgSQL et tester le parseur
+
+
+** <25/02/2020>
+** Fait
+*** Affichier le code avec les lignes souligné
+*** Affichier les arrete RW avec une couleur pernalisé
+*** mais le code ne compile pas
+** A faire:
+*** Gérer the edges may R/W (-) and the edge must R/W (+)
+*** Ecrire un "make" qui marche, avec comme target "all"
+*** Mettre a jour le README.md
+*** Affichier le numero de ligne dans le fichier
+*** Chercher des applications en PgSQL et tester le parseur
+*** lire
+https://universiteouverte.org/2020/02/13/le-5-mars-saffiche-partout/
+https://padlet.com/diderotpournosretraites/j413cz0jqfk7
