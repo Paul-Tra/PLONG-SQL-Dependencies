@@ -51,7 +51,7 @@ ww,HISTORY(*).*
 
 
 </data>
-</edge>wr,CUSTOMER(['cId', 'dId', 'wId']).balance
+</edge>wr,CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
 
 
 </data>
@@ -93,7 +93,7 @@ ww,HISTORY(*).*
 </node>
 <edge source="payment" target="orderstatus">
 <data key="d1">
-wr,CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
+wr,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
 
 
 </data>
@@ -101,7 +101,7 @@ wr,CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
 
 
 </data>
-</edge>wr,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
+</edge>wr,CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
 
 
 </data>
@@ -123,11 +123,11 @@ wr,CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
 </node>
 <edge source="delivery" target="orderstatus">
 <data key="d1">
-wr,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
+wr,CUSTOMER(['cId', 'dId', 'wId']).balance
 
 
 </data>
-</edge>wr,CUSTOMER(['cId', 'dId', 'wId']).balance
+</edge>wr,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
 
 
 </data>
@@ -153,11 +153,11 @@ wr,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
 </node>
 <edge source="payment" target="neworder">
 <data key="d1">
-wr,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
+wr,CUSTOMER(['cId', 'dId', 'wId']).balance
 
 
 </data>
-</edge>wr,CUSTOMER(['cId', 'dId', 'wId']).balance
+</edge>wr,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
 
 
 </data>
@@ -191,11 +191,11 @@ wr,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
 </node>
 <edge source="delivery" target="neworder">
 <data key="d1">
-wr,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
+wr,CUSTOMER(['cId', 'dId', 'wId']).balance
 
 
 </data>
-</edge>wr,CUSTOMER(['cId', 'dId', 'wId']).balance
+</edge>wr,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
 
 
 </data>

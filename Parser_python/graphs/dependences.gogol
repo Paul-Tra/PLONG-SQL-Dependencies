@@ -2,30 +2,18 @@
 ## ( SRC et DST sont en rapport avec les fleches du graphes).
 
 
-<Relation ID="ww,ORDERS(*).*" SRC="neworder" DST="neworder">
+<Relation ID="ww,ORDERLINE(*).*" SRC="neworder" DST="neworder">
 <SRC>
-	0 / 0	ww;ORDERS(*).*
-	0 / 0	ww;ORDERS(*).*
-	37 / 100	INSERT INTO ORDERS(oId, dId, wId, cId, entryDate, oLCnt, allLocal) VALUES (o_id, d_Id, w_Id, c_Id, date_time, o_ol_cnt, o_all_local);
-	0 / 0	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
+	0 / 100	ww;ORDERLINE(*).*
+	0 / 100	ww;ORDERLINE(*).*
+	93 / 100	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
+	0 / 100	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
 </SRC>
 <DST>
-	SELECT oId, carrierId, entryDate INTO o_id, o_carrier_id, ent_date FROM ORDERS O ORDER BY O.oId DESC
-	SELECT cId INTO c_id FROM ORDERS O WHERE O.oId = no_o_id AND O.dId = d_id AND O.wId = w_id
-	INSERT INTO ORDERS(oId, dId, wId, cId, entryDate, oLCnt, allLocal) VALUES (o_id, d_Id, w_Id, c_Id, date_time, o_ol_cnt, o_all_local);
-	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
-</DST>
-</Relation>
-
-
-<Relation ID="ww,NEW_ORDER(*).*" SRC="neworder" DST="neworder">
-<SRC>
-	0 / 0	ww;NEW_ORDER(*).*
-	40 / 100	INSERT INTO NEW_ORDER(oId, dId, wId) VALUES (o_id, d_Id, w_Id);
-</SRC>
-<DST>
-	SELECT oId FROM NEW_ORDER NO WHERE NO.dId = d_id AND NO.wId = w_id ORDER BY NO.oId ASC
-	INSERT INTO NEW_ORDER(oId, dId, wId) VALUES (o_id, d_Id, w_Id);
+	0 / 100	DECLARE c_line CURSOR FOR SELECT iId, supplyWId, quantity, amount, deliveryDate FROM ORDERLINE OL WHERE OL.oId = o_id AND OL.dId = d_id AND OL.wId = w_id
+	0 / 100	SELECT COUNT(DISTINCT(S.iId)) INTO stock_count FROM ORDERLINE OL, STOCK S WHERE OL.wId = w_id AND OL.dId = d_id AND OL.oId < o_id AND OL.oId >= o_id - 20 AND S.wId = w_id AND S.iId = OL.iId AND S.quantity < threshold
+	93 / 100	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
+	0 / 100	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
 </DST>
 </Relation>
 
@@ -35,23 +23,7 @@
 	84 / 100	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
 </SRC>
 <DST>
-	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
-</DST>
-</Relation>
-
-
-<Relation ID="ww,ORDERLINE(*).*" SRC="neworder" DST="neworder">
-<SRC>
-	0 / 0	ww;ORDERLINE(*).*
-	0 / 0	ww;ORDERLINE(*).*
-	93 / 100	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
-	0 / 0	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
-</SRC>
-<DST>
-	DECLARE c_line CURSOR FOR SELECT iId, supplyWId, quantity, amount, deliveryDate FROM ORDERLINE OL WHERE OL.oId = o_id AND OL.dId = d_id AND OL.wId = w_id
-	SELECT COUNT(DISTINCT(S.iId)) INTO stock_count FROM ORDERLINE OL, STOCK S WHERE OL.wId = w_id AND OL.dId = d_id AND OL.oId < o_id AND OL.oId >= o_id - 20 AND S.wId = w_id AND S.iId = OL.iId AND S.quantity < threshold
-	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
-	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
+	84 / 100	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
 </DST>
 </Relation>
 
@@ -61,19 +33,45 @@
 	32 / 100	UPDATE DISTRICT SET nextOrdId = d_next_o_id + 1 WHERE DISTRICT.dId = d_id AND DISTRICT.wId = w_id;
 </SRC>
 <DST>
-	UPDATE DISTRICT SET nextOrdId = d_next_o_id + 1 WHERE DISTRICT.dId = d_id AND DISTRICT.wId = w_id;
+	32 / 100	UPDATE DISTRICT SET nextOrdId = d_next_o_id + 1 WHERE DISTRICT.dId = d_id AND DISTRICT.wId = w_id;
 </DST>
 </Relation>
 
 
-<Relation ID="wr,CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="payment" DST="payment">
+<Relation ID="ww,ORDERS(*).*" SRC="neworder" DST="neworder">
 <SRC>
-	108 / 132	UPDATE CUSTOMER SET balance = c_balance, data = c_new_data WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-	112 / 132	UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+	0 / 100	ww;ORDERS(*).*
+	0 / 100	ww;ORDERS(*).*
+	37 / 100	INSERT INTO ORDERS(oId, dId, wId, cId, entryDate, oLCnt, allLocal) VALUES (o_id, d_Id, w_Id, c_Id, date_time, o_ol_cnt, o_all_local);
+	0 / 100	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
 </SRC>
 <DST>
-	DECLARE c_byname CURSOR FOR SELECT first, middle, cId, str1, str2, city, state, zip, phone, credit, creditLim, discount,balance, since FROM CUSTOMER C WHERE C.wId = w_id AND C.dId = c_d_id AND C.last = c_last ORDER BY C.first
-	SELECT first, middle, last, str1, str2, city, state, zip, phone, credit, creditLim, discount,balance, since INTO c_first,c_middle,c_last, c_str1, c_str2, c_city, c_state, c_zip, c_phone, c_credit, c_creditLim, c_discount,c_balance,c_since FROM CUSTOMER C WHERE C.wId = w_id AND C.dId = c_d_id AND C.cId = c_id
+	0 / 100	SELECT oId, carrierId, entryDate INTO o_id, o_carrier_id, ent_date FROM ORDERS O ORDER BY O.oId DESC
+	0 / 100	SELECT cId INTO c_id FROM ORDERS O WHERE O.oId = no_o_id AND O.dId = d_id AND O.wId = w_id
+	37 / 100	INSERT INTO ORDERS(oId, dId, wId, cId, entryDate, oLCnt, allLocal) VALUES (o_id, d_Id, w_Id, c_Id, date_time, o_ol_cnt, o_all_local);
+	0 / 100	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
+</DST>
+</Relation>
+
+
+<Relation ID="ww,NEW_ORDER(*).*" SRC="neworder" DST="neworder">
+<SRC>
+	0 / 100	ww;NEW_ORDER(*).*
+	40 / 100	INSERT INTO NEW_ORDER(oId, dId, wId) VALUES (o_id, d_Id, w_Id);
+</SRC>
+<DST>
+	0 / 100	SELECT oId FROM NEW_ORDER NO WHERE NO.dId = d_id AND NO.wId = w_id ORDER BY NO.oId ASC
+	40 / 100	INSERT INTO NEW_ORDER(oId, dId, wId) VALUES (o_id, d_Id, w_Id);
+</DST>
+</Relation>
+
+
+<Relation ID="ww,WAREHOUSE(['wId']).wYTD" SRC="payment" DST="payment">
+<SRC>
+	36 / 132	UPDATE WAREHOUSE SET wYTD = wYTD + h_amount WHERE WAREHOUSE.wId = w_id;
+</SRC>
+<DST>
+	36 / 132	UPDATE WAREHOUSE SET wYTD = wYTD + h_amount WHERE WAREHOUSE.wId = w_id;
 </DST>
 </Relation>
 
@@ -83,7 +81,27 @@
 	44 / 132	UPDATE DISTRICT SET dYTD = dYTD + h_amount WHERE DISTRICT.wId = w_id AND DISTRICT.dId = d_id;
 </SRC>
 <DST>
-	UPDATE DISTRICT SET dYTD = dYTD + h_amount WHERE DISTRICT.wId = w_id AND DISTRICT.dId = d_id;
+	44 / 132	UPDATE DISTRICT SET dYTD = dYTD + h_amount WHERE DISTRICT.wId = w_id AND DISTRICT.dId = d_id;
+</DST>
+</Relation>
+
+
+<Relation ID="ww,CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt" SRC="payment" DST="payment">
+<SRC>
+	93 / 132	UPDATE CUSTOMER SET YTDPaymt = YTDPaymt + h_amount WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+</SRC>
+<DST>
+	93 / 132	UPDATE CUSTOMER SET YTDPaymt = YTDPaymt + h_amount WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+</DST>
+</Relation>
+
+
+<Relation ID="ww,HISTORY(*).*" SRC="payment" DST="payment">
+<SRC>
+	126 / 132	INSERT INTO HISTORY(cDId, cWId, cId, dId, wId, date, amount, data) VALUES (c_d_id, w_id, c_id, c_d_id, w_id, datetime, c_amount, c_data);
+</SRC>
+<DST>
+	126 / 132	INSERT INTO HISTORY(cDId, cWId, cId, dId, wId, date, amount, data) VALUES (c_d_id, w_id, c_id, c_d_id, w_id, datetime, c_amount, c_data);
 </DST>
 </Relation>
 
@@ -93,7 +111,7 @@
 	96 / 132	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 </SRC>
 <DST>
-	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+	96 / 132	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 </DST>
 </Relation>
 
@@ -104,38 +122,17 @@
 	112 / 132	UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 </SRC>
 <DST>
-	UPDATE CUSTOMER SET balance = c_balance, data = c_new_data WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-	UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+	108 / 132	UPDATE CUSTOMER SET balance = c_balance, data = c_new_data WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+	112 / 132	UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 </DST>
 </Relation>
 
 
-<Relation ID="ww,WAREHOUSE(['wId']).wYTD" SRC="payment" DST="payment">
-<SRC>
-	36 / 132	UPDATE WAREHOUSE SET wYTD = wYTD + h_amount WHERE WAREHOUSE.wId = w_id;
-</SRC>
-<DST>
-	UPDATE WAREHOUSE SET wYTD = wYTD + h_amount WHERE WAREHOUSE.wId = w_id;
-</DST>
-</Relation>
-
-
-<Relation ID="ww,HISTORY(*).*" SRC="payment" DST="payment">
-<SRC>
-	126 / 132	INSERT INTO HISTORY(cDId, cWId, cId, dId, wId, date, amount, data) VALUES (c_d_id, w_id, c_id, c_d_id, w_id, datetime, c_amount, c_data);
-</SRC>
-<DST>
-	INSERT INTO HISTORY(cDId, cWId, cId, dId, wId, date, amount, data) VALUES (c_d_id, w_id, c_id, c_d_id, w_id, datetime, c_amount, c_data);
-</DST>
-</Relation>
-
-
-<Relation ID="ww,CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt" SRC="payment" DST="payment">
+<Relation ID="wr,CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt" SRC="payment" DST="payment">
 <SRC>
 	93 / 132	UPDATE CUSTOMER SET YTDPaymt = YTDPaymt + h_amount WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 </SRC>
 <DST>
-	UPDATE CUSTOMER SET YTDPaymt = YTDPaymt + h_amount WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 </DST>
 </Relation>
 
@@ -146,17 +143,8 @@
 	112 / 132	UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 </SRC>
 <DST>
-	DECLARE c_name CURSOR FOR SELECT balance, first, middle, cId FROM CUSTOMER C WHERE C.last = c_last AND C.dId = d_id AND C.wId = w_id ORDER BY C.first
-	SELECT balance, first, middle, last INTO c_balance, c_first, c_middle, c_last FROM CUSTOMER C WHERE C.cId = c_id AND C.dId = d_id AND C.wId = w_Id
-</DST>
-</Relation>
-
-
-<Relation ID="wr,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt" SRC="payment" DST="orderstatus">
-<SRC>
-	96 / 132	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-</SRC>
-<DST>
+	0 / 132	DECLARE c_name CURSOR FOR SELECT balance, first, middle, cId FROM CUSTOMER C WHERE C.last = c_last AND C.dId = d_id AND C.wId = w_id ORDER BY C.first
+	0 / 132	SELECT balance, first, middle, last INTO c_balance, c_first, c_middle, c_last FROM CUSTOMER C WHERE C.cId = c_id AND C.dId = d_id AND C.wId = w_Id
 </DST>
 </Relation>
 
@@ -170,12 +158,21 @@
 </Relation>
 
 
+<Relation ID="wr,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt" SRC="payment" DST="orderstatus">
+<SRC>
+	96 / 132	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+</SRC>
+<DST>
+</DST>
+</Relation>
+
+
 <Relation ID="wr,ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate" SRC="delivery" DST="orderstatus">
 <SRC>
 	34 / 52	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
 </SRC>
 <DST>
-	DECLARE c_line CURSOR FOR SELECT iId, supplyWId, quantity, amount, deliveryDate FROM ORDERLINE OL WHERE OL.oId = o_id AND OL.dId = d_id AND OL.wId = w_id
+	0 / 52	DECLARE c_line CURSOR FOR SELECT iId, supplyWId, quantity, amount, deliveryDate FROM ORDERLINE OL WHERE OL.oId = o_id AND OL.dId = d_id AND OL.wId = w_id
 </DST>
 </Relation>
 
@@ -185,8 +182,8 @@
 	41 / 52	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
 </SRC>
 <DST>
-	DECLARE c_name CURSOR FOR SELECT balance, first, middle, cId FROM CUSTOMER C WHERE C.last = c_last AND C.dId = d_id AND C.wId = w_id ORDER BY C.first
-	SELECT balance, first, middle, last INTO c_balance, c_first, c_middle, c_last FROM CUSTOMER C WHERE C.cId = c_id AND C.dId = d_id AND C.wId = w_Id
+	0 / 52	DECLARE c_name CURSOR FOR SELECT balance, first, middle, cId FROM CUSTOMER C WHERE C.last = c_last AND C.dId = d_id AND C.wId = w_id ORDER BY C.first
+	0 / 52	SELECT balance, first, middle, last INTO c_balance, c_first, c_middle, c_last FROM CUSTOMER C WHERE C.cId = c_id AND C.dId = d_id AND C.wId = w_Id
 </DST>
 </Relation>
 
@@ -210,15 +207,6 @@
 </Relation>
 
 
-<Relation ID="wr,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt" SRC="payment" DST="neworder">
-<SRC>
-	96 / 132	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-</SRC>
-<DST>
-</DST>
-</Relation>
-
-
 <Relation ID="wr,CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt" SRC="payment" DST="neworder">
 <SRC>
 	93 / 132	UPDATE CUSTOMER SET YTDPaymt = YTDPaymt + h_amount WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
@@ -231,6 +219,15 @@
 <Relation ID="wr,DISTRICT(['dId', 'wId']).dYTD" SRC="payment" DST="neworder">
 <SRC>
 	44 / 132	UPDATE DISTRICT SET dYTD = dYTD + h_amount WHERE DISTRICT.wId = w_id AND DISTRICT.dId = d_id;
+</SRC>
+<DST>
+</DST>
+</Relation>
+
+
+<Relation ID="wr,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt" SRC="payment" DST="neworder">
+<SRC>
+	96 / 132	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 </SRC>
 <DST>
 </DST>
@@ -278,8 +275,8 @@
 	41 / 52	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
 </SRC>
 <DST>
-	DECLARE c_byname CURSOR FOR SELECT first, middle, cId, str1, str2, city, state, zip, phone, credit, creditLim, discount,balance, since FROM CUSTOMER C WHERE C.wId = w_id AND C.dId = c_d_id AND C.last = c_last ORDER BY C.first
-	SELECT first, middle, last, str1, str2, city, state, zip, phone, credit, creditLim, discount,balance, since INTO c_first,c_middle,c_last, c_str1, c_str2, c_city, c_state, c_zip, c_phone, c_credit, c_creditLim, c_discount,c_balance,c_since FROM CUSTOMER C WHERE C.wId = w_id AND C.dId = c_d_id AND C.cId = c_id
+	0 / 52	DECLARE c_byname CURSOR FOR SELECT first, middle, cId, str1, str2, city, state, zip, phone, credit, creditLim, discount,balance, since FROM CUSTOMER C WHERE C.wId = w_id AND C.dId = c_d_id AND C.last = c_last ORDER BY C.first
+	0 / 52	SELECT first, middle, last, str1, str2, city, state, zip, phone, credit, creditLim, discount,balance, since INTO c_first,c_middle,c_last, c_str1, c_str2, c_city, c_state, c_zip, c_phone, c_credit, c_creditLim, c_discount,c_balance,c_since FROM CUSTOMER C WHERE C.wId = w_id AND C.dId = c_d_id AND C.cId = c_id
 </DST>
 </Relation>
 
@@ -302,32 +299,22 @@
 </Relation>
 
 
-<Relation ID="ww,CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="delivery" DST="delivery">
-<SRC>
-	41 / 52	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
-</SRC>
-<DST>
-	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
-</DST>
-</Relation>
-
-
 <Relation ID="ww,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt" SRC="delivery" DST="delivery">
 <SRC>
 	45 / 52	UPDATE CUSTOMER SET deliveryCnt = deliveryCnt + 1 WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
 </SRC>
 <DST>
-	UPDATE CUSTOMER SET deliveryCnt = deliveryCnt + 1 WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
+	45 / 52	UPDATE CUSTOMER SET deliveryCnt = deliveryCnt + 1 WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
 </DST>
 </Relation>
 
 
-<Relation ID="ww,ORDERS(['oId', 'dId', 'wId']).carrierId" SRC="delivery" DST="delivery">
+<Relation ID="ww,CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="delivery" DST="delivery">
 <SRC>
-	31 / 52	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
+	41 / 52	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
 </SRC>
 <DST>
-	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
+	41 / 52	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
 </DST>
 </Relation>
 
@@ -337,7 +324,17 @@
 	34 / 52	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
 </SRC>
 <DST>
-	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
+	34 / 52	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
+</DST>
+</Relation>
+
+
+<Relation ID="ww,ORDERS(['oId', 'dId', 'wId']).carrierId" SRC="delivery" DST="delivery">
+<SRC>
+	31 / 52	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
+</SRC>
+<DST>
+	31 / 52	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
 </DST>
 </Relation>
 
@@ -346,16 +343,7 @@
 <SRC>
 </SRC>
 <DST>
-	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
-</DST>
-</Relation>
-
-
-<Relation ID="rw,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt" SRC="orderstatus" DST="payment">
-<SRC>
-</SRC>
-<DST>
-	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+	0 / 19	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
 </DST>
 </Relation>
 
@@ -364,28 +352,28 @@
 <SRC>
 </SRC>
 <DST>
-	UPDATE CUSTOMER SET YTDPaymt = YTDPaymt + h_amount WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+	0 / 71	UPDATE CUSTOMER SET YTDPaymt = YTDPaymt + h_amount WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+</DST>
+</Relation>
+
+
+<Relation ID="rw,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt" SRC="orderstatus" DST="payment">
+<SRC>
+</SRC>
+<DST>
+	0 / 71	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 </DST>
 </Relation>
 
 
 <Relation ID="rw,CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="orderstatus" DST="payment">
 <SRC>
-	0 / 0	DECLARE c_name CURSOR FOR SELECT balance, first, middle, cId FROM CUSTOMER C WHERE C.last = c_last AND C.dId = d_id AND C.wId = w_id ORDER BY C.first
+	0 / 71	DECLARE c_name CURSOR FOR SELECT balance, first, middle, cId FROM CUSTOMER C WHERE C.last = c_last AND C.dId = d_id AND C.wId = w_id ORDER BY C.first
 	43 / 71	SELECT balance, first, middle, last INTO c_balance, c_first, c_middle, c_last FROM CUSTOMER C WHERE C.cId = c_id AND C.dId = d_id AND C.wId = w_Id
 </SRC>
 <DST>
-	UPDATE CUSTOMER SET balance = c_balance, data = c_new_data WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-	UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-</DST>
-</Relation>
-
-
-<Relation ID="rw,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt" SRC="neworder" DST="payment">
-<SRC>
-</SRC>
-<DST>
-	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+	0 / 71	UPDATE CUSTOMER SET balance = c_balance, data = c_new_data WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+	0 / 71	UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 </DST>
 </Relation>
 
@@ -394,7 +382,16 @@
 <SRC>
 </SRC>
 <DST>
-	UPDATE CUSTOMER SET YTDPaymt = YTDPaymt + h_amount WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+	0 / 100	UPDATE CUSTOMER SET YTDPaymt = YTDPaymt + h_amount WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+</DST>
+</Relation>
+
+
+<Relation ID="rw,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt" SRC="neworder" DST="payment">
+<SRC>
+</SRC>
+<DST>
+	0 / 100	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 </DST>
 </Relation>
 
@@ -403,7 +400,7 @@
 <SRC>
 </SRC>
 <DST>
-	UPDATE DISTRICT SET dYTD = dYTD + h_amount WHERE DISTRICT.wId = w_id AND DISTRICT.dId = d_id;
+	0 / 100	UPDATE DISTRICT SET dYTD = dYTD + h_amount WHERE DISTRICT.wId = w_id AND DISTRICT.dId = d_id;
 </DST>
 </Relation>
 
@@ -412,8 +409,29 @@
 <SRC>
 </SRC>
 <DST>
-	UPDATE CUSTOMER SET balance = c_balance, data = c_new_data WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-	UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+	0 / 100	UPDATE CUSTOMER SET balance = c_balance, data = c_new_data WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+	0 / 100	UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+</DST>
+</Relation>
+
+
+<Relation ID="rw,ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate" SRC="orderstatus" DST="delivery">
+<SRC>
+	0 / 71	DECLARE c_line CURSOR FOR SELECT iId, supplyWId, quantity, amount, deliveryDate FROM ORDERLINE OL WHERE OL.oId = o_id AND OL.dId = d_id AND OL.wId = w_id
+</SRC>
+<DST>
+	0 / 71	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
+</DST>
+</Relation>
+
+
+<Relation ID="rw,CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="orderstatus" DST="delivery">
+<SRC>
+	0 / 71	DECLARE c_name CURSOR FOR SELECT balance, first, middle, cId FROM CUSTOMER C WHERE C.last = c_last AND C.dId = d_id AND C.wId = w_id ORDER BY C.first
+	43 / 71	SELECT balance, first, middle, last INTO c_balance, c_first, c_middle, c_last FROM CUSTOMER C WHERE C.cId = c_id AND C.dId = d_id AND C.wId = w_Id
+</SRC>
+<DST>
+	0 / 71	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
 </DST>
 </Relation>
 
@@ -422,28 +440,7 @@
 <SRC>
 </SRC>
 <DST>
-	UPDATE CUSTOMER SET deliveryCnt = deliveryCnt + 1 WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
-</DST>
-</Relation>
-
-
-<Relation ID="rw,ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate" SRC="orderstatus" DST="delivery">
-<SRC>
-	0 / 0	DECLARE c_line CURSOR FOR SELECT iId, supplyWId, quantity, amount, deliveryDate FROM ORDERLINE OL WHERE OL.oId = o_id AND OL.dId = d_id AND OL.wId = w_id
-</SRC>
-<DST>
-	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
-</DST>
-</Relation>
-
-
-<Relation ID="rw,CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="orderstatus" DST="delivery">
-<SRC>
-	0 / 0	DECLARE c_name CURSOR FOR SELECT balance, first, middle, cId FROM CUSTOMER C WHERE C.last = c_last AND C.dId = d_id AND C.wId = w_id ORDER BY C.first
-	43 / 71	SELECT balance, first, middle, last INTO c_balance, c_first, c_middle, c_last FROM CUSTOMER C WHERE C.cId = c_id AND C.dId = d_id AND C.wId = w_Id
-</SRC>
-<DST>
-	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
+	0 / 71	UPDATE CUSTOMER SET deliveryCnt = deliveryCnt + 1 WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
 </DST>
 </Relation>
 
@@ -452,7 +449,7 @@
 <SRC>
 </SRC>
 <DST>
-	UPDATE CUSTOMER SET deliveryCnt = deliveryCnt + 1 WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
+	0 / 100	UPDATE CUSTOMER SET deliveryCnt = deliveryCnt + 1 WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
 </DST>
 </Relation>
 
@@ -461,7 +458,7 @@
 <SRC>
 </SRC>
 <DST>
-	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
+	0 / 100	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
 </DST>
 </Relation>
 
@@ -470,7 +467,7 @@
 <SRC>
 </SRC>
 <DST>
-	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
+	0 / 19	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
 </DST>
 </Relation>
 
@@ -479,7 +476,7 @@
 <SRC>
 </SRC>
 <DST>
-	UPDATE CUSTOMER SET deliveryCnt = deliveryCnt + 1 WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
+	0 / 132	UPDATE CUSTOMER SET deliveryCnt = deliveryCnt + 1 WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
 </DST>
 </Relation>
 
@@ -490,7 +487,7 @@
 	82 / 132	SELECT first, middle, last, str1, str2, city, state, zip, phone, credit, creditLim, discount,balance, since INTO c_first,c_middle,c_last, c_str1, c_str2, c_city, c_state, c_zip, c_phone, c_credit, c_creditLim, c_discount,c_balance,c_since FROM CUSTOMER C WHERE C.wId = w_id AND C.dId = c_d_id AND C.cId = c_id
 </SRC>
 <DST>
-	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
+	0 / 132	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
 </DST>
 </Relation>
 

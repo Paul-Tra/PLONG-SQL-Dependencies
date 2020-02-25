@@ -647,7 +647,8 @@ class principal:
                 fichier.write('</SRC>\n')
                 fichier.write('<DST>\n')
                 for elt in l_dep_dst :
-                    fichier.write('\t'+elt.strip()+'\n')
+                    debut , fin = self.trouve_ligne_fichier(elt,fsrc)
+                    fichier.write('\t'+str(debut) + " / " + str(fin) + '\t' +elt.strip()+'\n')
                 fichier.write('</DST>\n')
                 fichier.write('</Relation>\n\n')
                 return 0
@@ -672,8 +673,7 @@ class principal:
                     if ( check == True ):
                         debut = num
                 
-                for i in range(0,len(a)) :
-                    if ( ";" == a[i] and debut != 0 ):
+                if ( ";" in a and debut <= num ):
                         fin = num
     
         return debut,fin
