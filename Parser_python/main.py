@@ -642,7 +642,8 @@ class principal:
                 fichier.write('\n<Relation ID="'+v.strip().replace(";",",")+'" SRC="'+fsrc+'" DST="'+fdst+'">\n')
                 fichier.write('<SRC>\n')
                 for elt in l_dep_src :
-                    fichier.write('\t'+elt.strip()+'\n')
+                    debut , fin = self.trouve_ligne_fichier(elt,fsrc)
+                    fichier.write('\t'+str(debut) + " / " + str(fin) + '\t' +elt.strip()+'\n')
                 fichier.write('</SRC>\n')
                 fichier.write('<DST>\n')
                 for elt in l_dep_dst :
@@ -650,6 +651,32 @@ class principal:
                 fichier.write('</DST>\n')
                 fichier.write('</Relation>\n\n')
                 return 0
+                
+                
+    def trouve_ligne_fichier(self , elt , file ):
+        print("elt :: " + elt )
+        debut = 0 
+        fin = 0
+        cpt = 0 
+        check = True
+        
+        with open ( "./"+dossier+"/"+file+".sql" ,"r" ) as myFile:
+            for num, line in enumerate(myFile, 1):
+                a = line.strip()
+                if ( a != "" and a in elt and debut == 0 ):
+                    for i in range(0,len(a)) :
+                        if ( a[i] != elt[i] ):
+                            check = False
+                        else :
+                            check = True    
+                    if ( check == True ):
+                        debut = num
+                
+                for i in range(0,len(a)) :
+                    if ( ";" == a[i] and debut != 0 ):
+                        fin = num
+    
+        return debut,fin
                 
     def genere_graphml_sans_doublons(self):
         with open("./graphs/graph_sous_doub.graphml", "w") as fichier:
@@ -776,7 +803,7 @@ class principal:
         self.genere_graphml_sans_doublons_plus_Raisons_dependances()
         
         
-if __name__ == "__main__":
+if __name__ == "__main__":  
     argv = sys.argv
     if (len(argv) != 2 ) :
         print("Merci d'entrer un dossier contenant : \n - un fichier genDB.sql contenant votre base de données \n - un ensemble de fichier reprensetant les transactions ( au format .sql ; PLpgSQL ) ")
