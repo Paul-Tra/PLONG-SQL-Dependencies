@@ -4,6 +4,7 @@ import com.sun.jdi.StringReference;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -27,13 +28,15 @@ import org.w3c.dom.css.Rect;
 
 import javax.lang.model.element.AnnotationValue;
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 import static sample.Main.primaryStage;
 
-public class Controller {
+public class Controller implements Initializable {
     private final double deltaY = 1.1; //
     private Consumer<String> consumer = e -> System.out.println(e);
     // borderPane left area
@@ -52,7 +55,7 @@ public class Controller {
         changeVisibilityPopUpWindow(true);
     }
     @FXML
-    private void doClick(MouseEvent event) {
+    private void doClick() {
         // check if the data-cell clicked is a Relation or not
         if (lv_data.getAccessibleText() == null) {
             consumer.accept("we don't find a Relation ");
@@ -76,13 +79,14 @@ public class Controller {
                     consumer.accept("target : "+ target+"FIN");
                     ParserG parserG = new ParserG("./src/dependences.gogol");
                     ArrayList<String[]> list = parserG.getRelationLines(parserG.getList_lines(),id,source,target);
+                    if (checkRelationLines(list)) {
+                        return;
+                    }
                     String Id = "ww,BID(*).*";
                     String src = "StoreBId";
                     String dst = "StoreBId";
-                   // ArrayList<String[]> list = parserG.getRelationLines(parserG.getList_lines(),Id,src,dst);
-
-                    //String dependancy = lv_data.getSelectionModel().getSelectedItem().toString();
-                    //consumer.accept("our dependancy : " + dependancy);
+                    //ArrayList<String[]> list = parserG.getRelationLines(parserG.getList_lines(),Id,src,dst);
+                    consumer.accept(" after list parserG creation");
                     fillPop_up(list.get(0),list.get(1));
                 }else{
                     consumer.accept("the clicked cell is not about dependancy");
@@ -91,7 +95,32 @@ public class Controller {
                 }
             }
         }
-        //ArrayList<String> printing_lines = manageName();
+    }
+
+    private boolean checkRelationLines(ArrayList<String[]> arrayList) {
+        if (arrayList == null) {
+            consumer.accept("---------------------------------------------------------");
+            consumer.accept("There is a problem with the dependance in the .gogol file");
+            consumer.accept("(about the start or end index)");
+            consumer.accept("---------------------------------------------------------");
+            return true;
+        } else if (arrayList.contains(null)) {
+            consumer.accept("contains shows a null subList");
+            for (String[] strings : arrayList) {
+                if (strings == null) {
+                    consumer.accept("contains is right");
+                }
+            }
+            return true;
+        } else{
+            for (String[] strings : arrayList) {
+                if (strings.length == 0) {
+                    consumer.accept("string tab empty");
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // use to find anything in the data's ListView
@@ -112,7 +141,7 @@ public class Controller {
         if (visible) anchorPane3.setVisible(false);
         else anchorPane3.setVisible(true);
     }
-    // llokks after the clearing of listViews contained by the pop-up window
+    // looks after the clearing of listViews contained by the pop-up window
     private void doClearPopUpWindow() {
         consumer.accept("in doClearPopUpWindow");
         listViewSource.getItems().clear();
@@ -155,6 +184,7 @@ public class Controller {
         }
         anchorPane2.setScaleX(anchorPane2.getScaleX() * coef);
         anchorPane2.setScaleY(anchorPane2.getScaleY() * coef);
+
     }
 
     @FXML
@@ -216,9 +246,9 @@ public class Controller {
         // add event to listView's cells which contain a line from printing_lines
 
     }
-    // recovering the lines available to be print in the element description (data's ListView)
+    // recovering the lines available to be printed in the element description (data's ListView)
     public ArrayList<String>  manageName(String nom){
-        ArrayList<String> printing_lines = new ArrayList<String>();
+        ArrayList<String> printing_lines = new ArrayList<>();
         String[] line_tokens = nom.split("\n");
         for (String line_token : line_tokens) {
             boolean ww = line_token.contains("ww");
@@ -292,4 +322,16 @@ public class Controller {
             this.label1.setText(file.getAbsolutePath());
         }
     }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        // useless
+        anchorPane2.maxWidthProperty().bind(scrollPane.maxWidthProperty());
+        anchorPane2.maxHeightProperty().bind(scrollPane.maxHeightProperty());
+        anchorPane2.prefWidthProperty().bind(scrollPane.prefWidthProperty());
+        anchorPane2.prefHeightProperty().bind(scrollPane.prefHeightProperty());
+        anchorPane2.minWidthProperty().bind(scrollPane.minWidthProperty());
+        anchorPane2.minHeightProperty().bind(scrollPane.minHeightProperty());
+    }
+
 }

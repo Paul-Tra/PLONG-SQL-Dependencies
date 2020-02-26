@@ -1,380 +1,328 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<graphml xmlns="http://graphml.graphdrawing.org/xmlns\">
-    <key id="d0" for="node" attr.name="weight" attr.type="string"/>
-    <key id="d1" for="edge" attr.name="weight" attr.type="String"/>
-    <graph id="G" edgedefault="directed\">
-<node id="RegItem">
-<data key="d0">RegItem</data></node>
-<edge source="RegItem" target="RegItem">
-<data key="d1">
-ww,ITEMS(*).*;
-cid = cid'
+<graphml xmlns='http://graphml.graphdrawing.org/xmlns'>
+	<key id="d0" for="node" attr.name="weight" attr.type="string"/>
+	<key id="d1" for="edge" attr.name="weight" attr.type="string"/>
+<graph id="G" edgedefault="directed">
 
-</data>
+<node id="neworder">
+<data key="d0">"neworder"</data>
+</node>
+<edge source="neworder" target="stocklevel">
 <data key="d1">
-ww,ITEMS(*).*;
-cid = cid'
-
-</data>
-</edge>
-<node id="RegItem">
-<data key="d0">RegItem</data></node>
-<edge source="RegItem" target="ViewItem">
-<data key="d1">
-wr,ITEMS(iid).*;
-
-</data>
-<data key="d1">
+neworder.d_id = stocklevel.d_id
+wr,ORDERLINE(*).*
+neworder.ol_supply_w_id = stocklevel.w_id
+wr,STOCK(['iId', 'wId']).quantity
+neworder.w_id = stocklevel.w_id
+wr,DISTRICT(['dId', 'wId']).nextOrdId
 
 </data>
 </edge>
-<node id="RegItem">
-<data key="d0">RegItem</data></node>
-<edge source="RegItem" target="AboutMe">
-<data key="d1">
-wr,ITEMS(uid).*;
 
-</data>
-<data key="d1">
 
-</data>
-</edge>
-<node id="RegItem">
-<data key="d0">RegItem</data></node>
-<edge source="RegItem" target="SearchItemByReg">
+<node id="stocklevel">
+<data key="d0">"stocklevel"</data>
+</node>
+<edge source="stocklevel" target="neworder">
 <data key="d1">
-wr,ITEMS(cid).iId;
-cid = cid'
-
-</data>
-<data key="d1">
-cid = cid'
+rw,DISTRICT(['dId', 'wId']).nextOrdId
+rw,ORDERLINE(*).*
+stocklevel.w_id = neworder.ol_supply_w_id
+rw,STOCK(['iId', 'wId']).quantity
+stocklevel.d_id = neworder.d_id
+stocklevel.w_id = neworder.w_id
 
 </data>
 </edge>
-<node id="RegItem">
-<data key="d0">RegItem</data></node>
-<edge source="RegItem" target="StoreBuyNow">
-<data key="d1">
-wr,ITEMS(iid).qty;
-ww,ITEMS(iid).end_date;
-ww,ITEMS(iid).qty;
 
-</data>
-<data key="d1">
 
-</data>
-</edge>
-<node id="RegItem">
-<data key="d0">RegItem</data></node>
-<edge source="RegItem" target="SearchiItemByCat">
+<node id="neworder">
+<data key="d0">"neworder"</data>
+</node>
+<edge source="neworder" target="orderstatus">
 <data key="d1">
-wr,ITEMS(cid).*;
-cid = cid'
-
-</data>
-<data key="d1">
-cid = cid'
+wr,ORDERS(*).*
+wr,ORDERLINE(*).*
 
 </data>
 </edge>
-<node id="RegItem">
-<data key="d0">RegItem</data></node>
-<edge source="RegItem" target="StoreBid">
-<data key="d1">
-wr,ITEMS(iid).nbids;
-ww,ITEMS(iid).nbids;
 
-</data>
-<data key="d1">
-ww,ITEMS(iid).nbids;
 
-</data>
-</edge>
-<node id="ViewUser">
-<data key="d0">ViewUser</data></node>
-<edge source="ViewUser" target="RegUser">
+<node id="orderstatus">
+<data key="d0">"orderstatus"</data>
+</node>
+<edge source="orderstatus" target="neworder">
 <data key="d1">
-rw,USERS(uid).*;
-
-</data>
-<data key="d1">
+rw,ORDERS(*).*
+rw,ORDERLINE(*).*
 
 </data>
 </edge>
-<node id="RegUser">
-<data key="d0">RegUser</data></node>
-<edge source="RegUser" target="ViewUser">
-<data key="d1">
-wr,USERS(uid).*;
 
-</data>
-<data key="d1">
 
-</data>
-</edge>
-<node id="RegUser">
-<data key="d0">RegUser</data></node>
-<edge source="RegUser" target="RegUser">
+<node id="neworder">
+<data key="d0">"neworder"</data>
+</node>
+<edge source="neworder" target="neworder">
 <data key="d1">
-ww,USERS(*).*;
-uname = uname'
-rid = rid'
-
-</data>
-<data key="d1">
-uname = uname'
-rid = rid'
+ww,ORDERLINE(*).*
+ww,DISTRICT(*).*
+ww,ORDERLINE(*).*
+ww,ORDERS(*).*
+neworder.w_id = neworder.w_id
+ww,STOCK(*).*
+ww,NEW_ORDER(*).*
+ww,NEW_ORDER(*).*
+neworder.ol_i_id = neworder.ol_i_id
+ww,DISTRICT(['dId', 'wId']).nextOrdId
+ww,ORDERS(*).*
+ww,STOCK(['iId', 'wId']).quantity
+neworder.d_id = neworder.d_id
 
 </data>
 </edge>
-<node id="RegUser">
-<data key="d0">RegUser</data></node>
-<edge source="RegUser" target="SearchItemByReg">
-<data key="d1">
-wr,USERS(rid).uId;
-rid = rid'
 
-</data>
-<data key="d1">
-rid = rid'
 
-</data>
-</edge>
-<node id="ViewItem">
-<data key="d0">ViewItem</data></node>
-<edge source="ViewItem" target="RegItem">
+<node id="neworder">
+<data key="d0">"neworder"</data>
+</node>
+<edge source="neworder" target="delivery">
 <data key="d1">
-rw,ITEMS(iid).*;
-
-</data>
-<data key="d1">
+wr,NEW_ORDER(*).*
+ww,ORDERS(*).*
+ww,ORDERLINE(*).*
+neworder.d_id = delivery.d_id
+rw,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
+wr,ORDERS(*).*
+neworder.w_id = delivery.w_id
+rw,CUSTOMER(['cId', 'dId', 'wId']).balance
+neworder.c_Id = delivery.c_id
 
 </data>
 </edge>
-<node id="ViewItem">
-<data key="d0">ViewItem</data></node>
-<edge source="ViewItem" target="StoreBuyNow">
-<data key="d1">
-rw,ITEMS(iid).end_date;
-rw,ITEMS(iid).qty;
-rw,BUY_NOW(iid).uid;
-iid = iid'
 
-</data>
-<data key="d1">
-iid = iid'
 
-</data>
-</edge>
-<node id="ViewItem">
-<data key="d0">ViewItem</data></node>
-<edge source="ViewItem" target="StoreBid">
+<node id="delivery">
+<data key="d0">"delivery"</data>
+</node>
+<edge source="delivery" target="neworder">
 <data key="d1">
-rw,ITEMS(iid).nbids;
-rw,BIDS(iid).*;
-iid = iid'
-
-</data>
-<data key="d1">
-iid = iid'
+wr,CUSTOMER(['cId', 'dId', 'wId']).balance
+wr,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
+delivery.w_id = neworder.w_id
+ww,ORDERS(*).*
+ww,ORDERLINE(*).*
+rw,NEW_ORDER(*).*
+delivery.c_id = neworder.c_Id
+delivery.d_id = neworder.d_id
+rw,ORDERS(*).*
 
 </data>
 </edge>
-<node id="AboutMe">
-<data key="d0">AboutMe</data></node>
-<edge source="AboutMe" target="RegItem">
-<data key="d1">
-rw,ITEMS(uid).*;
 
-</data>
-<data key="d1">
 
-</data>
-</edge>
-<node id="AboutMe">
-<data key="d0">AboutMe</data></node>
-<edge source="AboutMe" target="StoreBuyNow">
+<node id="payment">
+<data key="d0">"payment"</data>
+</node>
+<edge source="payment" target="payment">
 <data key="d1">
-rw,BUY_NOW(uid).uid;
-uid = uid'
-
-</data>
-<data key="d1">
-uid = uid'
-
-</data>
-</edge>
-<node id="AboutMe">
-<data key="d0">AboutMe</data></node>
-<edge source="AboutMe" target="StoreBid">
-<data key="d1">
-rw,BIDS(uid).iId;
-
-</data>
-<data key="d1">
+ww,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
+payment.d_id = payment.d_id
+ww,CUSTOMER(['cId', 'dId', 'wId']).balance
+ww,DISTRICT(*).*
+ww,WAREHOUSE(*).*
+payment.w_id = payment.w_id
+ww,DISTRICT(['dId', 'wId']).dYTD
+ww,CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
+wr,CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
+ww,HISTORY(*).*
+ww,HISTORY(*).*
+payment.c_id = payment.c_id
+ww,WAREHOUSE(['wId']).wYTD
+ww,CUSTOMER(*).*
 
 </data>
 </edge>
-<node id="SearchItemByReg">
-<data key="d0">SearchItemByReg</data></node>
-<edge source="SearchItemByReg" target="RegItem">
-<data key="d1">
-rw,ITEMS(cid).iId;
-cid = cid'
 
-</data>
-<data key="d1">
-cid = cid'
 
-</data>
-</edge>
-<node id="SearchItemByReg">
-<data key="d0">SearchItemByReg</data></node>
-<edge source="SearchItemByReg" target="RegUser">
+<node id="delivery">
+<data key="d0">"delivery"</data>
+</node>
+<edge source="delivery" target="stocklevel">
 <data key="d1">
-rw,USERS(rid).uId;
-rid = rid'
-
-</data>
-<data key="d1">
-rid = rid'
+wr,ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate
+delivery.d_id = stocklevel.d_id
+delivery.w_id = stocklevel.w_id
 
 </data>
 </edge>
-<node id="StoreBuyNow">
-<data key="d0">StoreBuyNow</data></node>
-<edge source="StoreBuyNow" target="RegItem">
-<data key="d1">
-ww,ITEMS(iid).end_date;
-ww,ITEMS(iid).qty;
-rw,ITEMS(iid).qty;
 
-</data>
-<data key="d1">
 
-</data>
-</edge>
-<node id="StoreBuyNow">
-<data key="d0">StoreBuyNow</data></node>
-<edge source="StoreBuyNow" target="ViewItem">
+<node id="delivery">
+<data key="d0">"delivery"</data>
+</node>
+<edge source="delivery" target="orderstatus">
 <data key="d1">
-wr,ITEMS(iid).end_date;
-wr,ITEMS(iid).qty;
-wr,BUY_NOW(iid).uid;
-iid = iid'
-
-</data>
-<data key="d1">
-iid = iid'
+wr,ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate
+delivery.d_id = orderstatus.d_Id
+wr,CUSTOMER(['cId', 'dId', 'wId']).balance
+wr,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
+delivery.w_id = orderstatus.w_Id
+delivery.c_id = orderstatus.c_id
 
 </data>
 </edge>
-<node id="StoreBuyNow">
-<data key="d0">StoreBuyNow</data></node>
-<edge source="StoreBuyNow" target="AboutMe">
-<data key="d1">
-wr,BUY_NOW(uid).uid;
-uid = uid'
 
-</data>
-<data key="d1">
-uid = uid'
 
-</data>
-</edge>
-<node id="StoreBuyNow">
-<data key="d0">StoreBuyNow</data></node>
-<edge source="StoreBuyNow" target="StoreBuyNow">
+<node id="payment">
+<data key="d0">"payment"</data>
+</node>
+<edge source="payment" target="orderstatus">
 <data key="d1">
-wr,ITEMS(iid).end_date;
-wr,ITEMS(iid).qty;
-ww,ITEMS(iid).end_dateqty;
-ww,ITEMS(iid).qty;
-ww,BUY_NOW(*).uid;
-rw,ITEMS(iid).qty;
-iid = iid'
-uid = uid'
-qty = qty'
-
-</data>
-<data key="d1">
-iid = iid'
-uid = uid'
-qty = qty'
+wr,CUSTOMER(['cId', 'dId', 'wId']).balance
+wr,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
+wr,CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
+payment.c_id = orderstatus.c_id
+payment.c_d_id = orderstatus.d_Id
+payment.w_id = orderstatus.w_Id
 
 </data>
 </edge>
-<node id="SearchiItemByCat">
-<data key="d0">SearchiItemByCat</data></node>
-<edge source="SearchiItemByCat" target="RegItem">
-<data key="d1">
-rw,ITEMS(cid).*;
-cid = cid'
 
-</data>
-<data key="d1">
-cid = cid'
 
-</data>
-</edge>
-<node id="StoreBid">
-<data key="d0">StoreBid</data></node>
-<edge source="StoreBid" target="RegItem">
+<node id="payment">
+<data key="d0">"payment"</data>
+</node>
+<edge source="payment" target="neworder">
 <data key="d1">
-ww,ITEMS(iid).nbids;
-rw,ITEMS(iid).nbids;
-
-</data>
-<data key="d1">
-ww,ITEMS(iid).nbids;
+wr,DISTRICT(['dId', 'wId']).dYTD
+wr,CUSTOMER(['cId', 'dId', 'wId']).balance
+ww,DISTRICT(*).*
+payment.c_id = neworder.c_Id
+wr,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
+payment.d_id = neworder.d_id
+payment.w_id = neworder.w_id
+wr,CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
+payment.c_d_id = neworder.d_id
 
 </data>
 </edge>
-<node id="StoreBid">
-<data key="d0">StoreBid</data></node>
-<edge source="StoreBid" target="ViewItem">
-<data key="d1">
-wr,BIDS(iid).*;
-wr,ITEMS(iid).nbids;
-iid = iid'
 
-</data>
-<data key="d1">
-iid = iid'
 
-</data>
-</edge>
-<node id="StoreBid">
-<data key="d0">StoreBid</data></node>
-<edge source="StoreBid" target="AboutMe">
+<node id="delivery">
+<data key="d0">"delivery"</data>
+</node>
+<edge source="delivery" target="delivery">
 <data key="d1">
-wr,BIDS(uid).iId;
-
-</data>
-<data key="d1">
+wr,ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate
+ww,ORDERS(*).*
+ww,CUSTOMER(['cId', 'dId', 'wId']).balance
+ww,ORDERS(['oId', 'dId', 'wId']).carrierId
+ww,ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate
+ww,CUSTOMER(*).*
+ww,ORDERLINE(*).*
+ww,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
+delivery.d_id = delivery.d_id
+delivery.w_id = delivery.w_id
 
 </data>
 </edge>
-<node id="StoreBid">
-<data key="d0">StoreBid</data></node>
-<edge source="StoreBid" target="StoreBid">
-<data key="d1">
-wr,ITEMS(iid).nbids;
-ww,BIDS(*).*;
-ww,ITEMS(iid).nbids;
-rw,ITEMS(iid).nbids;
-iid = iid'
-val = val'
 
-</data>
+
+<node id="delivery">
+<data key="d0">"delivery"</data>
+</node>
+<edge source="delivery" target="payment">
 <data key="d1">
-ww,BIDS(*).*;
-ww,ITEMS(iid).nbids;
-iid = iid'
-val = val'
+wr,CUSTOMER(['cId', 'dId', 'wId']).balance
+wr,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
+delivery.w_id = payment.w_id
+delivery.c_id = payment.c_id
+delivery.d_id = payment.c_d_id
+ww,CUSTOMER(*).*
 
 </data>
 </edge>
-	</graph>
-</graphml>
+
+
+<node id="stocklevel">
+<data key="d0">"stocklevel"</data>
+</node>
+<edge source="stocklevel" target="delivery">
+<data key="d1">
+stocklevel.d_id = delivery.d_id
+stocklevel.w_id = delivery.w_id
+rw,ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate
+
+</data>
+</edge>
+
+
+<node id="orderstatus">
+<data key="d0">"orderstatus"</data>
+</node>
+<edge source="orderstatus" target="delivery">
+<data key="d1">
+orderstatus.c_id = delivery.c_id
+rw,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
+orderstatus.d_Id = delivery.d_id
+rw,CUSTOMER(['cId', 'dId', 'wId']).balance
+orderstatus.w_Id = delivery.w_id
+rw,ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate
+
+</data>
+</edge>
+
+
+<node id="payment">
+<data key="d0">"payment"</data>
+</node>
+<edge source="payment" target="delivery">
+<data key="d1">
+rw,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
+payment.c_d_id = delivery.d_id
+payment.w_id = delivery.w_id
+payment.c_id = delivery.c_id
+rw,CUSTOMER(['cId', 'dId', 'wId']).balance
+ww,CUSTOMER(*).*
+
+</data>
+</edge>
+
+
+<node id="orderstatus">
+<data key="d0">"orderstatus"</data>
+</node>
+<edge source="orderstatus" target="payment">
+<data key="d1">
+orderstatus.d_Id = payment.c_d_id
+orderstatus.w_Id = payment.w_id
+orderstatus.c_id = payment.c_id
+rw,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
+rw,CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
+rw,CUSTOMER(['cId', 'dId', 'wId']).balance
+
+</data>
+</edge>
+
+
+<node id="neworder">
+<data key="d0">"neworder"</data>
+</node>
+<edge source="neworder" target="payment">
+<data key="d1">
+ww,DISTRICT(*).*
+neworder.c_Id = payment.c_id
+rw,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
+rw,CUSTOMER(['cId', 'dId', 'wId']).YTDPaymt
+rw,CUSTOMER(['cId', 'dId', 'wId']).balance
+neworder.d_id = payment.d_id
+neworder.d_id = payment.c_d_id
+neworder.w_id = payment.w_id
+rw,DISTRICT(['dId', 'wId']).dYTD
+
+</data>
+</edge>
+
+</graph>
+	</graphml>

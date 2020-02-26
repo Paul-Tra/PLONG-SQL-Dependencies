@@ -99,6 +99,10 @@ public class ElementVisuel {
                     fleche = createFleche(relation.nom, tab_coord_depart[0], tab_coord_depart[1], tab_coord_arrivee[0], tab_coord_arrivee[1], r_source, r_dest, cote_arrivee,false);
                 }
 // addition to the Arrow two control circles
+                if (isRWRelation(relation)) {
+                    //fleche.setStrokeFill(Color.RED);
+                    fleche.setStroke(Color.CORAL);
+                }
                 list_shape.add(fleche);
                 addHandlerFleche(fleche);
             }
@@ -106,7 +110,9 @@ public class ElementVisuel {
             consumer.accept("relation's list null");
         }
     }
-
+    private boolean isRWRelation(Relation relation) {
+        return relation.nom.contains("rw,");
+    }
 // get the departure/arrival coord of an arrow on a Node
     private double[] getCoordPointFleche(Rectangle r, int cote, boolean boucle, boolean depart) {
         double rand = 0;
@@ -175,16 +181,16 @@ public class ElementVisuel {
         r.setFill(Color.TRANSPARENT);
         r.setStroke(Color.BLACK);
         r.setStrokeWidth(2);
-        r.setX(calculeCoordNode(true));
-        r.setY(calculeCoordNode(false));
+        r.setX(calculeCoordNode(true,r.getWidth()));
+        r.setY(calculeCoordNode(false,r.getHeight()));
         r.setAccessibleText(text.getText());
         return r;
     }
-    private double calculeCoordNode(boolean x) {
+    private double calculeCoordNode(boolean x, double margin) {
         if (x) {// alors coordonne horizontale
-            return new Random().nextDouble() * pane.getWidth();
+            return new Random().nextDouble() * (pane.getWidth() - margin);
         }else { // alors coordonnée verticale
-            return new Random().nextDouble() * pane.getHeight();
+            return new Random().nextDouble() * (pane.getHeight() - margin);
         }
     }
     private void addHandlerRectangle(Rectangle rectangle) {
