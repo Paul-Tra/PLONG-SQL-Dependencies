@@ -291,7 +291,7 @@ class principal:
     def genere_condition_dep(self):
         for src in self.p :
             for dst in self.pw : 
-                print("GENERE condition Dep 1 ")
+                #print("GENERE condition Dep 1 ")
                 source = src.name.split(".")[0]
                 target = dst.name.split(".")[0]
                 #print("----------"+name +"-------------")
@@ -311,9 +311,9 @@ class principal:
             for dst in self.p : 
                 source = src.name.split(".")[0]
                 target = dst.name.split(".")[0]
-                print("GENERE condition Dep 2 ")
+                #print("GENERE condition Dep 2 ")
                 #print("----------"+name +"-------------")
-                print(dst.couple_dependance)
+                #print(dst.couple_dependance)
                 for a1,b1 in src.couple_dependance.items():
                     #print(a1,b1)
                     for  a2,b2 in dst.couple_dependance.items():
@@ -328,12 +328,14 @@ class principal:
                                     print("src : " + source + ' , ' + e + " // dst : " + target + " , " + el )
                                     #if ( str(source + "." + a1 + " = " + target +"." +  a2) not in self.dep_sans_doublons[source,target] ) :
                                     self.dep_sans_doublons[source,target] = self.dep_sans_doublons[source,target] + [ source + "." + a1 + " = " + target +"." +  a2 ]
+                                    
     def generer_graphml(self):
         with open(os.getcwd()+"/graph.graphml", "w") as fichier:
             fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
             fichier.write('\t<key id="d0" for="node" attr.name="weight" attr.type="string"/>\n')
             fichier.write('\t<key id="d1" for="edge" attr.name="weight" attr.type="string"/>\n')
+            fichier.write('\t<key id="d2" for="edge" attr.name="weight" attr.type="string"/>\n')
             fichier.write('<graph id="G" edgedefault="directed\">\n')
             
             #creation node
@@ -442,24 +444,15 @@ class principal:
                     #print(elt.name)
                     if ( elt.name == src ):
                         #print("\t\tRaison de la dependance SRC : "+src+" : ")
-                        for c,val in elt.table_from.items():
-                            if ( table in val ):
-                                t = c
-                                
-                        if ( t != "" ):
-                            tmp = "SELECT .*? FROM .*? "+table+".*?;"
-                            #print(tmp)
-                            #print("ATTRRR : " + attr )
-                            m = re.findall("SELECT.*?"+attr+".*?FROM.*?"+table+".*?;",elt.data)
-                            
-                            if ( m != [] ) :
-                                #print("mmmmmmmm :::::::::: " + str(m))
-                                for li in m :
-                                    l = li.split(";")
-                                    for e in l :
-                                        if ( "SELECT" in e and attr in e):
-                                            #print('\t\t\t'+e)
-                                            l_dep_src.append(e)
+                        tmp = "SELECT .*? FROM .*? "+table+".*?;"
+                        m = re.findall("SELECT.*?"+attr+".*?FROM.*?"+table+".*?;",elt.data)
+                        if ( m ) :
+                            for li in m :
+                                l = li.split(";")
+                                for e in l :
+                                    if ( "SELECT" in e and attr in e):
+                                        #l_dep_src.append("rw,Succed")
+                                        l_dep_src.append(e)
                                     
             if ( "ww;" in v ) :
                 t = re.findall(";.*?\(",v)
@@ -625,10 +618,9 @@ class principal:
             #print(len(l_dep_dst))
             #print("//////////////////////////////////////")
             
-            #if ( l_dep_src == [] or l_dep_dst == [] ):
-            #    
-            #    print("RIP")
-            #    return -1
+            if ( l_dep_src == [] or l_dep_dst == [] ):
+                #print("RIP")
+                return -1
             if ( 1 == 0 ):
                 a=1
             else :
@@ -639,23 +631,99 @@ class principal:
                     self.dict_finale[fsrc,fdst] = []
                     #print("VALUE : " + v )
                     self.dict_finale[fsrc,fdst].append(v)
-                fichier.write('\n<Relation ID="'+v.strip().replace(";",",")+'" SRC="'+fsrc+'" DST="'+fdst+'">\n')
-                fichier.write('<SRC>\n')
+                    
+                l_ecriture = []
+                #fichier.write('\n<Relation ID="'+v.strip().replace(";",",")+'" SRC="'+fsrc+'" DST="'+fdst+'">\n')
+                #fichier.write('<SRC>\n')
+                l_ecriture.append('<SRC>\n')
+                check_condi2 = 0
+                count2 = 0
                 for elt in l_dep_src :
-                    debut , fin = self.trouve_ligne_fichier(elt,fsrc)
-                    fichier.write('\t'+str(debut) + " / " + str(fin) + '\t' +elt.strip()+'\n')
-                fichier.write('</SRC>\n')
-                fichier.write('<DST>\n')
+                    if ( "wr" not in elt.strip() and "rw" not in elt.strip() and "ww" not in elt.strip() ):
+                        count2 = count2 +1
+                        debut , fin = self.trouve_ligne_fichier(elt,fsrc)
+                        #fichier.write('\t l: '+str(debut) + '\t' +elt.strip()+'\n')
+                        #l_ecriture.append('\t l: '+str(debut) + '\t' +elt.strip()+'\n')
+                        if ( self.isRelationIfElse(v,elt.strip() , fsrc) == True or self.isRelationIfElse(v,elt.strip() , fdst) == True):
+                            #fichier.write('2 ! \t l: '+str(debut) + '\t' +elt.strip()+'\n')
+                            l_ecriture.append('\t l: '+str(debut) + '\t' +elt.strip()+'\n')
+                            check_condi2 =check_condi2 +1
+                        else :
+                            #fichier.write('1 ! \t l: '+str(debut) + '\t' +elt.strip()+'\n')
+                            l_ecriture.append('\t l: '+str(debut) + '\t' +elt.strip()+'\n')
+                        
+                #fichier.write('</SRC>\n')
+                l_ecriture.append('</SRC>\n')
+                #fichier.write('<DST>\n')
+                l_ecriture.append('<DST>\n')
+                # cariable pour ensuite tester si TOUTE les Operations sont dans des "If" , si oui , cette relation est dites '-' , a savoir RW- ou RW+
+                check_condi = 0
+                count = 0
                 for elt in l_dep_dst :
-                    debut , fin = self.trouve_ligne_fichier(elt,fsrc)
-                    fichier.write('\t'+str(debut) + " / " + str(fin) + '\t' +elt.strip()+'\n')
-                fichier.write('</DST>\n')
-                fichier.write('</Relation>\n\n')
+                    if ( "wr" not in elt.strip() and "rw" not in elt.strip() and "ww" not in elt.strip() ):
+                        count = count +1
+                        debut , fin = self.trouve_ligne_fichier(elt,fsrc)
+                        #print("test" + elt.strip())
+                        #fichier.write('\t l: '+str(debut) + '\t' +elt.strip()+'\n')
+                        #l_ecriture.append('\t l: '+str(debut) + '\t' +elt.strip()+'\n')
+                        if ( self.isRelationIfElse(v,elt.strip() , fsrc) == True ):
+                            #fichier.write('2 ! \t l: '+str(debut) + '\t' +elt.strip()+'\n')
+                            l_ecriture.append('\t l: '+str(debut) + '\t' +elt.strip()+'\n')
+                            check_condi =check_condi +1
+                        else :
+                            #fichier.write('1 ! \t l: '+str(debut) + '\t' +elt.strip()+'\n')
+                            l_ecriture.append('\t l: '+str(debut) + '\t' +elt.strip()+'\n')
+                            
+                #fichier.write('</DST>\n')
+                l_ecriture.append('</DST>\n')
+                #fichier.write('</Relation>\n\n')
+                l_ecriture.append('</Relation>\n\n')
+                
+                # si TOUTES les operation sont non obligatoires
+                l_fin = [""]
+                if ( count == check_condi or count2 == check_condi2):
+                    l_fin[0] = ('\n<Relation ID="'+v.strip().replace(";",",")+'" SRC="'+fsrc+'" DST="'+fdst+'" CONDITION=True >\n')
+                    l_fin.append(l_ecriture)
+                else:
+                    l_fin[0] = ('\n<Relation ID="'+v.strip().replace(";",",")+'" SRC="'+fsrc+'" DST="'+fdst+'" CONDITION=False >\n')
+                    l_fin.append(l_ecriture)
+                
+                
+                for elt in l_fin:
+                    for a in elt :
+                        fichier.write(a)
+                    
+                    
+                
                 return 0
+                
+    def isRelationIfElse(self,relation ,requette , file):
+        if ( "wr" in requette or "rw" in requette or "ww" in requette ):
+            return False
+        data =""
+        for elt in self.p:
+            if elt.name.split(".")[0] == file :
+                data = elt.data
+                if ( data == None ):
+                    break
+                p = "IF .*? END IF;"
+                m = re.findall(p,data)
+                if ( m ):
+                    for a in m :
+                        if ( re.findall(requette,str(a))):
+                            return True
+                p = "ELSE .*? END IF;"
+                m = re.findall(p,data)
+                if ( m ):
+                    for a in m :
+                        if ( re.findall(requette,str(a))):
+                            return True
+            
+        return False
                 
                 
     def trouve_ligne_fichier(self , elt , file ):
-        print("elt :: " + elt )
+        #print("elt :: " + elt )
         debut = 0 
         fin = 0
         cpt = 0 
@@ -674,7 +742,7 @@ class principal:
                         debut = num
                 
                 if ( ";" in a and debut <= num ):
-                        fin = num
+                    fin = num
     
         return debut,fin
                 
@@ -700,6 +768,7 @@ class principal:
                         l.append(v)
                     
                 for elt in l :
+                    
                     fichier.write(elt.strip().replace(";",",")+'\n')
                     
                 
@@ -733,16 +802,6 @@ class principal:
             for elt in v :
                 if ( elt not in self.dict_finale[c[0],c[1]] ) :
                     self.dict_finale[c[0],c[1]].append(elt)
-            #print(str(self.dict_finale[c[0],c[1]])+'\n')
-        
-        
-        #for cle , value in self.dict_finale.items() :
-        #    self.dict_finale[cle] = list(set(value))
-        
-         
-        # c = c1[0],c2[0]
-        # self.dict_finale[c].append(tmp)
-        
         for c1 , v1 in self.dict_finale.items() :
             self.dict_finale[c1] = list(set(v1))
         
@@ -753,6 +812,7 @@ class principal:
             fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
             fichier.write('\t<key id="d0" for="node" attr.name="weight" attr.type="string"/>\n')
             fichier.write('\t<key id="d1" for="edge" attr.name="weight" attr.type="string"/>\n')
+            fichier.write('\t<key id="d2" for="edge" attr.name="weight" attr.type="string"/>\n')
             fichier.write('<graph id="G" edgedefault="directed\">\n')
             
             #creation node
@@ -766,21 +826,60 @@ class principal:
                     fichier.write('<data key="d0">"'+cle[0]+'"</data>\n</node>')
                     fichier.write('\n<edge source="'+cle[0]+'" target="'+cle[1]+'">\n')
                     fichier.write('<data key="d1">\n')
+                    
                     # on traite ensuite toutes les dependances une a une 
                     l = []
-                    #print("°°°°°°°°°°°°° " + str(value)) 
                     for v in value :
                         if ( v not in l ) :
                             l.append(v)
                     
+                    l_condi = []
                     for elt in l :
-                        fichier.write(elt.strip().replace(";",",")+'\n')
+                        print (elt)
+                        if ( ";" in elt ):
+                            new_list = value.copy()
+                            p = self.maj_graph_IfElse(elt,cle[0],cle[1] , new_list )
+                            if ( p == [] or p == None):
+                                fichier.write(elt.strip().replace(";",",")+'\n')
+                            else :
+                                l_condi.append(p)
+                        else :
+                            fichier.write(elt.strip().replace(";",",")+'\n')
                         
                 
                     fichier.write('\n</data>\n</edge>\n\n')    
+                    if ( l_condi != [] and l_condi != None ) :
+                        for a in l_condi :
+                            for b in a :
+                                fichier.write(b)
+                
             fichier.write("</graph>\n\t</graphml>")
         fichier.close()
         self.fichier = fichier
+        
+    def maj_graph_IfElse(self,relation,s,d,value): # s = source, d = destination
+        l = []
+        with open ("./graphs/dependences.gogol","r") as fichier :
+            for line in fichier :
+                #print(line)
+                #print ( relation)
+                if ( relation.replace(";",",") in line and s in line and d in line and "CONDITION=True" in line):
+                    l.append('\n<node id="'+s+'">\n')
+                    l.append('<data key="d0">"'+s+'"</data>\n</node>')
+                    l.append('\n<edge source="'+s+'" target="'+d+'">\n')
+                    l.append('<data key="d2">\n')
+                    l.append(relation+'\n')
+                    
+                    l_tmp = []
+                    for v in value :
+                        if ( v not in l_tmp and "=" in v ) :
+                            l.append(v+'\n')
+                    l.append('\n</data>\n</edge>\n\n')
+                    return l
+        fichier.close()
+        return []            
+                
+        
         
     def lanceur_f(self):
         self.lanceur()
@@ -808,7 +907,6 @@ if __name__ == "__main__":
     if (len(argv) != 2 ) :
         print("Merci d'entrer un dossier contenant : \n - un fichier genDB.sql contenant votre base de données \n - un ensemble de fichier reprensetant les transactions ( au format .sql ; PLpgSQL ) ")
     else :
-        
         dossier = argv[1].replace("/","")
         main = principal(dossier)
         main.lanceur_f()

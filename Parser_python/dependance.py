@@ -7,6 +7,7 @@ class dependance:
         self.id = ""
         self.complement = ""
         self.condition = []
+        self.ifelse = False
         # type , table ( id ) . complement 
         #       conditions [...
         #       ....
