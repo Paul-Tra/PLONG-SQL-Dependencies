@@ -23,8 +23,8 @@ public class Parser {
     NodeList nodeList;
     ArrayList<Relation> list_relation;
     ArrayList<Transaction> list_transaction;
-    public Parser(String cheminFichier) {
-        file = new File(cheminFichier);
+    public Parser(String path) {
+        file = new File(path);
         nodeList = null;
         list_relation = new ArrayList<>();
         list_transaction = new ArrayList<>();
@@ -54,11 +54,24 @@ public class Parser {
             String source = e.getAttribute("source");
             String destination = e.getAttribute("target");
             String nom = e.getElementsByTagName("data").item(0).getTextContent();
-            if (!estContenue(source,destination,nom )) {
+            // add here the recovering of the key ( d0, d1,...)
+            String key = getFirstDataKey(e);
+            /*if (!estContenue(source,destination,nom )) {
                 Relation r = new Relation(source, destination, nom);
+                list_relation.add(r);
+            }*/
+            if (!isContained(source, destination, nom, key)) {
+                Relation r = new Relation(source, destination, nom, key);
                 list_relation.add(r);
             }
         }
+    }
+    // return the key type of a data tag
+    private String getFirstDataKey(Element e) {
+        e.getElementsByTagName("data").item(0).normalize();
+        NodeList n = e.getElementsByTagName("data");
+        Element element = (Element) n.item(0);
+        return element.getAttribute("key");
     }
     // remplie la liste avec les transactions en gerant l'unicité des transactions
     private void fillListTransction() {
@@ -83,6 +96,15 @@ public class Parser {
     private boolean estContenue(String source, String destination, String nom) {
         for (Relation relation : list_relation) {
             if (relation.source.equals(source) && relation.destination.equals(destination) && relation.nom.equals(nom)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    //check if a relation with the arguments already exist
+    private boolean isContained(String source, String destination, String nom,String key) {
+        for (Relation relation : list_relation) {
+            if (relation.source.equals(source) && relation.destination.equals(destination) && relation.nom.equals(nom) && relation.key.equals(key)) {
                 return true;
             }
         }

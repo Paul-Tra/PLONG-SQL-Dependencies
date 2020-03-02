@@ -16,7 +16,7 @@ CLASSES = \
 MAIN = Main
 MODULES = --module-path lib/ --add-modules=javafx.controls,javafx.fxml
 checkJava: 
-      ifeq ($(shell java -version 2>&1|grep 14 >/dev/null; printf $$?),0)
+      ifeq ($(shell java --version 2>&1|grep "openjdk 14" >/dev/null; printf $$?),0)
 		@make clean
 		@ls sample/
 		@make compile

@@ -35,7 +35,7 @@ public class ElementVisuel {
     private double oldX, oldY;
     private final int DEFAULT_MARGE_X_NOM_NODE = 20;
     private final int DEFAULT_MARGE_Y_NOM_NODE = 10;
-    private final int TAILLE_FLECHE = 8; // taille du bout de la fleche
+    private final int TAILLE_FLECHE = 12; // taille du bout de la fleche
     private final double ANGLE_FLECHE = 45; // angle d'un cote du bout de la fleche par rapport au noeud d'arrivee
     private final double COEFFICIENT_CONTROLE = 0.3;// coefficent de longueur/hauteur pour placer les points de controles
     private Pane pane; // panneau auquel l'element visuel est asssocié
@@ -102,6 +102,9 @@ public class ElementVisuel {
                 if (isRWRelation(relation)) {
                     //fleche.setStrokeFill(Color.RED);
                     fleche.setStroke(Color.CORAL);
+                }
+                if (relation.key.equals("d2")) {
+                    fleche.getStrokeDashArray().addAll(3.0,7.0,3.0,7.0);
                 }
                 list_shape.add(fleche);
                 addHandlerFleche(fleche);

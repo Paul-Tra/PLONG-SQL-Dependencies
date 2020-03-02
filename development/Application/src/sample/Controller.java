@@ -54,6 +54,8 @@ public class Controller implements Initializable {
     private void graphClick() {
         changeVisibilityPopUpWindow(true);
     }
+
+    // action method used when user click on a dependancy's arrow
     @FXML
     private void doClick() {
         // check if the data-cell clicked is a Relation or not
@@ -80,12 +82,11 @@ public class Controller implements Initializable {
                     ParserG parserG = new ParserG("./src/dependences.gogol");
                     ArrayList<String[]> list = parserG.getRelationLines(parserG.getList_lines(),id,source,target);
                     if (checkRelationLines(list)) {
+                        // unfill the pop-up window and set it invisible
+                        doClearPopUpWindow();
+                        changeVisibilityPopUpWindow(true); // hide the pop-up
                         return;
                     }
-                    String Id = "ww,BID(*).*";
-                    String src = "StoreBId";
-                    String dst = "StoreBId";
-                    //ArrayList<String[]> list = parserG.getRelationLines(parserG.getList_lines(),Id,src,dst);
                     consumer.accept(" after list parserG creation");
                     fillPop_up(list.get(0),list.get(1));
                 }else{
@@ -96,7 +97,7 @@ public class Controller implements Initializable {
             }
         }
     }
-
+    // check if the result of the Gogol parsing is printable in the pop-up window
     private boolean checkRelationLines(ArrayList<String[]> arrayList) {
         if (arrayList == null) {
             consumer.accept("---------------------------------------------------------");
@@ -184,7 +185,8 @@ public class Controller implements Initializable {
         }
         anchorPane2.setScaleX(anchorPane2.getScaleX() * coef);
         anchorPane2.setScaleY(anchorPane2.getScaleY() * coef);
-
+        scrollPane.setHmax(scrollPane.getHmax()*coef);
+        scrollPane.setVmax(scrollPane.getVmax()*coef);
     }
 
     @FXML

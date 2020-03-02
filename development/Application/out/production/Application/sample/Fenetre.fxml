@@ -32,7 +32,7 @@
          <children>
             <ScrollPane fx:id="scrollPane" onMouseClicked="#graphClick" onScroll="#doScroll" prefHeight="371.0" prefWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <content>
-                  <AnchorPane fx:id="anchorPane2" onScroll="#doScroll" prefHeight="371.0" prefWidth="450.0" style="-fx-background-color: SALMON;" />
+                  <AnchorPane fx:id="anchorPane2" onScroll="#doScroll" prefHeight="371.0" prefWidth="450.0" style="-: ;" />
                </content>
             </ScrollPane>
             <AnchorPane fx:id="anchorPane3" maxWidth="200.0" prefHeight="100.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
