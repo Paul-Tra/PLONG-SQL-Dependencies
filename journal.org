@@ -69,3 +69,14 @@
 *** lire
 https://universiteouverte.org/2020/02/13/le-5-mars-saffiche-partout/
 https://padlet.com/diderotpournosretraites/j413cz0jqfk7
+
+
+** <03/03/2020>
+** Fait
+*** Gérer the edges may R/W (-) and the edge must R/W (+)
+*** Ecrire un "make" dont le message de erreur marche
+*** Mettre a jour le README.md
+*** Affichier le numero de ligne dans le fichier
+** A faire:
+** Nettoyage README's
+** Chercher des applications en PgSQL et tester l'application
