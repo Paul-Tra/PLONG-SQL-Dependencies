@@ -106,7 +106,7 @@ class PrimaryKey :
         #print(self.liste_table)
         self.trouve_primary()
         #print(len(self.couple))
-        self.affiche_couple()
+        #self.affiche_couple()
     
 if __name__ == "__main__":
     pk = PrimaryKey("./fichiers/genDB.sql")

@@ -10,7 +10,7 @@ from dependance import *
 class parser_ecriture:
     def __init__(self,nom_fichier,dossier):
         self.nom_fichier = nom_fichier
-        #print(nom_fichier)
+        # #print(nom_fichier)
         name = nom_fichier.split("/")
         name = name[len(name)-1]
         self.name = name
@@ -31,19 +31,19 @@ class parser_ecriture:
         m =re.findall("UPDATE.*?SET.*?=",self.data)
         l = []
         for elt in m :
-            #print(elt)
+            # #print(elt)
             elt = elt.replace(" SET "," ").replace(" =","").replace("UPDATE ","")
-            #print("elt " + str(elt))
+            # #print("elt " + str(elt))
             table = elt.split(" ")[0]
             attr = elt.split(" ")[1]
             if ( table in self.cle_impacte_set.keys() ) :
                 a = self.cle_impacte_set[table]
                 a.append(attr)
                 self.cle_impacte_set[table] = a 
-                print(self.cle_impacte_set[table])
+                 #print(self.cle_impacte_set[table])
             else:
                 self.cle_impacte_set[table] = [attr]
-                print(self.cle_impacte_set[table])
+                 #print(self.cle_impacte_set[table])
         
         
     def trouve_update(self):
@@ -55,13 +55,13 @@ class parser_ecriture:
                 ligne = ligne.strip()
                 #si la igne est vide , equivalent à \n\n\n par exemple
                 if not ligne :
-                    #print("#ligne vide.")
+                    # #print("#ligne vide.")
                     # rien a faire ...
                     a= 0 
                 # sinon on traite la ligne et l'ajoute a notre liste
                 else :
                     data += " "+ligne
-                    #print(sans_saut)
+                    # #print(sans_saut)
         # on se retrouve avec une tres grande ligne , que l'on va pouvoir parser .
         # privée des espaces inutiles , et des retours chariot
         self.data = data
@@ -70,30 +70,30 @@ class parser_ecriture:
         m = re.findall("UPDATE .*?;",self.data)
         for elt in m :
             self.liste_update.append(elt)
-            #print(elt+'\n')
+            # #print(elt+'\n')
         
     def determine_table(self,data):
         d = data.split(" ")[1]
         self.liste_attribut[d]=[]
-        #print(d)
+        # #print(d)
     
     def analyse_set(self,data):
-        #print("data :: " + data)
+        # #print("data :: " + data)
         d = data.split(" ")[1]
-        #print("nom : " + d )
+        # #print("nom : " + d )
         m = re.findall("[A-Za-z]+\.[A-Za-z]+",data)
-        #print(m)
+        # #print(m)
         attribut = []
         for elt in m :
             attribut.append(elt.split(".")[1])
-            #print(attribut)
+            # #print(attribut)
         
         self.liste_attribut[d] = attribut
-        #print(self.liste_attribut[d])
-        #print(self.liste_attribut)
+        # #print(self.liste_attribut[d])
+        # #print(self.liste_attribut)
             
             
-        #print(m)
+        # #print(m)
         
     def trouve_insert(self):
         m = re.findall("INSERT .*?\(?.*?\)",self.data)
@@ -103,55 +103,55 @@ class parser_ecriture:
             elt = elt[2]
             elt = elt[:-1]
             self.liste_table_insert.append(elt)
-            #print(elt+'\n')
+            # #print(elt+'\n')
             # traitement des conditions
             liste =[]
             liste = condi.split("(")[1].split(")")[0].split(",")
             self.liste_condition.append(liste)
-            #print(self.liste_condition)
+            # #print(self.liste_condition)
             
     def trouve_attribut_de_fonction(self):
-        #print("\nrecherche des attributs de fonction")
+        # #print("\nrecherche des attributs de fonction")
         self.data = self.data.replace("NUMERIC(2)","INTEGER")
         self.data = self.data.replace("VARCHAR(16)","INTEGER")
         m = re.findall("FUNCTION .*?[{]*? RETURNS",self.data)
-        #print(m)
+        # #print(m)
         n = re.findall("\(.*?\)",str(m))
-        #print(n)
+        # #print(n)
         m = re.findall("[a-z]+.*? ",str(n))
-        #print(m)
-        print("\nListe des parametre de la fonction : " )
+        # #print(m)
+         #print("\nListe des parametre de la fonction : " )
         for elt in m :
             elt =elt.replace(",","")
             self.liste_param_fonction.append(elt)
-            print(elt )
+             #print(elt )
             
             
     def trouve_cle_dep_possible (self):
         for elt in self.liste_update :
-            #print(elt)
+            # #print(elt)
             elt = elt.split("WHERE")[1]
-            #print(elt)
+            # #print(elt)
             elt = elt.replace("AND",",")
             elt = elt.replace("OR ",",")
             elt = elt.strip().replace(" ","").replace(";","")
-            #print(elt)
+            # #print(elt)
             l = elt.split(",")
             for a in l : 
                 a = a.split("=")
                 self.aux(a)
             
     def aux(self,l):
-        #print("cle avant changement " + str(l))
+        # #print("cle avant changement " + str(l))
         cle = l[0].split(".")[1]
         table = l[0].split(".")[0]
         attr = l[1].lower()
-        #print("ok cle = " + cle + ", attr : " + attr )
+        # #print("ok cle = " + cle + ", attr : " + attr )
         #if ( table in self.table_from.keys() ) :
-            #print("ok")
+            # #print("ok")
          #   table = self.table_from[table]
         if ( cle in self.pkey.couple[table] ) :
-            print("Clé primaire : " + cle + " / " + attr + " dans : " + table)
+             #print("Clé primaire : " + cle + " / " + attr + " dans : " + table)
             # on va ajouter a un dico les couple ( arg : [table touché] ) car nous savons deja que les clé touchés sont des clés primaires
             if ( attr in self.couple_dependance.keys()):
                 tmp = self.couple_dependance[attr]
@@ -161,7 +161,7 @@ class parser_ecriture:
                 
             tmp.append(str(table + " : " + cle) )
             self.couple_dependance[attr] = tmp
-            print("AUX :: " + str(self.couple_dependance[attr]))
+             #print("AUX :: " + str(self.couple_dependance[attr]))
                 
             
         
@@ -169,33 +169,34 @@ class parser_ecriture:
         for elt in self.liste_update :
             
             elt = elt.split("WHERE")[1]
-            #print(elt)
+            # #print(elt)
     
     def analyse_contenue(self):
         for elt in self.liste_update :
-            #print(elt)
+            # #print(elt)
             self.determine_table(elt)
             self.analyse_set(elt)
     
     def affiche(self):
+        a=1
         #for elt,a in self.liste_attribut.items():
-         #   print(elt,a)
+         #    #print(elt,a)
         #for elt in self.liste_table_insert:
-        #    print(elt)
-        for a,b in self.couple_dependance.items():
-            print(a,b)    
+        #     #print(elt)
+        #for a,b in self.couple_dependance.items():
+             #print(a,b)    
         
     def lanceur(self):
         self.trouve_update()
         self.analyse_req()
         self.analyse_contenue()
         self.trouve_insert()
-        #print(p_write.data)
+        # #print(p_write.data)
         self.trouve_attribut_de_fonction()
         
         #self.trouve_dependance_dans_le_update()
         self.trouve_cle_dep_possible()
-        print("------------------------------------------------")
+         #print("------------------------------------------------")
         self.affiche()
         self.trouve_set()
         
