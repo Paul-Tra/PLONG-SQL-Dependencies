@@ -36,6 +36,7 @@ class principal:
         self.dependance = []
         self.dep_sans_doublons = dict()
         self.dict_finale = dict()
+        self.dossier = dossier
         
     
     def analyse_BD(self):
@@ -275,13 +276,6 @@ class principal:
                     
     
     def genere_couple_source_target(self):
-        # init du disctionnaire { ( source , target ) : [ liste de contraintes ....]
-         #print("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{")
-        #for elt in self.liste_dependance :
-             #print(elt)
-            
-        
-            
         for elt in self.dependance :
             self.dep_sans_doublons[elt.source,elt.target] = None
             
@@ -363,7 +357,7 @@ class principal:
                         #<edge source="RegItem" target="RegItem">
                         fichier.write('\n<edge source="'+dep.source+'" target="'+dep.target+'">\n')
                         fichier.write('<data key="d1">\n')
-                        fichier.write(dep.type +';'+dep.table+'('+str(dep.id)+').'+dep.complement+'\n\n</data></edge>')
+                        fichier.write(dep.type +';'+dep.table+'('+str(dep.id)+').'+dep.complement.strip()+'\n\n</data></edge>')
                     
                 
             fichier.write("</graph>\n\t</graphml>")
@@ -376,13 +370,17 @@ class principal:
         with open ("./graphs/dependences.gogol","w") as fichier :
             fichier.write('## Fichier généré dans le cadre de Plong2019/2020 pour etudier les raisons de dépendances entre 2 transactions , ID = "nom_de_la_relation" SRC = "fichier_source" DST = "fichier_destination"\n## ( SRC et DST sont en rapport avec les fleches du graphes).\n\n')
         for cle,value in self.dep_sans_doublons.items():
-            # #print("\nSource : " + cle[0] + " , Destination : " + cle[1] )
-            value = list(set(value))
-            #print (value)
-            for v in  value : 
+            #print(cle)
+            for v in value :
+                v = v.strip()
+                #print("v :" ,v )
+            i = list(set(value))
+            for v in  i : 
                 self.write_raison_dependances(v,cle[0],cle[1])
-                # #print("SIZE : " + str(len(value)) )
-                
+                #if ( "rw" in v or 'wr' in v or 'ww' in v ):
+                    #print(cle[0],cle[1] ,"v :: " , v)
+                        
+        return self.dep_sans_doublons
                 
     def write_raison_dependances(self,v ,src,dst):
         # #print ( src ) 
@@ -394,19 +392,31 @@ class principal:
         l_dep_src = []
         l_dep_dst = []
         # #print("------------------- " + v )
-        print("#" , v)
         
+        #if ( "rw" in v or 'wr' in v or 'ww' in v and src != dst ):
+         #   print(src , dst ,"v :: " , v)
+        #print(src,dst)
         with open ("./graphs/dependences.gogol","a+") as fichier :
             
             
-            if ( "wr;" in v ) :
-                t = re.findall(";.*?\(",v)
-                table = t[0].replace(";","").replace("(","")
+            if ( "wr" in v ) :
+                #t = re.findall(";.*?\(",v)
+                if ( ";" in v ):
+                    t = v.split(";")[1].split("(")[0]
+                else:
+                    t = v.split(",")[1].split("(")[0]
+                #print("t : " , t )
+                #print('t|' ,t,'|' )
+                #print("v : " ,v )
+                if ( t != None and t != [] ):
+                    table = t.replace(";","").replace("(","")
                 tmp = re.findall("\)\..*",v)
                 # #print(tmp)
-                attr = tmp[0].replace(").","")
+                attr = tmp[0].replace(").","").strip()
                 t = ""
-                # #print(table)
+                #print("attr = " , attr )
+                #print(table)
+                #print(v)
                 for elt in self.p :
                     # #print(elt.name)
                     if ( elt.name == dst ):
@@ -420,16 +430,21 @@ class principal:
                             if ( attr == "*" ):
                                 #print('ok' + table)
                                 m = re.findall("SELECT.*? FROM "+table+".*?;",elt.data)
+                                #print(m)
                             else :
                                 m = re.findall("SELECT.*? "+attr+" FROM "+table+".*?;",elt.data)
-                            #m = re.findall("SELECT.*?"+attr+".*?FROM.*?"+table+".*?;",elt.data)
                             if ( m != [] ) :
                                 for li in m :
                                     l = li.split(";")
+                                    #print("On cherche : " ,attr , "\nDans :: ",str(m))
                                     for e in l :
+                                        e = e.strip()
                                         if ( "SELECT" in e and attr in e ):
-                                            # #print('\t\t\t'+e)
                                             l_dep_dst.append(e)
+                                        elif ( attr == "*" ):
+                                            if ( "SELECT" in e and table in e):
+                                                #print('e = ' ,e , table)
+                                                l_dep_dst.append(e)
                 for elt in self.pw :
                     if ( elt.name == src ):
                         tmp = "UPDATE "+table+" SET " +attr
@@ -437,19 +452,25 @@ class principal:
                         if ( m != [] ):
                             # #print("\t\tRaison de la dependance SRC : "+src+" : ")
                             for li in m :
-                                # #print('\t\t\t'+li)
+                                #print('li : ',li, '\n')
                                 l_dep_src.append(li)
                     
                                 
-            if ( "rw;" in v ) :
-                t = re.findall(";.*?\(",v)
-                table = t[0].replace(";","").replace("(","")
+            if ( "rw" in v or "rw," in v ) :
+                
+                if ( ";" in v ):
+                    t = v.split(";")[1].split("(")[0]
+                else:
+                    t = v.split(",")[1].split("(")[0]
+                #print("t : " , t )
+                #print('t|' ,t,'|' )
+                #print("v : " ,v )
+                if ( t != None and t != [] ):
+                    table = t.replace(";","").replace("(","")
                 tmp = re.findall("\)\..*",v)
                 # #print(tmp)
                 attr = tmp[0].replace(").","").strip()
-                print(";"+attr+";")
                 t = ""
-                # #print(table)
                 l_dep_src = []
                 l_dep_dst = []
                 for elt in self.pw :
@@ -470,23 +491,28 @@ class principal:
                         if ( attr == "*" ):
                             #print('ok' + table)
                             m = re.findall("SELECT.*? FROM "+table+".*?;",elt.data)
+                            
                         else :
                             m = re.findall("SELECT.*? "+attr+" FROM "+table+".*?;",elt.data)
-                        print(v)
-                        if ( m ) :
+                        #print(v)
+                        if ( m != [] ) :
                             for li in m :
                                 l = li.split(";")
+                                #print("On cherche : " ,attr )
                                 for e in l :
-                                    if ( "SELECT" in e and attr in e):
-                                        #l_dep_src.append("rw,Succed")
-                                        l_dep_src.append(e)
-                                    
+                                    e = e.strip()
+                                    if ( "SELECT" in e and attr in e ):
+                                        l_dep_dst.append(e)
+                                    elif ( attr == "*" ):
+                                        if ( "SELECT" in e and table in e):
+                                            #print('e = ' ,e)
+                                            l_dep_dst.append(e)          
             if ( "ww;" in v ) :
                 t = re.findall(";.*?\(",v)
                 table = t[0].replace(";","").replace("(","")
                 tmp = re.findall("\)\..*",v)
                 # #print(tmp)
-                attr = tmp[0].replace(").","")
+                attr = tmp[0].replace(").","").strip()
                 # #print(table)
                 
                 ## test ##
@@ -511,39 +537,25 @@ class principal:
                                     g = (lect.name.split(".")[0],fsrc) 
                                     # #print(a)
                                     if ( a in self.dict_finale.keys() ):
-                                        # #print("OK , elt = " + elt)
                                         b = v.replace("ww","wr")
                                         h = v.replace("ww","rw")
-                                        # #print(b)
                                         self.dict_finale[a].append(b)
                                         self.dict_finale[g].append(h)
-                                        # #print(";;;;;;;;;;;;;;" + str(self.dict_finale[a]))
                                         l_dep_src.append(v)
                                         l_dep_dst.append(elt)
-
-                                         #print(self.dict_finale[g] )
-                                         #print(self.dict_finale[a])
                                         
                                     else : 
-                                        # #print("Pas OK , elt = " + elt)
-                                        # #print(a)
                                         b = v.replace("ww","wr")
                                         h = v.replace("ww","rw")
-                                         #print(b)
                                         self.dict_finale[a] = []
                                         self.dict_finale[a].append(b)
                                         self.dict_finale[g] = []
                                         self.dict_finale[g].append(h)
-                                         #print(self.dict_finale[g] )
-                                         #print(self.dict_finale[a])
                                         l_dep_src.append(v)
                                         l_dep_dst.append(elt)
                                                         
                     else :
-                        # #print("*******************************************")
                         m = re.search("SELECT.*?"+table+".*?;",lect.data)
-                        # #print((fsrc,lect.name.split(".")[0]))
-                         #print("//"+ str(m))
                         if ( m != None and m[0] != None):
                             a = m[0].split(";")
                             for elt in a :
@@ -564,13 +576,8 @@ class principal:
                                         # #print(";;;;;;;;;;;;;;" + str(self.dict_finale[a]))
                                         l_dep_src.append(v)
                                         l_dep_dst.append(elt)
-
-                                         #print(self.dict_finale[g] )
-                                         #print(self.dict_finale[a])
                                         
                                     else : 
-                                        # #print("Pas OK , elt = " + elt)
-                                        # #print(a)
                                         b = v.replace("ww","wr")
                                         h = v.replace("ww","rw")
                                          #print(b)
@@ -580,8 +587,6 @@ class principal:
                                         self.dict_finale[g] = []
                                         if ( h not in self.dict_finale[g] ):
                                             self.dict_finale[g].append(h)
-                                         #print(self.dict_finale[g] )
-                                         #print(self.dict_finale[a])
                                         l_dep_src.append(v)
                                         l_dep_dst.append(elt)
                             
@@ -849,9 +854,10 @@ class principal:
                     self.dict_finale[c[0],c[1]].append(elt)
         for c1 , v1 in self.dict_finale.items() :
             self.dict_finale[c1] = list(set(v1))
+            
         
-        
-        
+        #print("##########################################")
+        lgaph = []
         with open("./graphs/graph.graphml", "w") as fichier:
             fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
@@ -862,18 +868,14 @@ class principal:
             
             #creation node
             for cle , value in self.dict_finale.items() :
-                 #print(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;",cle,value)
-                
                 src = self.p[0]
                 dst = self.p[0]
                 
                 for elt in self.p :
                     if ( elt.name == cle[0]+".sql" ):
-                         #print ("11111111111111111111111111111111111111&")
                         src = elt
                     if ( elt.name == cle[1]+".sql" ):
                         dst = elt
-                         #print ("22222222222222222222222222222222222222é&")
                         
                 s = src.name.split(".")[0]
                 d = dst.name.split(".")[0]
@@ -883,10 +885,8 @@ class principal:
                             for e in b1 :
                                 
                                 if ( el == e ):
-                                    # #print("&&&&" , src.name , dst.name , s ,d )
                                     el = el.replace(" : " , ":")
                                     e =e.replace(" : ",":")
-                                     #print("src : " + src.name + ' , ' + e + " // dst : " + dst.name + " , " + el )
                                     value = value + [ s + "." + a1 + " = " + d +"." +  a2 ]
 
                 if ( 1 == 1 ):
@@ -902,10 +902,11 @@ class principal:
                     l_non_condi.append('\n<edge source="'+cle[0]+'" target="'+cle[1]+'">\n')
                     l_non_condi.append('<data key="d1">\n')
                     
+                    
                     for elt in l :
                         if ( ").*" in elt ):
-                            if ( (cle[0],cle[1]) in self.dep_sans_doublons.keys() ):
-                                self.dep_sans_doublons[cle[0],cle[1]].append(elt)
+                            if ( (cle[0],cle[1]) in self.dep_sans_doublons.keys() and elt not in self.dep_sans_doublons[cle[0],cle[1]] ):
+                                self.dep_sans_doublons[cle[0],cle[1]].append(elt.strip())
                             #print("ok .* ajouté")
                             
                         if ( ';' in elt or ',' in elt ):
@@ -914,24 +915,31 @@ class principal:
                             
                             if ( p == [] or p == None):
                                 if ( elt.replace(";",",") not in l_non_condi ):
-                                    l_non_condi.append(elt.replace(";",",")+'\n')
+                                    l_non_condi.append(elt.replace(";",",").strip()+'\n')
                                 #fichier.write(elt.replace(";",",")+'\n')
                                 
                             else :
-                                l_condi.append(p)
+                                if ( elt.replace(";",",").strip() not in l_condi ):
+                                    l_condi.append(p)
                         else :
-                             #print("#####################################")
-                             #print("ELSEEEE   ",elt)
-                            #fichier.write(elt.strip().replace(";",",")+'\n')
                             if ( elt.replace(";",",") not in l_non_condi ):
-                                l_non_condi.append(elt.strip().replace(";",",")+'\n')
+                                l_non_condi.append(elt.strip().replace(";",",").strip()+'\n')
                         
-                
-                    #fichier.write('\n</data>\n</edge>\n\n')    
                     if ( l_condi != [] and l_condi != None ) :
+                        size = (len(l_condi))
+                        #print(size)
+                        
+                        tmp = l_condi[4:(size-1)]
+                        tmp = list(set(tmp))
+                        #for e in tmp :
+                        #    print(e)
+                            
+                        l_condi[4:(size-1)] = tmp
                         for a in l_condi :
                             for b in a :
                                 fichier.write(b.replace(";",","))
+                        lgaph.append(l_condi)
+                        
                     if ( l_non_condi != [] and l_non_condi != None ) :
                         check = False
                         for elt in l_non_condi :
@@ -940,14 +948,233 @@ class principal:
                                     check = True
                         l_non_condi.append('\n</data>\n</edge>\n\n')  
                         if ( check == True ):
+                            
+                            size = (len(l_non_condi))
+                            #print(size)
+                            
+                            tmp = l_non_condi[4:(size-1)]
+                            tmp = list(set(tmp))
+                            #for e in tmp :
+                                #print(e)
+                                
+                            l_non_condi[4:(size-1)] = tmp
                             for a in l_non_condi :
                                 #print(a)
+                                
                                 for b in a :
                                     fichier.write(b.replace(";",","))
-                
+                            ## on retraite ls dépendance en fonction du grapml
+                            lgaph.append(l_non_condi)   
             fichier.write("</graph>\n\t</graphml>")
         fichier.close()
+        self.maj_gogol(lgaph)
         self.fichier = fichier
+        
+        
+        
+        
+        
+    def maj_gogol(self, l):
+        src =""
+        dst =""
+        for elt in l:
+            for a in elt :
+                #print(a)
+                if ( "source" in a ):
+                    src = a.split('"')[1]
+                    dst = a.split('"')[3]
+                    #print(src,dst)
+                if ( "wr" in a or "rw" in a or "ww" in a ):
+                    print (src , ' - ', dst , ' : ' ,a)
+                    self.raison_dependance(a,src,dst)
+    
+    def raison_dependance(self,a,src,dst):
+        fsrc = src+".sql"
+        fdst = dst + ".sql"
+        t = ""
+        
+        if ( ";" in a ):
+            t = a.split(";")[1].split("(")[0]
+        else:
+            t = a.split(",")[1].split("(")[0]
+        if ( t != None and t != [] ):
+            table = t.replace(";","").replace("(","")
+        tmp = re.findall("\)\..*",a)
+        attr = tmp[0].replace(").","").strip()
+        if ( "wr" in a ):
+            l_src = ""
+            raison_source = []
+            raison_dst = []
+            with open ( self.dossier + "/" + fdst ) as F :
+                for ligne in F :
+                    l = ligne.strip()
+                    if ( l != '' ):
+                        l_src = l_src + l
+                l = l_src.split(";")
+                
+                for elt in l :
+                    if ( attr in elt and "SELECT" in elt):
+                        #print(elt)
+                        raison_source.append(elt)
+                        
+                    elif ( attr == "*" and "SELECT" in elt ):
+                        if ( table in elt ):
+                            #print(elt)
+                            raison_source.append(elt)
+            with open ( self.dossier + "/" + fsrc ) as F :
+                for ligne in F :
+                    l = ligne.strip()
+                    if ( l != '' ):
+                        l_src = l_src + l
+                l = l_src.split(";")
+                
+                for elt in l :
+                    if ( attr in elt and "UPDATE" in elt):
+                        #print(elt)
+                        raison_dst.append(elt)
+                        
+                    elif ( attr == "*" and "INSERT" in elt ):
+                        if ( table in elt ):
+                            #print(elt)
+                            raison_dst.append(elt)
+                            
+            with open ("./graphs/dependences.gogol","a+") as fichier :
+                fichier.write('\n<Relation ID="'+a.strip()+'" SRC="'+src+'" DST="'+dst+'" CONDITION=False >\n')
+                fichier.write('<SRC>\n')
+                raison_dst = list(set(raison_dst))
+                for elt in raison_dst :
+                    d,f = self.trouve_ligne_fichier(elt , src )
+                    fichier.write('\t'+"l: "+str(d)+'\t' +elt+';\n')
+                fichier.write('</SRC>\n')
+                fichier.write('<DST>\n')
+                raison_source = list(set(raison_source))
+                for elt in raison_source :
+                    d,f = self.trouve_ligne_fichier(elt , dst )
+                    fichier.write('\t'+"l: "+str(d)+'\t' +elt+';\n')
+                fichier.write('</DST>\n')
+                fichier.write("</Relation>\n\n")
+        if ( "rw" in a ):
+            l_src = ""
+            raison_source = []
+            raison_dst = []
+            with open ( self.dossier + "/" + fsrc ) as F :
+                for ligne in F :
+                    l = ligne.strip()
+                    if ( l != '' ):
+                        l_src = l_src + l
+                l = l_src.split(";")
+                
+                for elt in l :
+                    if ( attr in elt and "SELECT" in elt):
+                        #print(elt)
+                        raison_source.append(elt)
+                        
+                    elif ( attr == "*" and "SELECT" in elt ):
+                        if ( table in elt ):
+                            #print(elt)
+                            raison_source.append(elt)
+            with open ( self.dossier + "/" + fdst ) as F :
+                for ligne in F :
+                    l = ligne.strip()
+                    if ( l != '' ):
+                        l_src = l_src + l
+                l = l_src.split(";")
+                
+                for elt in l :
+                    if ( attr in elt and "UPDATE" in elt):
+                        #print(elt)
+                        raison_dst.append(elt)
+                        
+                    elif ( attr == "*" and "INSERT" in elt ):
+                        if ( table in elt ):
+                            #print(elt)
+                            raison_dst.append(elt)
+                            
+            with open ("./graphs/dependences.gogol","a+") as fichier :
+                fichier.write('\n<Relation ID="'+a.strip()+'" SRC="'+src+'" DST="'+dst+'" CONDITION=False >\n')
+                fichier.write('<SRC>\n')
+                raison_dst = list(set(raison_dst))
+                for elt in raison_dst :
+                    d,f = self.trouve_ligne_fichier(elt , src )
+                    fichier.write('\t'+"l: "+str(d)+'\t' +elt+';\n')
+                fichier.write('</SRC>\n')
+                fichier.write('<DST>\n')
+                raison_source = list(set(raison_source))
+                for elt in raison_source :
+                    d,f = self.trouve_ligne_fichier(elt , dst )
+                    fichier.write('\t'+"l: "+str(d)+'\t' +elt+';\n')
+                fichier.write('</DST>\n')
+                fichier.write("</Relation>\n\n")
+        if ( "ww" in a ):
+            l_src = ""
+            raison_source = []
+            raison_dst = []
+            with open ( self.dossier + "/" + fsrc ) as F :
+                for ligne in F :
+                    l = ligne.strip()
+                    if ( l != '' ):
+                        l_src = l_src + l
+                l = l_src.split(";")
+                
+                for elt in l :
+                    if ( attr in elt and ( "INSERT" in elt or "UPDATE" in elt ) ):
+                        #print(elt)
+                        raison_dst.append(elt)
+                        
+                    elif ( attr == "*" and ( "INSERT" in elt or "UPDATE" in elt ) ):
+                        if ( table in elt ):
+                            #print(elt)
+                            raison_dst.append(elt)
+                            
+            with open ( self.dossier + "/" + fdst ) as F :
+                for ligne in F :
+                    l = ligne.strip()
+                    if ( l != '' ):
+                        l_src = l_src + l
+                l = l_src.split(";")
+                
+                for elt in l :
+                    if ( attr in elt and ( "INSERT" in elt or "UPDATE" in elt ) ):
+                        #print(elt)
+                        raison_source.append(elt)
+                        
+                    elif ( attr == "*" and ( "INSERT" in elt or "UPDATE" in elt )  ):
+                        if ( table in elt ):
+                            #print(elt)
+                            raison_source.append(elt)
+                            
+            with open ("./graphs/dependences.gogol","a+") as fichier :
+                if ( src == dst ) :
+                    fichier.write('\n<Relation ID="'+a.strip()+'" SRC="'+src+'" DST="'+dst+'" CONDITION=False >\n')
+                    fichier.write('<SRC>\n')
+                    raison_source = list(set(raison_source))
+                    for elt in raison_source :
+                        d,f = self.trouve_ligne_fichier(elt , dst )
+                        fichier.write('\t'+"l: "+str(d)+'\t' +elt+';\n')
+                    fichier.write('</SRC>\n')
+                    fichier.write('<DST>\n')
+                    raison_source = list(set(raison_source))
+                    for elt in raison_source :
+                        d,f = self.trouve_ligne_fichier(elt , dst )
+                        fichier.write('\t'+"l: "+str(d)+'\t' +elt+';\n')
+                    fichier.write('</DST>\n')
+                    fichier.write("</Relation>\n\n")
+                else :
+                    fichier.write('\n<Relation ID="'+a.strip()+'" SRC="'+src+'" DST="'+dst+'" CONDITION=False >\n')
+                    fichier.write('<SRC>\n')
+                    raison_dst = list(set(raison_dst))
+                    for elt in raison_dst :
+                        d,f = self.trouve_ligne_fichier(elt , src )
+                        fichier.write('\t'+"l: "+str(d)+'\t' +elt+';\n')
+                    fichier.write('</SRC>\n')
+                    fichier.write('<DST>\n')
+                    raison_source = list(set(raison_source))
+                    for elt in raison_source :
+                        d,f = self.trouve_ligne_fichier(elt , dst )
+                        fichier.write('\t'+"l: "+str(d)+'\t' +elt+';\n')
+                    fichier.write('</DST>\n')
+                    fichier.write("</Relation>\n\n")
+                    
         
     def maj_graph_IfElse(self,relation,s,d,value): # s = source, d = destination
         l = []
@@ -971,7 +1198,26 @@ class principal:
         fichier.close()
         return []            
                 
-        
+    def maj_doublon(self,dict ):
+        with open ("./graphs/dependences.gogol","w") as fichier :
+            fichier.write('## Fichier généré dans le cadre de Plong2019/2020 pour etudier les raisons de dépendances entre 2 transactions , ID = "nom_de_la_relation" SRC = "fichier_source" DST = "fichier_destination"\n## ( SRC et DST sont en rapport avec les fleches du graphes).\n\n')
+        for cle,v in dict.items():
+            
+            #print("cle : ----------- " , cle)
+            for a in v :
+                a = a.strip()
+            v = list(set(v))
+            #for a in v:
+                #print(a)
+            self.dep_sans_doublons = dict
+        for cle,value in dict.items():
+            #print(cle)
+            for v in value :
+                v = v.strip()
+                #print("v :" ,v )
+            i = list(set(value))
+            for v in  i : 
+                self.write_raison_dependances(v,cle[0],cle[1])
         
     def lanceur_f(self):
         self.lanceur()
@@ -989,10 +1235,11 @@ class principal:
         self.verifie_dep_ww()
         self.traite_dep_ww_entrefonctions()
         self.genere_condition_dep()
-        self.affiche_lise_sans_doublon()
+        dict = self.affiche_lise_sans_doublon()
         self.genere_graphml_sans_doublons()
         self.genere_graphml_sans_doublons_plus_Raisons_dependances()
-        self.affiche_lise_sans_doublon()
+        
+        #self.maj_doublon(dict)
         
         
 if __name__ == "__main__":  
