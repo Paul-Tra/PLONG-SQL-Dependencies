@@ -55,7 +55,7 @@
    - Chercher des applications en PgSQL et tester le parseur
 
 
-** <25/02/2020>
+* <25/02/2020>
 ** Fait
 *** Affichier le code avec les lignes souligné
 *** Affichier les arrete RW avec une couleur pernalisé
@@ -71,12 +71,26 @@ https://universiteouverte.org/2020/02/13/le-5-mars-saffiche-partout/
 https://padlet.com/diderotpournosretraites/j413cz0jqfk7
 
 
-** <03/03/2020>
+* <03/03/2020>
 ** Fait
 *** Gérer the edges may R/W (-) and the edge must R/W (+)
 *** Ecrire un "make" dont le message de erreur marche
 *** Mettre a jour le README.md
 *** Affichier le numero de ligne dans le fichier
 ** A faire:
-** Nettoyage README's
-** Chercher des applications en PgSQL et tester l'application
+*** Nettoyage README's
+*** Chercher des applications en PgSQL et tester l'application
+
+* <10/03/2020>
+  
+** DONE
+*** README
+*** Bug parser
+    
+
+** TODO
+*** Chercher des applications en PgSQL et tester l'application
+*** rendre l'affichage joli:
+    placer les points
+    placer les flêches (jolies) en évitant de traverser des points
+*** utiliser l'interface graphique pour lancer le parser
