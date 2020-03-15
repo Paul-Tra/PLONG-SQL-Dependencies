@@ -19,6 +19,7 @@ import javafx.scene.transform.Rotate;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -85,29 +86,31 @@ public class ElementVisuel {
                 int cote_arrivee;
                 double tab_coord_arrivee[];
                 double tab_coord_depart[];
-                Path fleche;
+                Path curve;
+                Circle circle;
                 if (r_source.getAccessibleText().equals(r_dest.getAccessibleText())) {
-//if the relation draw a loop from the same  transaction (node)
+                    //if the relation draw a loop from the same  transaction (node)
                     cote_arrivee = new Random().nextInt(NB_COTE);
                     tab_coord_depart = getCoordPointFleche(r_source, cote_arrivee, true, true);
                     tab_coord_arrivee = getCoordPointFleche(r_dest, cote_arrivee, true, false);
-                    fleche = createFleche(relation.nom, tab_coord_depart[0], tab_coord_depart[1], tab_coord_arrivee[0], tab_coord_arrivee[1], r_source, r_dest, cote_arrivee, true);
                 } else {
                     cote_arrivee = getCoteNodeArrivee(r_source, r_dest);
                     tab_coord_depart = getCoordPointFleche(r_source, (cote_arrivee + 2) % 4, false, false);
                     tab_coord_arrivee = getCoordPointFleche(r_dest, cote_arrivee, false, false);
-                    fleche = createFleche(relation.nom, tab_coord_depart[0], tab_coord_depart[1], tab_coord_arrivee[0], tab_coord_arrivee[1], r_source, r_dest, cote_arrivee,false);
                 }
-// addition to the Arrow two control circles
-                if (isRWRelation(relation)) {
-                    //fleche.setStrokeFill(Color.RED);
-                    fleche.setStroke(Color.CORAL);
-                }
+                curve = createCurve(relation.nom, tab_coord_depart[0], tab_coord_depart[1], tab_coord_arrivee[0],
+                        tab_coord_arrivee[1], r_source, r_dest, cote_arrivee);
+                circle = createCircleArrow(r_dest, tab_coord_arrivee[0], tab_coord_arrivee[1]);
+                // addition to the Arrow two control circles
                 if (relation.key.equals("d2")) {
-                    fleche.getStrokeDashArray().addAll(3.0,7.0,3.0,7.0);
+                    curve.getStrokeDashArray().addAll(3.0,7.0,3.0,7.0);
                 }
-                list_shape.add(fleche);
-                addHandlerFleche(fleche);
+                if (isRWRelation(relation)) {
+                    curve.setStroke(Color.CORAL);
+                    circle.setFill(Color.CORAL);
+                }
+                list_shape.addAll(Arrays.asList(curve, circle));
+                addHandlerCurve(curve);
             }
         }else{
             consumer.accept("relation's list null");
@@ -232,42 +235,63 @@ public class ElementVisuel {
         }
         return null;
     }
-    //create an arrow between two point ( source : s ; destination : d)
-    private Path createFleche(String nom,double s_x,double s_y,double d_x,double d_y,Rectangle r_source,Rectangle r_dest, int cote, boolean boucle) {
-        Path fleche = new Path();
-        fleche.setAccessibleText(nom);
+    // create the curve representing the Relation between source : s and destination : d
+    private Path createCurve(String nom, double s_x, double s_y, double d_x, double d_y, Rectangle r_source, Rectangle r_dest,int cote) {
+        Path curve = new Path();
+        curve.setAccessibleText(nom);
         MoveTo mt = new MoveTo();
         mt.xProperty().bind(r_source.layoutXProperty().add(s_x));
         mt.yProperty().bind(r_source.layoutYProperty().add(s_y));
         CubicCurveTo cct = new CubicCurveTo();
         cct.xProperty().bind(r_dest.layoutXProperty().add(d_x));
         cct.yProperty().bind(r_dest.layoutYProperty().add(d_y));
-        createCourbe(mt,cct,s_x,s_y,d_x,d_y,boucle,cote,nom);
-        //addition of the arrow's curve
-        fleche.getElements().add(mt);
-        fleche.getElements().add(cct);
-        // addition of the arrow's apex 
-        // creation of a side of the arrow's apex
-        createBoutFleche(fleche,r_dest, d_x, d_y, cote, true); // |\ <- oui c'est bien un bout de fleche
-        // creation of the other side
-        createBoutFleche(fleche,r_dest, d_x, d_y, cote, false);// /| <- ici aussi  /| + |\ = /|\ en gros /\
-        fleche.setStroke(Color.BLACK);
-        fleche.setStrokeWidth(3);
-        return fleche;
+        boolean loop = (r_source.getAccessibleText().equals(r_dest.getAccessibleText()));
+        drawCurve(mt,cct,s_x,s_y,d_x,d_y,loop,cote,nom);
+        curve.getElements().add(mt);
+        curve.getElements().add(cct);
+        curve.setStroke(Color.BLACK); // default color
+        curve.setStrokeWidth(3);
+        return curve;
+    }
+
+    // manage the way of the curve
+    private void drawCurve(MoveTo mt,CubicCurveTo cct, double s_x, double s_y, double d_x, double d_y,boolean boucle,int cote,String nom) {
+        ArrayList<Double> list_coord = gestionPointControle(s_x, s_y, d_x, d_y,boucle,cote);
+        if (list_coord == null || list_coord.size() < NB_COTE) {
+            consumer.accept("liste de coordonnee null ou partielle");
+        }
+        Circle c1 = createCircleControle(list_coord.get(0), list_coord.get(2), nom);
+        Circle c2 = createCircleControle(list_coord.get(1), list_coord.get(3), nom);
+        c1.centerXProperty().bind(mt.xProperty().add((list_coord.get(0)-mt.getX())));
+        c1.centerYProperty().bind(mt.yProperty().add((list_coord.get(2)-mt.getY())));
+        c2.centerXProperty().bind(cct.xProperty().add((list_coord.get(1)-cct.getX())));
+        c2.centerYProperty().bind(cct.yProperty().add((list_coord.get(3)-cct.getY())));
+        cct.controlX1Property().bind(c1.layoutXProperty().add(c1.centerXProperty()));
+        cct.controlY1Property().bind(c1.layoutYProperty().add(c1.centerYProperty()));
+        cct.controlX2Property().bind(c2.layoutXProperty().add(c2.centerXProperty()));
+        cct.controlY2Property().bind(c2.layoutYProperty().add(c2.centerYProperty()));
+        c1.setVisible(false);// cercle de congtrole invisible au depart
+        c2.setVisible(false);
+        if (estDirectionVerticale(cote)) {
+            c1.setFill(Color.BLUE);
+            c2.setFill(Color.LIGHTGREEN);
+        } else {
+            c1.setFill(Color.RED);
+            c2.setFill(Color.SALMON);
+        }
     }
     // manage the event actions of the arrow
-    private void addHandlerFleche(Path fleche) {
-        fleche.setOnMousePressed(new EventHandler<MouseEvent>() {
+    private void addHandlerCurve(Path curve) {
+        curve.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 // set invisible all of the control-circles
-                setInvisbleAllCircle();
+                setInvisbleAllCircleControle();
                 // addition of only the arrow's control-circles in the view
-                setVisibleCircleControleFleche(fleche);
+                setVisibleCircleControleFleche(curve);
             }
         });
     }
-    
     private Controller getControllerFenetre() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Fenetre.fxml"));
         Parent calcRoot = loader.load();
@@ -283,7 +307,7 @@ public class ElementVisuel {
         return null;
     }
     // set the 2 arrow's control-circles visible  
-    private void setVisibleCircleControleFleche(Path fleche) {
+    private void setVisibleCircleControleFleche(Path curve) {
         int cpt=0;
         for (int i = 0; i < list_shape.size(); i++) {
             if (cpt >= 2) { 
@@ -292,25 +316,43 @@ public class ElementVisuel {
             }
             if (list_shape.get(i).getClass() == Circle.class) { // si c'est un cercle
                 Circle c = (Circle) list_shape.get(i);
-                if (c.getAccessibleText().equals(fleche.getAccessibleText())) {
-                    // match between c.text and fleche.text
-                    cpt++;
-                    if (!c.isVisible()) {
-                        c.setVisible(true);
+                if( curve == null || c == null) return;
+                try {
+                    if (c.getAccessibleText().equals(curve.getAccessibleText())) {
+                        // match between c.text and fleche.text
+                        cpt++;
+                        if (!c.isVisible()) {
+                            c.setVisible(true);
+                        }
                     }
+                } catch (Exception e) {
+                    // case when the circle corresponds to a end of 'arrow'
                 }
-
             }
         }
     }
 
-    private void setInvisbleAllCircle() {
+    private void setInvisbleAllCircleControle() {
         for (Shape shape : list_shape) {
             if (shape.getClass() == Circle.class) {
                 Circle c = (Circle) shape;
-                c.setVisible(false);
+                try {
+                    if (!c.getAccessibleText().isEmpty()) {
+                        c.setVisible(false);
+                    }
+                } catch (NullPointerException e) {
+                }
             }
         }
+    }
+
+    // create a circle on the destination's node of an 'arrow'
+    private Circle createCircleArrow(Rectangle r_dest, double d_x, double d_y) {
+        Circle c = new Circle();
+        c.setRadius(4);
+        c.centerXProperty().bind(r_dest.layoutXProperty().add(d_x));
+        c.centerYProperty().bind(r_dest.layoutYProperty().add(d_y));
+        return c ;
     }
     // takes care of the creation of the arrow's apex from the destination point
     private void createBoutFleche(Path p,Rectangle r_dest, double d_x, double d_y, int cote,boolean premier) {
@@ -346,31 +388,7 @@ public class ElementVisuel {
         return tab;
     }
 
-    private void createCourbe(MoveTo mt,CubicCurveTo cct, double s_x, double s_y, double d_x, double d_y,boolean boucle,int cote,String nom) {
-        ArrayList<Double> list_coord = gestionPointControle(s_x, s_y, d_x, d_y,boucle,cote);
-        if (list_coord == null || list_coord.size() < NB_COTE) {
-            consumer.accept("liste de coordonnee null ou partielle");
-        }
-        Circle c1 =createCircleControle(list_coord.get(0),list_coord.get(2),nom);
-        Circle c2 =createCircleControle(list_coord.get(1),list_coord.get(3),nom);
-        c1.centerXProperty().bind(mt.xProperty().add((list_coord.get(0)-mt.getX())));
-        c1.centerYProperty().bind(mt.yProperty().add((list_coord.get(2)-mt.getY())));
-        c2.centerXProperty().bind(cct.xProperty().add((list_coord.get(1)-cct.getX())));
-        c2.centerYProperty().bind(cct.yProperty().add((list_coord.get(3)-cct.getY())));
-        cct.controlX1Property().bind(c1.layoutXProperty().add(c1.centerXProperty()));
-        cct.controlY1Property().bind(c1.layoutYProperty().add(c1.centerYProperty()));
-        cct.controlX2Property().bind(c2.layoutXProperty().add(c2.centerXProperty()));
-        cct.controlY2Property().bind(c2.layoutYProperty().add(c2.centerYProperty()));
-        c1.setVisible(false);// cercle de congtrole invisible au depart
-        c2.setVisible(false);
-        if (estDirectionVerticale(cote)) {
-            c1.setFill(Color.BLUE);
-            c2.setFill(Color.LIGHTGREEN);
-        } else {
-            c1.setFill(Color.RED);
-            c2.setFill(Color.SALMON);
-        }
-    }
+
 
     private Circle createCircleControle(double x, double y,String nom) {
         Circle c = new Circle();
