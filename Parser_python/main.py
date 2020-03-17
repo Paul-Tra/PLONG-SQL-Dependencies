@@ -10,11 +10,11 @@ class principal:
         ### Nous avons changé le rep. pour verifier que notre algo est correct , en se basant sur l'exemple fournie dans l'enoncé ###
         #self.pk = PrimaryKey("./fichiers/genDB.sql")
          #print("dossier :: " + dossier )
-        self.pk = PrimaryKey("./"+dossier+"/genDB.sql") # pour nos test
+        self.pk = PrimaryKey(dossier+"/genDB.sql") # pour nos test
         self.p = []
         self.pw = []
         #self.l = os.listdir("./fichiers/")
-        self.l = os.listdir("./"+dossier+"/") # pour nos test
+        self.l = os.listdir(dossier+"/") # pour nos test
         # #print("Liste des fichier d'entrée : ")
         # #print(l)
         for elt in self.l :
@@ -22,8 +22,8 @@ class principal:
                 #p = Parser("./fichiers/"+elt)
                 #pw = parser_ecriture("./fichiers/"+elt)
                 
-                p = Parser("./"+dossier+"/"+elt,dossier) # pour nos test
-                pw = parser_ecriture("./"+dossier+"/"+elt,dossier) # pour nos test
+                p = Parser(dossier+"/"+elt,dossier) # pour nos test
+                pw = parser_ecriture(dossier+"/"+elt,dossier) # pour nos test
                 
                 self.p.append(p)
                 self.pw.append(pw)
@@ -776,7 +776,7 @@ class principal:
         cpt = 0 
         check = True
         
-        with open ( "./"+dossier+"/"+file+".sql" ,"r+" ) as myFile:
+        with open ( dossier+"/"+file+".sql" ,"r+" ) as myFile:
             for num, line in enumerate(myFile, 1):
                 a = line.strip()
                 if ( a != "" and a in elt and debut == 0 ):
@@ -985,7 +985,7 @@ class principal:
                     dst = a.split('"')[3]
                     #print(src,dst)
                 if ( "wr" in a or "rw" in a or "ww" in a ):
-                    print (src , ' - ', dst , ' : ' ,a)
+                    #print (src , ' - ', dst , ' : ' ,a)
                     self.raison_dependance(a,src,dst)
     
     def raison_dependance(self,a,src,dst):
@@ -1150,6 +1150,11 @@ class principal:
                     raison_source = list(set(raison_source))
                     for elt in raison_source :
                         d,f = self.trouve_ligne_fichier(elt , dst )
+                        # //////
+                        l = self.isRelationIfElse(elt,elt,dst)
+                        if ( l == True ): 
+                            print("Is_If_Else : ",l )
+                        # /////
                         fichier.write('\t'+"l: "+str(d)+'\t' +elt+';\n')
                     fichier.write('</SRC>\n')
                     fichier.write('<DST>\n')
@@ -1165,6 +1170,11 @@ class principal:
                     raison_dst = list(set(raison_dst))
                     for elt in raison_dst :
                         d,f = self.trouve_ligne_fichier(elt , src )
+                        # //////
+                        l = self.isRelationIfElse(elt,elt,dst)
+                        if ( l == True ): 
+                            print("Is_If_Else : ",l )
+                        # /////
                         fichier.write('\t'+"l: "+str(d)+'\t' +elt+';\n')
                     fichier.write('</SRC>\n')
                     fichier.write('<DST>\n')
@@ -1174,6 +1184,8 @@ class principal:
                         fichier.write('\t'+"l: "+str(d)+'\t' +elt+';\n')
                     fichier.write('</DST>\n')
                     fichier.write("</Relation>\n\n")
+                    
+        ## ajouter les If/else pour les nouvelles relations
                     
         
     def maj_graph_IfElse(self,relation,s,d,value): # s = source, d = destination
@@ -1247,7 +1259,9 @@ if __name__ == "__main__":
     if (len(argv) != 2 ) :
          print("Merci d'entrer un dossier contenant : \n - un fichier genDB.sql contenant votre base de données \n - un ensemble de fichier reprensetant les transactions ( au format .sql ; PLpgSQL ) ")
     else :
-        dossier = argv[1].replace("/","")
+        #dossier = argv[1].replace("/","")
+        dossier = argv[1]
+        print("Nous allons travailler sur le repertoire suivant : " , dossier )
         main = principal(dossier)
         main.lanceur_f()
     

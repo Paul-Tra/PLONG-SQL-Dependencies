@@ -348,7 +348,7 @@ class Parser:
         self.affiche_liste_finale()
         
         #self.pkey = PrimaryKey("./fichiers/genDB.sql")
-        self.pkey = PrimaryKey("./"+self.dossier+"/genDB.sql") # pour nos test
+        self.pkey = PrimaryKey(self.dossier+"/genDB.sql") # pour nos test
         self.pkey.lanceur()
         #self.trouve_cle_primaire_associe_au_from()
         self.trouve_attribut_de_fonction()
