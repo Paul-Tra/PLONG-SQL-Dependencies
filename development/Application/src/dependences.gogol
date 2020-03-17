@@ -28,12 +28,12 @@
 
 <Relation ID="ww,ITEMS(['iId']).nbids" SRC="StoreBId" DST="StoreBId" CONDITION=False >
 <SRC>
-	l: 0	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
 	l: 6	BEGININSERT INTO BIDS ( iId , nbids ) VALUES ( i_id, val) ;
+	l: 0	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
 </SRC>
 <DST>
-	l: 0	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
 	l: 6	BEGININSERT INTO BIDS ( iId , nbids ) VALUES ( i_id, val) ;
+	l: 0	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
 </DST>
 </Relation>
 

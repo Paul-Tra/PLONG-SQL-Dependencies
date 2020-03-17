@@ -344,17 +344,18 @@ public class Controller implements Initializable {
         File defaultDirectory = new File("../../");
         chooser.setInitialDirectory(defaultDirectory);
         File s = chooser.showDialog(primaryStage);
-        System.out.println(s.getParent());
-        System.out.println("python3.7 "+s.getParent()+"/main.py  "+s.getParent()+"/"+s.getName());
-        System.out.println("Working Directory = " +
-                System.getProperty("user.dir"));
+        //System.out.println(s.getParent());
+        //System.out.println("python3.7 "+s.getParent()+"/main.py  "+s.getParent()+"/"+s.getName());
+        //System.out.println("Working Directory = " +
+         //       System.getProperty("user.dir"));
 
         String c_dir = System.getProperty("user.dir") + "/src/" ;
-        Process p = Runtime.getRuntime().exec("python3.7 "+s.getParent()+"/main.py "+s.getParent()+"/"+s.getName());
-        //Process q = Runtime.getRuntime().exec("cp "+s.getParent()+"/graph/graph.grapml "+c_dir);
-        Process q = Runtime.getRuntime().exec("cp "+s.getParent()+"/graphs/graph.graphml ../development/Application/src/");
-        System.out.println("cp "+s.getParent()+"/graphs/graph.graphml "+c_dir);
-        Process r = Runtime.getRuntime().exec("cp "+s.getParent()+"/graph/dependences.gogol "+c_dir);
+        Process p = Runtime.getRuntime().exec("python3.7 "+s.getParent()+"/main.py "+s.getParent()+"/"+s.getName()+"/");
+        System.out.println("python3.7 "+s.getParent()+"/main.py "+s.getParent()+"/"+s.getName()+"/");
+        Process q = Runtime.getRuntime().exec("cp "+s.getParent()+"/graph/graph.grapml "+c_dir);
+        Process r = Runtime.getRuntime().exec("cp "+s.getParent()+"/graphs/dependences.gogol " + c_dir );
+        //System.out.println("cp "+s.getParent()+"/graphs/graph.graphml "+c_dir);
+        //Process r = Runtime.getRuntime().exec("cp "+s.getParent()+"/graph/dependences.gogol "+c_dir);
 
     }
 }
