@@ -146,7 +146,6 @@ public class Controller implements Initializable {
     }
     // looks after the clearing of listViews contained by the pop-up window
     private void doClearPopUpWindow() {
-        consumer.accept("in doClearPopUpWindow");
         listViewSource.getItems().clear();
         listViewTarget.getItems().clear();
     }
@@ -338,24 +337,15 @@ public class Controller implements Initializable {
         anchorPane2.minHeightProperty().bind(scrollPane.minHeightProperty());
     }
 
-    public void onOpenFolder(ActionEvent actionEvent) throws IOException {
+    public void onOpenFolder() throws IOException {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Select your folder");
         File defaultDirectory = new File("../../");
         chooser.setInitialDirectory(defaultDirectory);
         File s = chooser.showDialog(primaryStage);
-        //System.out.println(s.getParent());
-        //System.out.println("python3.7 "+s.getParent()+"/main.py  "+s.getParent()+"/"+s.getName());
-        //System.out.println("Working Directory = " +
-         //       System.getProperty("user.dir"));
-
         String c_dir = System.getProperty("user.dir") + "/src/" ;
-        Process p = Runtime.getRuntime().exec("python3.7 "+s.getParent()+"/main.py "+s.getParent()+"/"+s.getName()+"/");
-        System.out.println("python3.7 "+s.getParent()+"/main.py "+s.getParent()+"/"+s.getName()+"/");
-        Process q = Runtime.getRuntime().exec("cp "+s.getParent()+"/graph/graph.grapml "+c_dir);
-        Process r = Runtime.getRuntime().exec("cp "+s.getParent()+"/graphs/dependences.gogol " + c_dir );
-        //System.out.println("cp "+s.getParent()+"/graphs/graph.graphml "+c_dir);
-        //Process r = Runtime.getRuntime().exec("cp "+s.getParent()+"/graph/dependences.gogol "+c_dir);
-
+        Runtime.getRuntime().exec("python3.7 "+s.getParent()+"/main.py "+s+"/");
+        Runtime.getRuntime().exec("cp "+s.getParent()+"/graphs/graph.graphml "+c_dir);
+        Runtime.getRuntime().exec("cp "+s.getParent()+"/graphs/dependences.gogol " + c_dir );
     }
 }
