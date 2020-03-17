@@ -20,6 +20,7 @@ import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.scene.transform.Rotate;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -28,6 +29,7 @@ import org.w3c.dom.css.Rect;
 
 import javax.lang.model.element.AnnotationValue;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -336,4 +338,23 @@ public class Controller implements Initializable {
         anchorPane2.minHeightProperty().bind(scrollPane.minHeightProperty());
     }
 
+    public void onOpenFolder(ActionEvent actionEvent) throws IOException {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Select your folder");
+        File defaultDirectory = new File("../../");
+        chooser.setInitialDirectory(defaultDirectory);
+        File s = chooser.showDialog(primaryStage);
+        System.out.println(s.getParent());
+        System.out.println("python3.7 "+s.getParent()+"/main.py  "+s.getParent()+"/"+s.getName());
+        System.out.println("Working Directory = " +
+                System.getProperty("user.dir"));
+
+        String c_dir = System.getProperty("user.dir") + "/src/" ;
+        Process p = Runtime.getRuntime().exec("python3.7 "+s.getParent()+"/main.py "+s.getParent()+"/"+s.getName());
+        //Process q = Runtime.getRuntime().exec("cp "+s.getParent()+"/graph/graph.grapml "+c_dir);
+        Process q = Runtime.getRuntime().exec("cp "+s.getParent()+"/graphs/graph.graphml ../development/Application/src/");
+        System.out.println("cp "+s.getParent()+"/graphs/graph.graphml "+c_dir);
+        Process r = Runtime.getRuntime().exec("cp "+s.getParent()+"/graph/dependences.gogol "+c_dir);
+
+    }
 }
