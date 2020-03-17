@@ -367,7 +367,7 @@ class principal:
     
         
     def affiche_lise_sans_doublon(self):
-        with open ("./graphs/dependences.gogol","w") as fichier :
+        with open (self.dossier+"../graphs/dependences.gogol","w") as fichier :
             fichier.write('## Fichier généré dans le cadre de Plong2019/2020 pour etudier les raisons de dépendances entre 2 transactions , ID = "nom_de_la_relation" SRC = "fichier_source" DST = "fichier_destination"\n## ( SRC et DST sont en rapport avec les fleches du graphes).\n\n')
         for cle,value in self.dep_sans_doublons.items():
             #print(cle)
@@ -396,7 +396,7 @@ class principal:
         #if ( "rw" in v or 'wr' in v or 'ww' in v and src != dst ):
          #   print(src , dst ,"v :: " , v)
         #print(src,dst)
-        with open ("./graphs/dependences.gogol","a+") as fichier :
+        with open (self.dossier+"../graphs/dependences.gogol","a+") as fichier :
             
             
             if ( "wr" in v ) :
@@ -795,7 +795,7 @@ class principal:
         return debut,fin
                 
     def genere_graphml_sans_doublons(self):
-        with open("./graphs/graph_sous_doub.graphml", "w") as fichier:
+        with open(self.dossier+"../graphs/graph_sous_doub.graphml", "w") as fichier:
             fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
             fichier.write('\t<key id="d0" for="node" attr.name="weight" attr.type="string"/>\n')
@@ -858,7 +858,7 @@ class principal:
         
         #print("##########################################")
         lgaph = []
-        with open("./graphs/graph.graphml", "w") as fichier:
+        with open(self.dossier+"../graphs/graph.graphml", "w") as fichier:
             fichier.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             fichier.write("<graphml xmlns='http://graphml.graphdrawing.org/xmlns\'>\n")
             fichier.write('\t<key id="d0" for="node" attr.name="weight" attr.type="string"/>\n')
@@ -1038,7 +1038,7 @@ class principal:
                             #print(elt)
                             raison_dst.append(elt)
                             
-            with open ("./graphs/dependences.gogol","a+") as fichier :
+            with open (self.dossier+"../graphs/dependences.gogol","a+") as fichier :
                 fichier.write('\n<Relation ID="'+a.strip()+'" SRC="'+src+'" DST="'+dst+'" CONDITION=False >\n')
                 fichier.write('<SRC>\n')
                 raison_dst = list(set(raison_dst))
@@ -1090,7 +1090,7 @@ class principal:
                             #print(elt)
                             raison_dst.append(elt)
                             
-            with open ("./graphs/dependences.gogol","a+") as fichier :
+            with open (self.dossier+"../graphs/dependences.gogol","a+") as fichier :
                 fichier.write('\n<Relation ID="'+a.strip()+'" SRC="'+src+'" DST="'+dst+'" CONDITION=False >\n')
                 fichier.write('<SRC>\n')
                 raison_dst = list(set(raison_dst))
@@ -1143,7 +1143,7 @@ class principal:
                             #print(elt)
                             raison_source.append(elt)
                             
-            with open ("./graphs/dependences.gogol","a+") as fichier :
+            with open (self.dossier+"../graphs/dependences.gogol","a+") as fichier :
                 if ( src == dst ) :
                     fichier.write('\n<Relation ID="'+a.strip()+'" SRC="'+src+'" DST="'+dst+'" CONDITION=False >\n')
                     fichier.write('<SRC>\n')
@@ -1190,7 +1190,7 @@ class principal:
         
     def maj_graph_IfElse(self,relation,s,d,value): # s = source, d = destination
         l = []
-        with open ("./graphs/dependences.gogol","r") as fichier :
+        with open (self.dossier+"../graphs/dependences.gogol","r") as fichier :
             for line in fichier :
                 # #print(line)
                 # #print ( relation)
@@ -1211,7 +1211,7 @@ class principal:
         return []            
                 
     def maj_doublon(self,dict ):
-        with open ("./graphs/dependences.gogol","w") as fichier :
+        with open (self.dossier+"../graphs/dependences.gogol","w") as fichier :
             fichier.write('## Fichier généré dans le cadre de Plong2019/2020 pour etudier les raisons de dépendances entre 2 transactions , ID = "nom_de_la_relation" SRC = "fichier_source" DST = "fichier_destination"\n## ( SRC et DST sont en rapport avec les fleches du graphes).\n\n')
         for cle,v in dict.items():
             
