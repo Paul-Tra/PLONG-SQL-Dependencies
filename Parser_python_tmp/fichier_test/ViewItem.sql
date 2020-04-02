@@ -4,7 +4,7 @@ RETURNS VOID AS $$
 DECLARE
 	nothing void;
 BEGIN
-	SELECT I.nbids 
+	SELECT *
 	FROM ITEMS I
 	WHERE I.iId = i_id;
 END;

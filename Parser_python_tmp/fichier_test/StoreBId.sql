@@ -10,11 +10,6 @@ BEGIN
 	FROM ITEMS I
 	WHERE I.iId = i_id ;
 
-
-	SELECT I.iId 
-	FROM ITEMS I
-	WHERE I.nbids = val ;
-
 	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
 END;
 }
