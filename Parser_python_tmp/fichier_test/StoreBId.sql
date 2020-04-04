@@ -4,12 +4,16 @@ DECLARE
 	nothing void;
 
 BEGIN
-	INSERT INTO BIDS ( iId , nbids ) VALUES ( i_id, val) ;
+
+	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val) ;
 
 	SELECT I.nbids 
 	FROM ITEMS I
 	WHERE I.iId = i_id ;
 
+IF (boabkoabk)
 	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id ;
+END IF;
+
 END;
 }

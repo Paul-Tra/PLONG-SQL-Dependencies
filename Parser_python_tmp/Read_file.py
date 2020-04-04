@@ -5,6 +5,7 @@ class Read_file:
         self.file_name = file_name
         self.function_attr = []
         self.file_content = ""
+        self.new_content = ""
         self.primary_dict = primary_dict
         #print("----------------------------------\n----------------------------------\nWorking on : " , self.file_name ,"\n")
         self.find_function_attr()
@@ -31,6 +32,8 @@ class Read_file:
         with open (self.file_name) as file :
             for line in file :
                 self.file_content = self.file_content + line.strip()+" "
+                self.new_content = self.new_content + line.strip()+" "
+                
         res = re.findall("CREATE.*?RETURNS",self.file_content)
         attr = re.findall("[a-z]+_*[A-Za-z]*", res[0] )
         attr.remove(attr[0])
@@ -75,6 +78,7 @@ class Read_file:
                 self.processSelect(i)
                 
     def processSelect(self,select):
+        prev = str(select)
         self.table_name = dict()
         res = re.findall(".*?FROM.*?;",select)
         if ( res ) :
@@ -104,9 +108,9 @@ class Read_file:
                             select = select.replace(" "+elt," "+new) # normal case
                             select = select.replace("("+elt,"("+new) # count / distinct case
                             select = select.replace(","+elt,","+new) # if there is no space before the attr
-                            
-
                 self.select_liste.append(select)
+                self.new_content = self.new_content.replace(prev,select)
+                
         
         
     def print_new_select(self):
