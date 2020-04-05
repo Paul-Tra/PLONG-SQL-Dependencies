@@ -5,8 +5,12 @@ DECLARE
 
 BEGIN
 
+IF (test insert1)
+
 	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val) ;
 
+ END IF;
+ 
 	SELECT I.nbids 
 	FROM ITEMS I
 	WHERE I.iId = i_id ;
