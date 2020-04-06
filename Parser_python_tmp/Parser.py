@@ -2,6 +2,7 @@ import os
 import sys
 from Read_file import *
 from Primary_key import *
+from Gogol import *
 
 class Parser:
     def __init__(self, work_folder):
@@ -27,7 +28,9 @@ class Parser:
         #print("OK process OK")
         #self.print_dependency()
         count,nb_edge = self.write_graphml()
-        print(" ## ", count, "Edges were found with : "+ str(nb_edge) + " relations , please see the grampl file ( into 'graphs' repo. ) ##\n")
+        print(" \n## ", count, "Edges were found with : "+ str(nb_edge) + " relations , please see the grampl file ( into 'graphs' repo. ) ##\n")
+        print("Look at the .gogol file to see more details about relations.")
+        self.gogol = Gogol(self,"graphs/Mygraphml.graphml",self.work_folder)
         
         
     def process(self):
@@ -209,7 +212,7 @@ class Parser:
             if ( "IF (" in line ):
                 cpt = cpt+1
             if ( string in line and cpt > 0 ):
-                print("#################",line)
+                #print("#################",line)
                 return True
             if ("END IF" in line ):
                 cpt = cpt-1
@@ -267,7 +270,7 @@ class Parser:
         F.write('<graph id="G" edgedefault="directed">\n')
     
     def print_list(self):
-        print("####### CONDI \n")
+        #print("####### CONDI \n")
         for key,val in self.conditional_Dependencies.items() :
             print(key[0].file_name,key[1].file_name,val,'\n')
         print("##### REGULAR \n")
@@ -285,10 +288,10 @@ class Parser:
         #if ( dict_tmp_condi != None ) :
         if (  self.Dependencies != None ) :
             for k , v in self.conditional_Dependencies.items() :
-                print("##",k[0].file_name ,k[1].file_name ,v)
+                #print("##",k[0].file_name ,k[1].file_name ,v)
                 if ( ( k[1],k[0] ) in self.conditional_Dependencies.keys() ):
                     for elt in v :
-                        print("###",elt)
+                        #print("###",elt)
                         if ( ( elt.replace("rw","wr") != elt ) and elt.replace("rw","wr") not in self.conditional_Dependencies[k[1],k[0]] ) :
                             b = elt.replace("rw","wr")
                             if ( b not in self.conditional_Dependencies[k[1],k[0]] and b != elt ):
@@ -368,21 +371,12 @@ class Parser:
         dict_tmp_condi = dict(self.conditional_Dependencies)
         
         for k , v in dict_tmp.items():
-            print("$$$$$$$$$$$$$$$ :",v)
+            #print("$$$$$$$$$$$$$$$ :",v)
             if ( k in self.Dependencies.keys() ) :
                 for elt in v :
                     self.Dependencies[k].append(elt)
             else :
                 self.Dependencies[k] = v        
-        
-        print("\n\nCONDI :: \n")    
-        for k , v in self.conditional_Dependencies.items():
-            print(k[0].file_name ,k[1].file_name ,v,'\n')
-        print("---")
-        print("NORMAL :: \n") 
-        for k , v in self.Dependencies.items():
-            print(k[0].file_name ,k[1].file_name ,v,'\n')
-        
         
         for k , v in self.conditional_Dependencies.items() :
             l = []
@@ -401,32 +395,30 @@ class Parser:
         dict_tmp = dict(self.Dependencies)
         
         for k , v in dict_tmp.items():
-            print("OKKKKKKKKKKKKKKKKKKK")
+            #print("OKKKKKKKKKKKKKKKKKKK")
             if ( (k[1],k[0]) not in self.Dependencies.keys() ) :
                 self.Dependencies[k[1],k[0]] = []
                 for elt in v :
-                    print("elt :" , elt )
+                    #print("elt :" , elt )
                     a = elt.replace("wr","rw")
                     if ( a != elt ):
                         self.Dependencies[k[1],k[0]].append(a)
-                        print("1")
+                        
                     else :
                         a = elt.replace("wr","rw")
                         if ( a != elt ):
                             self.Dependencies[k[1],k[0]].append(a)
-                            print("2")
+                            
             else :
                 for elt in v :
-                    print("elt :" , elt )
                     a = elt.replace("wr","rw")
                     if ( a != elt and a not in self.Dependencies[k[1],k[0]] ):
                         self.Dependencies[k[1],k[0]].append(a)
-                        print("3" , a )
+                        
                     else :
                         a = elt.replace("rw","wr")
                         if ( a != elt and a not in self.Dependencies[k[1],k[0]]):
                             self.Dependencies[k[1],k[0]].append(a)
-                            print("4")
                             
         for k , v in self.Dependencies.items():
             for elt in v :
@@ -600,7 +592,7 @@ class Parser:
     
     def search_reason_RW(self,src,dst,dependence,dicto):
         
-        print("\n",src.file_name.split("/")[1] ,dst.file_name.split("/")[1] ,"|::|",dependence)
+        #print("\n",src.file_name.split("/")[1] ,dst.file_name.split("/")[1] ,"|::|",dependence)
         if ( "wr" in dependence ) :
             tmp = src 
             src = dst 
