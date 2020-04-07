@@ -9,7 +9,7 @@ class Gogol:
         self.find_relation()
         
     def write_entete(self):
-        with open ( "graphs/MyDependencies.gogol","w+") as F :
+        with open ( "graphs/dependencies.gogol","w+") as F :
             F.write("#-- Created by TRAORE Paul & CADIOU Léo-Paul --#\n\n\n")
         
     def find_relation(self):
@@ -95,7 +95,7 @@ class Gogol:
         self.write_relation(lsrc,ldst ,relation,condi, src , dst )
         
     def write_relation( self, lsrc,ldst ,relation,condi, src , dst) :
-        with open ( "graphs/MyDependencies.gogol","a+") as F :
+        with open ( "graphs/dependencies.gogol","a+") as F :
             F.write('<Relation ID="'+relation.strip()+'" SRC="' + src + '" DST="'+ dst + '" CONDITION='+str(condi)+' >\n')
             F.write('<SRC>\n')
             for elt in lsrc :

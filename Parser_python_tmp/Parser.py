@@ -28,8 +28,8 @@ class Parser:
         #print("OK process OK")
         #self.print_dependency()
         count,nb_edge = self.write_graphml()
-        print(" \n## ", count, "Edges were found with : "+ str(nb_edge) + " relations , please see the grampl file ( into 'graphs' repo. ) ##\n")
-        print("Look at the .gogol file to see more details about relations.")
+        print("## ", count, "Edges were found with : "+ str(nb_edge) + " relations , please see the grampl file ( into 'graphs' repo. ) ##\n")
+        print("Look at the .gogol file to see more details about relations")
         self.gogol = Gogol(self,"graphs/Mygraphml.graphml",self.work_folder)
         
         
@@ -219,14 +219,19 @@ class Parser:
         return False
                     
     def check_condional_dependencies_UPDATE(self,  src , table , attr ): # check if the 'update' in 'src' file is into an IF (.... ) else : ( ) ;
+        if ( "=" in attr ) :
+            attr = attr.split("=")[0].strip()
+        #print("Check : " , table , attr )
         string = "UPDATE "+table+" SET "+attr
         tmp = src.new_content.split(";")
         cpt = 0
         for line in tmp :
             if ( "IF (" in line ):
                 cpt = cpt+1
-            if ( string in line and cpt > 0 ):
+            if ( string in line and cpt > 0  ):
                 #print("OK condi : " , table , attr )
+                return True
+            elif( table in line and attr in line and cpt > 0 ) :
                 return True
             if ("END IF" in line ):
                 cpt = cpt-1
@@ -236,18 +241,22 @@ class Parser:
         for table,attr in file_src.dict_update_table_attr.items():
             if ( (file_src,file_src) not in self.Dependencies.keys() ) :
                 for a in attr :
+                    if ( "=" in a ):
+                        a = a.split("=")[0].strip()
                     tmp = self.returnPk(table)
-                    string = ["ww,"+table+"("+str(tmp)+")."+a]
+                    string = "ww,"+table+"("+str(tmp)+")."+a
                     condi = self.check_condional_dependencies_UPDATE(file_src , table , a )
                     if ( condi ) :
                         if ( (file_src,file_src) not in self.conditional_Dependencies.keys() ) :
-                            self.conditional_Dependencies[file_src,file_src] = string
+                            self.conditional_Dependencies[file_src,file_src] = [string]
                         else :
                             self.conditional_Dependencies[file_src,file_src].append(string)
                     else :
-                        self.Dependencies[file_src,file_src] = string
+                        self.Dependencies[file_src,file_src] = [string]
             else :
                 for a in attr :
+                    if ( "=" in a ):
+                        a = a.split("=")[0].strip()
                     tmp = self.returnPk(table)
                     string = "ww,"+table+"("+str(tmp)+")."+a
                     condi = self.check_condional_dependencies_UPDATE(file_src , table , a )
@@ -473,6 +482,8 @@ class Parser:
                     F.write ('<edge source="'+src+'" target="'+dst+'">\n')
                     F.write ('\t<data key="d1">\n')
                     for elt in val :
+                        #if ( ( "rw" in elt or "wr" in elt ) and "=" in elt ):
+                        #    elt = elt.split("=")[0].strip() 
                         F.write ('\t'+elt+'\n')
                         if ( ',' in elt ) :
                             cpt2 = cpt2 +1
@@ -503,6 +514,8 @@ class Parser:
                     F.write ('<edge source="'+src+'" target="'+dst+'">\n')
                     F.write ('\t<data key="d2">\n')
                     for elt in val :
+                        #if ( ( "rw" in elt or "wr" in elt ) and "=" in elt ):
+                        #    elt = elt.split("=")[0].strip() 
                         F.write ('\t'+elt+'\n')
                         if ( ',' in elt ) :
                             cpt2 = cpt2 +1

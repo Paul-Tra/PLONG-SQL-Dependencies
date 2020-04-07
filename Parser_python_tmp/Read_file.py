@@ -99,16 +99,53 @@ class Read_file:
                 self.list_table_insert.append(table)
                 
     def find_update(self):
-        res = re.findall("UPDATE (?P<table>[A-Za-z]+) SET (?P<attr>[A-Za-z]+_*[A-Za-z]+).*?;",self.file_content)
+        res = re.findall("UPDATE (?P<table>[A-Za-z]+) SET (?P<attr>([A-Za-z]+_*[A-Za-z]+).*?)WHERE.*?;",self.file_content)
+    
+        #print(res)
+        if ( res ) :
+            for i in res :
+                for elt in i :
+                    if ( "," in elt ) :
+                        a = elt.split(",")
+                        for item in a :
+                            item = item.strip()
+                            a,b = item.split("=")
+                            a = a.strip()
+                            #print('A : ', a)
+                            if ( i[0] in self.dict_update_table_attr.keys() ) :
+                                self.dict_update_table_attr[i[0]].append(a)
+                            else :
+                                self.dict_update_table_attr[i[0]] = [a]
+                    
         if ( res ):
             for i in res :
-                if ( i[0] in self.dict_update_table_attr.keys() ) :
-                    self.dict_update_table_attr[i[0]].append(i[1])
+                tmp = ""
+                if ( "=" in i[1] ):
+                    #print("OKKK",i[1])
+                    tmp = i[1].split("=")[0].strip()
+                    #print(tmp)
                 else :
-                    self.dict_update_table_attr[i[0]] = [i[1]]
+                    tmp = i[1].strip()
+                if ( i[0] in self.dict_update_table_attr.keys() ) :
+                    self.dict_update_table_attr[i[0]].append(tmp)
+                else :
+                    self.dict_update_table_attr[i[0]] = [tmp]
+                    
+            for elt in self.dict_update_table_attr[i[0]]:
+                if ( "=" in elt ) :
+                    elt = elt.replace(elt,elt.split("=")[0].strip())
+        
+        #for k , v in self.dict_update_table_attr.items() :
+        #    print(k,v)
     
     def find_where_case_in_update(self,table , attr ):
+        if ( attr == "*" ):
+            return []
+        if ( "=" in attr ) :
+            attr = attr.split("=")[0].strip()
+        #print(table,attr)
         res = re.findall("UPDATE "+table+" SET.*?"+attr+".*? WHERE.*?;",self.file_content)
+        #print(res)
         l = []
         if ( res ):
             for i in res :

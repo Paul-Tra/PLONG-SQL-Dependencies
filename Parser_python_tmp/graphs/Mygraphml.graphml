@@ -11,8 +11,10 @@
 	<data key="d1">
 	ww,ITEMS(['iId']).nbids
 	rw,ITEMS(['iId']).nbids
+	ww,BIDS(*).*
 	wr,ITEMS(['iId']).nbids
 	StoreBId.['i_id'] = StoreBId.['i_id']
+	StoreBId.* = StoreBId.*
 </data>
 </edge>
 
@@ -22,35 +24,6 @@
 <edge source="ViewItem.sql" target="StoreBId.sql">
 	<data key="d1">
 	rw,ITEMS(['iId']).nbids
-	ViewItem.['i_id'] = StoreBId.['i_id']
-</data>
-</edge>
-
-<node id="StoreBId.sql">
-	<data key="d0">"StoreBId.sql"</data>
-</node>
-<edge source="StoreBId.sql" target="ViewItem.sql">
-	<data key="d1">
-	wr,ITEMS(['iId']).nbids
-	ViewItem.['i_id'] = StoreBId.['i_id']
-</data>
-</edge>
-
-<node id="StoreBId.sql">
-	<data key="d0">"StoreBId.sql"</data>
-</node>
-<edge source="StoreBId.sql" target="StoreBId.sql">
-	<data key="d2">
-	ww,BIDS(*).*
-	StoreBId.* = StoreBId.*
-</data>
-</edge>
-
-<node id="ViewItem.sql">
-	<data key="d0">"ViewItem.sql"</data>
-</node>
-<edge source="ViewItem.sql" target="StoreBId.sql">
-	<data key="d2">
 	rw,BIDS(*).*
 	ViewItem.['i_id'] = StoreBId.['i_id']
 </data>
@@ -60,8 +33,9 @@
 	<data key="d0">"StoreBId.sql"</data>
 </node>
 <edge source="StoreBId.sql" target="ViewItem.sql">
-	<data key="d2">
+	<data key="d1">
 	wr,BIDS(*).*
+	wr,ITEMS(['iId']).nbids
 	ViewItem.['i_id'] = StoreBId.['i_id']
 </data>
 </edge>
