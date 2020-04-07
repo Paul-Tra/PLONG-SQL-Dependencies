@@ -10,6 +10,11 @@ class Read_file:
         #print("----------------------------------\n----------------------------------\nWorking on : " , self.file_name ,"\n")
         self.find_function_attr()
         
+        self.content_line_by_line = []
+        self.new_content_line_by_line = [] 
+        
+        self.read_by_line()
+        
         self.list_table_insert = []
         self.find_table_insert()
         
@@ -23,10 +28,56 @@ class Read_file:
         self.select_liste = [] # store the select request with th new format , like :
         # Select find : SELECT I.nbids FROM ITEMS I WHERE I.iId = i_id;
         # New Select : SELECT ITEMS.ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
+        self.prev_select_list = []
 
         self.find_select()
         #self.print_new_select()
+        
+    def return_line_numbor_of(self,select ) :
+        select = select.strip()
+        return self.read_line_numbers(select)
 
+    def read_by_line(self) :
+        with open(self.file_name) as file :
+            for line in file :
+                self.content_line_by_line.append(line.strip())
+                self.new_content_line_by_line.append(line.strip())
+        
+    def read_line_numbers(self,select):
+        check = False
+        tmp = ""
+        line = self.new_content_line_by_line
+        cpt = 0 
+        match = 0
+        a = 0
+        if ( "SELECT" in select ) :
+            for i in range(0,len(self.select_liste)):
+                if ( select in self.select_liste[i] ) :
+                    a = i
+                    #print(self.select_liste[i])
+                    #print(str(self.prev_select_list[a].replace(";","").strip()))
+            select = str(self.prev_select_list[a].replace(";","").strip())
+            #print("#",select)
+        for i in range(0,len(line)):
+            #print (line[i] )
+            l = line[i].replace(";","").strip()
+            #print("I:",i,"Line :", l )
+            if ( l in select ) :
+                if ( "SELECT" in l or "UPDATE" in l or "INSERT" in l  ) :
+                    match = i
+                tmp = tmp+" " + l
+                check = True
+                cpt = i
+                #print("LL:",tmp)
+                if ( tmp.strip() == select.strip() ) :
+                    return match+1
+            else :
+                if ( cpt > 0 and tmp == select ) :
+                    cpt = i
+                    return cpt
+                    
+            
+        
     def find_function_attr(self):
         # store the content into a string 
         with open (self.file_name) as file :
@@ -38,7 +89,6 @@ class Read_file:
         attr = re.findall("[a-z]+_*[A-Za-z]*", res[0] )
         attr.remove(attr[0])
         self.function_attr = attr
-        #print("\tFunction parameter : " , self.function_attr ) 
     
     def find_table_insert(self):
         res = re.findall("INSERT INTO.*?;",self.file_content)
@@ -56,7 +106,6 @@ class Read_file:
                     self.dict_update_table_attr[i[0]].append(i[1])
                 else :
                     self.dict_update_table_attr[i[0]] = [i[1]]
-                #print("\n\tUpdate on " , i[0] ," , about : " , self.dict_update_table_attr[i[0]] )
     
     def find_where_case_in_update(self,table , attr ):
         res = re.findall("UPDATE "+table+" SET.*?"+attr+".*? WHERE.*?;",self.file_content)
@@ -108,7 +157,9 @@ class Read_file:
                             select = select.replace(" "+elt," "+new) # normal case
                             select = select.replace("("+elt,"("+new) # count / distinct case
                             select = select.replace(","+elt,","+new) # if there is no space before the attr
+                            
                 self.select_liste.append(select)
+                self.prev_select_list.append(prev)
                 self.new_content = self.new_content.replace(prev,select)
                 
         

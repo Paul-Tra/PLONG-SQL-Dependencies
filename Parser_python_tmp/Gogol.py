@@ -99,11 +99,27 @@ class Gogol:
             F.write('<Relation ID="'+relation.strip()+'" SRC="' + src + '" DST="'+ dst + '" CONDITION='+str(condi)+' >\n')
             F.write('<SRC>\n')
             for elt in lsrc :
-                F.write('\t' +elt+'\n')
+                if ( "IF" in elt and "INSERT" not in elt ) :
+                    elt = elt.split(")")[1].strip().replace(";","")
+                if ( "INSERT" in elt ) :
+                    elt = "INSERT " + elt.split("INSERT")[1].strip().replace(";","")
+                for f in self.parser.list_readFile :
+                    if ( f.file_name.split("/")[1] == src ) :
+                        cpt = f.return_line_numbor_of(elt.replace("BEGIN","").strip())
+                F.write('\tl: ' + str(cpt) +'\t' + elt.replace(";","").replace("BEGIN","").strip() +';\n')
             F.write('</SRC>\n')
             F.write('<DST>\n')
             for elt in ldst :
-                F.write('\t' + elt+'\n')
+                        
+                if ( "IF" in elt and "INSERT" not in elt ) :
+                    elt = elt.split(")")[1].strip().replace(";","")
+                if ( "INSERT" in elt ) :
+                    elt = "INSERT " + elt.split("INSERT")[1].strip().replace(";","")
+                    
+                for f in self.parser.list_readFile :
+                    if ( f.file_name.split("/")[1] == dst ) :
+                        cpt = f.return_line_numbor_of(elt.replace("BEGIN","").strip())
+                F.write('\tl: ' + str(cpt) +'\t' + elt.replace(";","").replace("BEGIN","").strip() +';\n')
             F.write('</DST>\n')
             F.write('</Relation>\n\n')
        

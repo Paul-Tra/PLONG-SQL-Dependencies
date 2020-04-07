@@ -3,73 +3,73 @@
 
 <Relation ID="ww,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
 <SRC>
-	  UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id 
+	l: 18	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
 </SRC>
 <DST>
-	  UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id 
+	l: 18	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+</DST>
+</Relation>
+
+<Relation ID="rw,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
+<SRC>
+	l: 14	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
+</SRC>
+<DST>
+	l: 18	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+</DST>
+</Relation>
+
+<Relation ID="wr,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
+<SRC>
+	l: 14	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
+</SRC>
+<DST>
+	l: 18	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
 </DST>
 </Relation>
 
 <Relation ID="rw,ITEMS(['iId']).nbids" SRC="ViewItem.sql" DST="StoreBId.sql" CONDITION=False >
 <SRC>
-	  SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id
+	l: 12	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
 </SRC>
 <DST>
-	  UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id 
+	l: 18	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
 </DST>
 </Relation>
 
 <Relation ID="wr,ITEMS(['iId']).nbids" SRC="ViewItem.sql" DST="StoreBId.sql" CONDITION=False >
 <SRC>
-	  SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id
+	l: 12	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
 </SRC>
 <DST>
-	  UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id 
-</DST>
-</Relation>
-
-<Relation ID="wr,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=True >
-<SRC>
-	  IF (Blbalblab)  SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id 
-</SRC>
-<DST>
-	  UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id 
+	l: 18	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
 </DST>
 </Relation>
 
 <Relation ID="ww,BIDS(*).*" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=True >
 <SRC>
-	  BEGIN  IF (test insert1)  INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val) 
+	l: 10	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
 </SRC>
 <DST>
-	  BEGIN  IF (test insert1)  INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val) 
-</DST>
-</Relation>
-
-<Relation ID="rw,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=True >
-<SRC>
-	  IF (Blbalblab)  SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id 
-</SRC>
-<DST>
-	  UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id 
-</DST>
-</Relation>
-
-<Relation ID="wr,BIDS(*).*" SRC="ViewItem.sql" DST="StoreBId.sql" CONDITION=True >
-<SRC>
-	 BEGIN  SELECT BIDS.bId FROM BIDS B WHERE BIDS.bId = i_id
-</SRC>
-<DST>
-	  BEGIN  IF (test insert1)  INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val) 
+	l: 10	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
 </DST>
 </Relation>
 
 <Relation ID="rw,BIDS(*).*" SRC="ViewItem.sql" DST="StoreBId.sql" CONDITION=True >
 <SRC>
-	 BEGIN  SELECT BIDS.bId FROM BIDS B WHERE BIDS.bId = i_id
+	l: 8	SELECT BIDS.bId FROM BIDS B WHERE BIDS.bId = i_id;
 </SRC>
 <DST>
-	  BEGIN  IF (test insert1)  INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val) 
+	l: 10	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
+</DST>
+</Relation>
+
+<Relation ID="wr,BIDS(*).*" SRC="ViewItem.sql" DST="StoreBId.sql" CONDITION=True >
+<SRC>
+	l: 8	SELECT BIDS.bId FROM BIDS B WHERE BIDS.bId = i_id;
+</SRC>
+<DST>
+	l: 10	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
 </DST>
 </Relation>
 
