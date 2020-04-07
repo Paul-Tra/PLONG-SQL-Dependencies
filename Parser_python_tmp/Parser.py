@@ -182,8 +182,7 @@ class Parser:
                         else :
                             self.Dependencies[file_dst,file_src].append(string)
                     
-        
-    ## voir les conditions sur les insert / update
+   
     def analyze_INSERT1(self,file_src,file_dst):
         for table in file_src.list_table_insert :
             condi = self.check_condional_dependencies_INSERT(file_src,table)
@@ -230,11 +229,16 @@ class Parser:
                 cpt = cpt+1
             if ( string in line and cpt > 0  ):
                 #print("OK condi : " , table , attr )
+                print("TRUE")
                 return True
-            elif( table in line and attr in line and cpt > 0 ) :
+            elif( "UPDATE" in line and table in line and attr in line and cpt > 0 ) :
+                print("TRUE")
                 return True
             if ("END IF" in line ):
                 cpt = cpt-1
+                
+                
+        print("FALSE")
         return False
     
     def analyze_UPDATE(self,file_src):

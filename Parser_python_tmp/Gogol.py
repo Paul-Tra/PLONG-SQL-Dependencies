@@ -96,6 +96,15 @@ class Gogol:
         
     def write_relation( self, lsrc,ldst ,relation,condi, src , dst) :
         with open ( "graphs/dependencies.gogol","a+") as F :
+            if ( "wr" in relation ):
+                tmp = src
+                src = dst
+                dst = tmp
+                
+                ltmp = lsrc
+                lsrc = ldst
+                ldst = ltmp
+                
             F.write('<Relation ID="'+relation.strip()+'" SRC="' + src + '" DST="'+ dst + '" CONDITION='+str(condi)+' >\n')
             F.write('<SRC>\n')
             for elt in lsrc :
