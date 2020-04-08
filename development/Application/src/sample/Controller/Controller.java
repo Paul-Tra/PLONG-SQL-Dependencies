@@ -147,12 +147,14 @@ public class Controller implements Initializable {
         File defaultDirectory = new File("../../");
         chooser.setInitialDirectory(defaultDirectory);
         File s = chooser.showDialog(this.anchorPane1.getScene().getWindow());
-        String c_dir = System.getProperty("user.dir") + "/src/";
+        String c_dir = System.getProperty("user.dir") + "/src/" ;
         try {
-            Runtime.getRuntime().exec("python3.7 " + s.getParent() + "/main.py " + s + "/");
-            Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/graph.graphml " + c_dir);
+            System.out.println("Dir : " + c_dir);
+            System.out.println("folder : " + s );
+            Runtime.getRuntime().exec("python3.7 " + s.getParent() + "/Parser.py " + s + "/");
+            Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/Mygraphml.graphml " + c_dir);
             Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/dependencies.gogol " + c_dir);
-            this.currentPath = "src/graph.graphml";
+            this.currentPath = "src/Mygraphml.graphml";
             onMenuItemClearLaunch();
         } catch (Exception e) {
             System.out.println("issue causing by python3.7 execution");
