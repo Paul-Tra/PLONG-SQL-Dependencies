@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<graphml xmlns='http://graphml.graphdrawing.org/xmlns'>
+	<key id="d0" for="node" attr.name="weight" attr.type="string"/>
+	<key id="d1" for="edge" attr.name="weight" attr.type="string"/>
+	<key id="d2" for="edge" attr.name="weight" attr.type="string"/>
+<graph id="G" edgedefault="directed">
+<node id="StoreBId.sql">
+	<data key="d0">"StoreBId.sql"</data>
+</node>
+<edge source="StoreBId.sql" target="StoreBId.sql">
+	<data key="d1">
+	ww,ITEMS(['iId']).nbids
+	StoreBId.['i_id'] = StoreBId.['i_id']
+</data>
+</edge>
+
+<node id="ViewItem.sql">
+	<data key="d0">"ViewItem.sql"</data>
+</node>
+<edge source="ViewItem.sql" target="StoreBId.sql">
+	<data key="d1">
+	rw,ITEMS(['iId']).nbids
+	ViewItem.['i_id'] = StoreBId.['i_id']
+</data>
+</edge>
+
+<node id="StoreBId.sql">
+	<data key="d0">"StoreBId.sql"</data>
+</node>
+<edge source="StoreBId.sql" target="ViewItem.sql">
+	<data key="d1">
+	wr,ITEMS(['iId']).nbids
+	ViewItem.['i_id'] = StoreBId.['i_id']
+</data>
+</edge>
+
+<node id="StoreBId.sql">
+	<data key="d0">"StoreBId.sql"</data>
+</node>
+<edge source="StoreBId.sql" target="StoreBId.sql">
+	<data key="d2">
+	ww,BIDS(*).*
+	rw,ITEMS(['iId']).nbids
+	wr,ITEMS(['iId']).nbids
+	StoreBId.* = StoreBId.*
+	StoreBId.['i_id'] = StoreBId.['i_id']
+</data>
+</edge>
+
+<node id="StoreBId.sql">
+	<data key="d0">"StoreBId.sql"</data>
+</node>
+<edge source="StoreBId.sql" target="ViewItem.sql">
+	<data key="d2">
+	wr,BIDS(*).*
+	ViewItem.['i_id'] = StoreBId.['i_id']
+</data>
+</edge>
+
+<node id="ViewItem.sql">
+	<data key="d0">"ViewItem.sql"</data>
+</node>
+<edge source="ViewItem.sql" target="StoreBId.sql">
+	<data key="d2">
+	rw,BIDS(*).*
+	ViewItem.['i_id'] = StoreBId.['i_id']
+</data>
+</edge>
+
+</graph>
+</graphml>
