@@ -94,3 +94,15 @@ https://padlet.com/diderotpournosretraites/j413cz0jqfk7
     placer les points
     placer les flêches (jolies) en évitant de traverser des points
 *** utiliser l'interface graphique pour lancer le parser
+
+
+* <08/04/2020>
+** Fait
+** Rewritten code from skratches (parser and GUI)
+** Extended parser + tests + better performances
+** Improved GUI
+** Implenté un algoritmhe pour l'affiche de noeuds
+** A faire:
+** Finish code ~(2 semaines)
+** Write list of extensions to add to the tools
+** Coach the other (new) group on the code
