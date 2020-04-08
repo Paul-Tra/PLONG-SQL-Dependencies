@@ -229,16 +229,14 @@ class Parser:
                 cpt = cpt+1
             if ( string in line and cpt > 0  ):
                 #print("OK condi : " , table , attr )
-                print("TRUE")
+                #print("TRUE")
                 return True
             elif( "UPDATE" in line and table in line and attr in line and cpt > 0 ) :
-                print("TRUE")
+                #print("TRUE")
                 return True
             if ("END IF" in line ):
                 cpt = cpt-1
                 
-                
-        print("FALSE")
         return False
     
     def analyze_UPDATE(self,file_src):

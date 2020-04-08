@@ -1,30 +1,12 @@
 #-- Created by TRAORE Paul & CADIOU Léo-Paul --#
 
 
-<Relation ID="wr,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
-<SRC>
-	l: 18	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
-</SRC>
-<DST>
-	l: 14	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
-</DST>
-</Relation>
-
-<Relation ID="rw,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
-<SRC>
-	l: 14	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
-</SRC>
-<DST>
-	l: 18	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
-</DST>
-</Relation>
-
 <Relation ID="ww,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
 <SRC>
-	l: 18	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+	l: 23	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
 </SRC>
 <DST>
-	l: 18	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+	l: 23	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
 </DST>
 </Relation>
 
@@ -33,13 +15,13 @@
 	l: 12	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
 </SRC>
 <DST>
-	l: 18	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+	l: 23	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
 </DST>
 </Relation>
 
 <Relation ID="wr,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="ViewItem.sql" CONDITION=False >
 <SRC>
-	l: 18	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+	l: 23	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
 </SRC>
 <DST>
 	l: 12	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
@@ -48,10 +30,37 @@
 
 <Relation ID="ww,BIDS(*).*" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=True >
 <SRC>
-	l: 10	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
+	l: 11	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
 </SRC>
 <DST>
-	l: 10	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
+	l: 11	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
+</DST>
+</Relation>
+
+<Relation ID="rw,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=True >
+<SRC>
+	l: 17	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
+</SRC>
+<DST>
+	l: 23	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+</DST>
+</Relation>
+
+<Relation ID="wr,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=True >
+<SRC>
+	l: 23	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+</SRC>
+<DST>
+	l: 17	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
+</DST>
+</Relation>
+
+<Relation ID="wr,BIDS(*).*" SRC="StoreBId.sql" DST="ViewItem.sql" CONDITION=True >
+<SRC>
+	l: 11	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
+</SRC>
+<DST>
+	l: 8	SELECT BIDS.bId FROM BIDS B WHERE BIDS.bId = i_id;
 </DST>
 </Relation>
 
@@ -60,16 +69,7 @@
 	l: 8	SELECT BIDS.bId FROM BIDS B WHERE BIDS.bId = i_id;
 </SRC>
 <DST>
-	l: 10	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
-</DST>
-</Relation>
-
-<Relation ID="wr,BIDS(*).*" SRC="StoreBId.sql" DST="ViewItem.sql" CONDITION=True >
-<SRC>
-	l: 10	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
-</SRC>
-<DST>
-	l: 8	SELECT BIDS.bId FROM BIDS B WHERE BIDS.bId = i_id;
+	l: 11	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
 </DST>
 </Relation>
 
