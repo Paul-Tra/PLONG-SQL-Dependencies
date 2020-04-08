@@ -141,7 +141,7 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    private void onMenuItemFolder(ActionEvent event) throws IOException {
+    private void onMenuItemFolder() {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Select your folder");
         File defaultDirectory = new File("../../");
@@ -152,7 +152,6 @@ public class Controller implements Initializable {
             Runtime.getRuntime().exec("python3.7 " + s.getParent() + "/main.py " + s + "/");
             Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/graph.graphml " + c_dir);
             Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/dependencies.gogol " + c_dir);
-            //System.out.println("./graph.graphml");
             this.currentPath = "src/graph.graphml";
             onMenuItemClearLaunch();
         } catch (Exception e) {
@@ -161,7 +160,7 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    private void onMenuItemFile(ActionEvent event) {
+    private void onMenuItemFile() {
         //Node node = (Node) event.getSource();
         FileChooser fil_chooser = new FileChooser();
         // add filters file's extension+
@@ -208,7 +207,11 @@ public class Controller implements Initializable {
 
     }
 
-
+    /**
+     * Hides all control circle of the the arrows excepted
+     * the relation's control circles
+     * @param relation relation whose do not want to hide the control circles
+     */
     public void hideControlCircles(Relation relation) {
         if (relation == null) {
             relations.forEach(relation1 -> {
@@ -323,7 +326,6 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        /* TODO : should be false at the very beginning of the use */
         anchorPane2.setVisible(false);
         labelElement2.setText("no element selected");
         labelSource.setText("Source :");
