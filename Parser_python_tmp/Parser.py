@@ -555,8 +555,8 @@ class Parser:
         list_dst = dict()
         
         if ( "*" in dependence and src == dst ) :
-            string = src.file_name.split("/")[1].replace(".sql","")+".*"
-            string = string + " = " + dst.file_name.split("/")[1].replace(".sql","")+".*"
+            string = src.file_name.split("/")[-1].replace(".sql","")+".*"
+            string = string + " = " + dst.file_name.split("/")[-1].replace(".sql","")+".*"
             if ( string not in dicto[dst,src] ) :
                 dicto[dst,src].append(string)
             return
@@ -595,8 +595,8 @@ class Parser:
         for k , v in list_src.items():
             for k2 , v2 in list_dst.items() :
                 if ( k == k2 ):
-                    string = src.file_name.split("/")[1].replace(".sql","")+"."+str(v).replace(table,"")
-                    string = string + " = " + dst.file_name.split("/")[1].replace(".sql","")+"."+str(v2).replace(table,"")
+                    string = src.file_name.split("/")[-1].replace(".sql","")+"."+str(v).replace(table,"")
+                    string = string + " = " + dst.file_name.split("/")[-1].replace(".sql","")+"."+str(v2).replace(table,"")
                     string = string.strip()
                     if ( "rw" in dependence or "ww" in dependence and string not in dicto[src,dst] ) :
                         dicto[src,dst].append(string)
@@ -679,12 +679,12 @@ class Parser:
         for k , v in list_src.items():
             for k2 , v2 in list_dst.items() :
                 if ( k == k2 ):
-                    string = src.file_name.split("/")[1].replace(".sql","")+"."+str(v).replace(table,"")
+                    string = src.file_name.split("/")[-1].replace(".sql","")+"."+str(v).replace(table,"")
                     #print("String1 " , string )
                     for elt in self.primary_key_obj.table_list :
                         if ( elt+"." in string ) :
                             string = string.replace( elt+"." , "" )
-                    string = string + " = " + dst.file_name.split("/")[1].replace(".sql","")+"."+str(v2).replace(table,"")
+                    string = string + " = " + dst.file_name.split("/")[-1].replace(".sql","")+"."+str(v2).replace(table,"")
                     #print("String2 " , string )
                     if ( (src,dst) in dicto.keys() and string not in dicto[src,dst] ) :
                         dicto[src,dst].append(string)

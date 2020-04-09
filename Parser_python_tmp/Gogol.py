@@ -21,14 +21,14 @@ class Gogol:
         
     def find_relation(self):
         with open ( "/"+self.dossier+self.file_graphml , "r" ) as F :
-            print("PPPP : " , self.dossier+self.file_graphml )
+            #print("PPPP : " , self.dossier+self.file_graphml )
             src = "" 
             dst = ""
             relation = ""
             condi = False # if the relation is conditional or not
             
             for line in F :
-                print("L:",line)
+                #print("L:",line)
                 if ( "edge" in line ) :
                     # on va traiter les nom des sources / targets des relations
                     a = re.findall("[A-Za-z]+\.sql",line)
@@ -43,12 +43,12 @@ class Gogol:
                 if ( "rw" in line or "wr" in line or "ww" in line ) :
                     relation = str(line)
                     #print(relation) 
-                    print(src,'-',dst)
+                    #print(src,'-',dst)
                     self.find_reasons(src,dst,relation,condi)
                     
     def return_content_by_file_name(self , name ) :
         for elt in self.parser.list_readFile :
-            print(" Name : " , elt.file_name.split("/")[-1] , "-- " , name  )
+            #print(" Name : " , elt.file_name.split("/")[-1] , "-- " , name  )
             if (  name == elt.file_name.split("/")[-1] ) :
                 return elt.new_content     
                     
@@ -67,9 +67,6 @@ class Gogol:
         ldst = []
         content_src = self.return_content_by_file_name(src)
         content_dst = self.return_content_by_file_name(dst)
-        
-        print("src : " , content_src )
-        print("dst : " , content_dst )
         t = re.findall("[A-Z]+[A-Z]+",relation )
         table = ""
         attr = ""
@@ -115,8 +112,6 @@ class Gogol:
         self.write_relation(lsrc,ldst ,relation,condi, src , dst )
         
     def write_relation( self, lsrc,ldst ,relation,condi, src , dst) :
-        
-        print("RRRRRRRRRRRRR : /"+self.dossier+"graphs/dependencies.gogol")
         
         with open ( "/"+self.dossier+"graphs/dependencies.gogol","a+") as F :
             if ( "wr" in relation ):

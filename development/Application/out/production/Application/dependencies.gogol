@@ -1,9 +1,18 @@
 #-- Created by TRAORE Paul & CADIOU Léo-Paul --#
 
 
-<Relation ID="ww,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
+<Relation ID="wr,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
 <SRC>
 	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+</SRC>
+<DST>
+	l: 10	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
+</DST>
+</Relation>
+
+<Relation ID="rw,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
+<SRC>
+	l: 10	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
 </SRC>
 <DST>
 	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
@@ -19,30 +28,12 @@
 </DST>
 </Relation>
 
-<Relation ID="rw,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
-<SRC>
-	l: 10	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
-</SRC>
-<DST>
-	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
-</DST>
-</Relation>
-
-<Relation ID="wr,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
+<Relation ID="ww,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
 <SRC>
 	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
 </SRC>
 <DST>
-	l: 10	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
-</DST>
-</Relation>
-
-<Relation ID="rw,BIDS(*).*" SRC="ViewItem.sql" DST="StoreBId.sql" CONDITION=False >
-<SRC>
-	l: 8	SELECT BIDS.bId FROM BIDS B WHERE BIDS.bId = i_id;
-</SRC>
-<DST>
-	l: 8	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
+	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
 </DST>
 </Relation>
 
@@ -55,12 +46,12 @@
 </DST>
 </Relation>
 
-<Relation ID="wr,BIDS(*).*" SRC="StoreBId.sql" DST="ViewItem.sql" CONDITION=False >
+<Relation ID="rw,BIDS(*).*" SRC="ViewItem.sql" DST="StoreBId.sql" CONDITION=False >
 <SRC>
-	l: 8	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
+	l: 8	SELECT BIDS.bId FROM BIDS B WHERE BIDS.bId = i_id;
 </SRC>
 <DST>
-	l: 8	SELECT BIDS.bId FROM BIDS B WHERE BIDS.bId = i_id;
+	l: 8	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
 </DST>
 </Relation>
 
@@ -70,6 +61,15 @@
 </SRC>
 <DST>
 	l: 12	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
+</DST>
+</Relation>
+
+<Relation ID="wr,BIDS(*).*" SRC="StoreBId.sql" DST="ViewItem.sql" CONDITION=False >
+<SRC>
+	l: 8	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
+</SRC>
+<DST>
+	l: 8	SELECT BIDS.bId FROM BIDS B WHERE BIDS.bId = i_id;
 </DST>
 </Relation>
 
