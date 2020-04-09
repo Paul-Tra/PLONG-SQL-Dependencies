@@ -29,6 +29,9 @@ public class GogolParser {
             return;
         }
         this.file = new File(path);
+        if (this.file == null) {
+            System.out.println("fill du gogol vide et null");
+        }
         this.relations = relations;
         getFileLines();
         fillDependencies();
@@ -113,9 +116,24 @@ public class GogolParser {
     // TODO : 3.7 executionjava.lang.IndexOutOfBoundsException: Index -1 out of bounds for length 65
 
     private void fillDependencies() {
+        int cpt = 0;
+        for (Relation relation : this.relations) {
+            ArrayList<String> dependencies = relation.getDependenciesLinesFromName();
+            cpt += dependencies.size();
+        }
+        System.out.println("nb dependence graphml :" + cpt);
+        cpt = 0;
+        for (String file_line : this.file_lines) {
+            if (file_line.contains("<Relation")) {
+                cpt++;
+            }
+        }
+        System.out.println("nb relation gogol :" + cpt);
+
         for (Relation relation : this.relations) {
             ArrayList<String> dependencies = relation.getDependenciesLinesFromName();
             for (String dependency : dependencies) {
+                System.out.println("dependence :" + dependency);
                 String source = relation.getSource().getId();
                 String target = relation.getTarget().getId();
 
@@ -144,7 +162,7 @@ public class GogolParser {
      */
     private int indexRelation(String dependency, String source, String target) {
         for (int i = 0; i < file_lines.size(); i++) {
-            String id = buildAttributeWithContent(this.attributeId, dependency);
+            String id = buildAttributeWithContent(this.attributeId, dependency.trim());
             String s = buildAttributeWithContent(this.attributeSource, source);
             String t = buildAttributeWithContent(this.attributeTarget, target);
             if (file_lines.get(i).contains(id) && file_lines.get(i).contains(s)
