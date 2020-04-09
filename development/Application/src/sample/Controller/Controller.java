@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
+import static java.lang.Thread.sleep;
+
 public class Controller implements Initializable {
     private final String GOGOLPATH = "./src/dependencies.gogol";
     public final double BOUND = 10;
@@ -150,12 +152,18 @@ public class Controller implements Initializable {
         String c_dir = System.getProperty("user.dir") + "/src/" ;
         try {
             System.out.println("Dir : " + c_dir);
-            System.out.println("folder : " + s );
+            System.out.println("folder : " + s.getParent() );
             System.out.println("cmd : " + "python3.7 " + s.getParent() + "/Parser.py " + s + "/" );
-            Runtime.getRuntime().exec("python3.7 " + s.getParent() + "/Parser.py " + s + "/");
+            Process p = Runtime.getRuntime().exec("python3.7 " + s.getParent() + "/Parser.py " + s + "/");
+            // wait until p finished
+            p.waitFor() ;
 
+
+            System.out.println("cp " + s.getParent() + "/graphs/Mygraphml.graphml " + c_dir);
+            System.out.println("cp " + s.getParent() + "/graphs/dependencies.gogol " + c_dir);
             Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/Mygraphml.graphml " + c_dir);
             Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/dependencies.gogol " + c_dir);
+
 
             this.currentPath = "src/Mygraphml.graphml";
             onMenuItemClearLaunch();

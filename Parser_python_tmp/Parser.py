@@ -456,7 +456,7 @@ class Parser:
         #self.print_list()
         
         
-        with open ( "graphs/Mygraphml.graphml","w+") as F :
+        with open ( self.work_folder+"../graphs/Mygraphml.graphml","w+") as F :
             self.write_en_tete(F)
             cpt = 0
             cpt2 = 0
@@ -476,8 +476,8 @@ class Parser:
                         else :
                             check = False
                 if ( check and val != [] ) :
-                    src = key[0].file_name.split("/")[1].strip()
-                    dst = key[1].file_name.split("/")[1].strip()
+                    src = key[0].file_name.split("/")[-1].strip()
+                    dst = key[1].file_name.split("/")[-1].strip()
                     F.write ('<node id="'+src+'">\n')
                     F.write ('\t<data key="d0">"'+src+'"</data>\n')
                     F.write ('</node>\n')
@@ -508,8 +508,8 @@ class Parser:
                         else :
                             check = False
                 if ( check and val != []) :
-                    src = key[0].file_name.split("/")[1].strip()
-                    dst = key[1].file_name.split("/")[1].strip()
+                    src = key[0].file_name.split("/")[-1].strip()
+                    dst = key[1].file_name.split("/")[-1].strip()
                     F.write ('<node id="'+src+'">\n')
                     F.write ('\t<data key="d0">"'+src+'"</data>\n')
                     F.write ('</node>\n')

@@ -4,22 +4,31 @@ class Gogol:
     def __init__(self, parser , graphml , dossier):
         self.parser = parser 
         self.file_graphml = graphml
-        self.dossier = dossier
+        tmp = ""
+        for elt in dossier.split("/")[:-2] :
+            if elt != '' :
+                tmp = tmp+elt+"/"
+                
+        print(tmp )
+        print("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python_tmp/graphs")
+        self.dossier = tmp
         self.write_entete()
         self.find_relation()
         
     def write_entete(self):
-        with open ( "graphs/dependencies.gogol","w+") as F :
+        with open ( "/"+self.dossier+"graphs/dependencies.gogol","w+") as F :
             F.write("#-- Created by TRAORE Paul & CADIOU Léo-Paul --#\n\n\n")
         
     def find_relation(self):
-        with open (self.file_graphml ) as F :
+        with open ( "/"+self.dossier+self.file_graphml , "r" ) as F :
+            print("PPPP : " , self.dossier+self.file_graphml )
             src = "" 
             dst = ""
             relation = ""
             condi = False # if the relation is conditional or not
             
             for line in F :
+                print("L:",line)
                 if ( "edge" in line ) :
                     # on va traiter les nom des sources / targets des relations
                     a = re.findall("[A-Za-z]+\.sql",line)
@@ -34,11 +43,13 @@ class Gogol:
                 if ( "rw" in line or "wr" in line or "ww" in line ) :
                     relation = str(line)
                     #print(relation) 
+                    print(src,'-',dst)
                     self.find_reasons(src,dst,relation,condi)
                     
     def return_content_by_file_name(self , name ) :
         for elt in self.parser.list_readFile :
-            if ( elt.file_name.split("/")[1] == name ) :
+            print(" Name : " , elt.file_name.split("/")[-1] , "-- " , name  )
+            if (  name == elt.file_name.split("/")[-1] ) :
                 return elt.new_content     
                     
                     
@@ -56,6 +67,9 @@ class Gogol:
         ldst = []
         content_src = self.return_content_by_file_name(src)
         content_dst = self.return_content_by_file_name(dst)
+        
+        print("src : " , content_src )
+        print("dst : " , content_dst )
         t = re.findall("[A-Z]+[A-Z]+",relation )
         table = ""
         attr = ""
@@ -66,8 +80,10 @@ class Gogol:
         if ( t ) :
             for elt in t :
                 attr = elt
-                
-        c = content_src.split(";")
+        if ( content_src != None ) :        
+            c = content_src.split(";")
+        else :
+            return
         for elt in c :
             motif = table+attr
             if ( "SELECT" in elt and motif in elt ) :
@@ -76,7 +92,11 @@ class Gogol:
                 if ( "SELECT" in elt and table+"." in elt ) :
                     lsrc.append(elt)
         
-        c = content_dst.split(";")
+        if ( content_src != None ) :        
+            c = content_dst.split(";")
+        else :
+            return
+        
         for elt in c :
             # update
             if ( "UPDATE" in elt ) :
@@ -95,7 +115,10 @@ class Gogol:
         self.write_relation(lsrc,ldst ,relation,condi, src , dst )
         
     def write_relation( self, lsrc,ldst ,relation,condi, src , dst) :
-        with open ( "graphs/dependencies.gogol","a+") as F :
+        
+        print("RRRRRRRRRRRRR : /"+self.dossier+"graphs/dependencies.gogol")
+        
+        with open ( "/"+self.dossier+"graphs/dependencies.gogol","a+") as F :
             if ( "wr" in relation ):
                 tmp = src
                 src = dst
@@ -113,7 +136,7 @@ class Gogol:
                 if ( "INSERT" in elt ) :
                     elt = "INSERT " + elt.split("INSERT")[1].strip().replace(";","")
                 for f in self.parser.list_readFile :
-                    if ( f.file_name.split("/")[1] == src ) :
+                    if ( f.file_name.split("/")[-1] == src ) :
                         cpt = f.return_line_numbor_of(elt.replace("BEGIN","").strip())
                 F.write('\tl: ' + str(cpt) +'\t' + elt.replace(";","").replace("BEGIN","").strip() +';\n')
             F.write('</SRC>\n')
@@ -126,7 +149,7 @@ class Gogol:
                     elt = "INSERT " + elt.split("INSERT")[1].strip().replace(";","")
                     
                 for f in self.parser.list_readFile :
-                    if ( f.file_name.split("/")[1] == dst ) :
+                    if ( f.file_name.split("/")[-1] == dst ) :
                         cpt = f.return_line_numbor_of(elt.replace("BEGIN","").strip())
                 F.write('\tl: ' + str(cpt) +'\t' + elt.replace(";","").replace("BEGIN","").strip() +';\n')
             F.write('</DST>\n')
@@ -148,8 +171,11 @@ class Gogol:
         if ( t ) :
             for elt in t :
                 attr = elt
-    
-        c = content_src.split(";")
+        if ( content_src != None ) :        
+            c = content_src.split(";")
+        else :
+            return
+        
         for elt in c :
             # update
             if ( "UPDATE" in elt ) :
@@ -162,7 +188,11 @@ class Gogol:
                 if ( table in elt ) :
                     lsrc.append(elt)
         
-        c = content_dst.split(";")
+        if ( content_src != None ) :        
+            c = content_dst.split(";")
+        else :
+            return
+            
         for elt in c :
             # update
             if ( "UPDATE" in elt ) :
