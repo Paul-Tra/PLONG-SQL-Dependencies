@@ -161,9 +161,11 @@ public class Controller implements Initializable {
 
             System.out.println("cp " + s.getParent() + "/graphs/Mygraphml.graphml " + c_dir);
             System.out.println("cp " + s.getParent() + "/graphs/dependencies.gogol " + c_dir);
-            Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/Mygraphml.graphml " + c_dir);
-            Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/dependencies.gogol " + c_dir);
-
+            Process q =Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/Mygraphml.graphml " + c_dir);
+            // wait until p finished
+            q.waitFor() ;
+            Process r = Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/dependencies.gogol " + c_dir);
+            r.waitFor();
 
             this.currentPath = "src/Mygraphml.graphml";
             onMenuItemClearLaunch();

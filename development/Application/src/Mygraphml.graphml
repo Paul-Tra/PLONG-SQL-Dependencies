@@ -9,12 +9,12 @@
 </node>
 <edge source="StoreBId.sql" target="StoreBId.sql">
 	<data key="d1">
+	ww,ITEMS(['iId']).nbids
+	ww,BIDS(*).*
 	rw,ITEMS(['iId']).nbids
 	wr,ITEMS(['iId']).nbids
-	ww,BIDS(*).*
-	ww,ITEMS(['iId']).nbids
-	home.['i_id'] = home.['i_id']
-	home.* = home.*
+	StoreBId.['i_id'] = StoreBId.['i_id']
+	StoreBId.* = StoreBId.*
 </data>
 </edge>
 
@@ -23,9 +23,9 @@
 </node>
 <edge source="ViewItem.sql" target="StoreBId.sql">
 	<data key="d1">
-	rw,ITEMS(['iId']).nbids
 	rw,BIDS(*).*
-	home.['i_id'] = home.['i_id']
+	rw,ITEMS(['iId']).nbids
+	ViewItem.['i_id'] = StoreBId.['i_id']
 </data>
 </edge>
 
@@ -36,7 +36,7 @@
 	<data key="d1">
 	wr,BIDS(*).*
 	wr,ITEMS(['iId']).nbids
-	home.['i_id'] = home.['i_id']
+	ViewItem.['i_id'] = StoreBId.['i_id']
 </data>
 </edge>
 
