@@ -63,7 +63,11 @@ class Read_file:
             l = line[i].replace(";","").strip()
             #print("I:",i,"Line :", l )
             if ( l in select ) :
-                if ( "SELECT" in l or "UPDATE" in l or "INSERT" in l  ) :
+                if ( "UPDATE" in l ) :
+                    match = i
+                    return match
+                    
+                if ( "SELECT" in l or "INSERT" in l  ) :
                     match = i
                 tmp = tmp+" " + l
                 check = True
