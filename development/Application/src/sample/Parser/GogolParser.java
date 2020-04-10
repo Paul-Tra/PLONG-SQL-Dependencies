@@ -155,6 +155,7 @@ public class GogolParser {
 
     /**
      * Finds the index from where the dependency begin in the file_lines
+     *
      * @param dependency    name of the dependency
      * @param source    name of the source Transaction of the dependency
      * @param target    name of the target Transaction of the dependency
@@ -175,6 +176,7 @@ public class GogolParser {
 
     /**
      * Fills the lines list by dependencies lines thanks to the index and the tag
+     *
      * @param index index where we began to search the tag lines
      * @param lines list where we plug the searched lines
      * @param tag   tag of the searched lines
@@ -184,7 +186,8 @@ public class GogolParser {
         String startingTag = buildTag(tag, true);
         String closingTag = buildTag(tag, false);
         boolean start = false;
-        while (!this.file_lines.get(index).contains(closingTag) && index < this.file_lines.size()) {
+        while (!this.file_lines.get(index).contains(closingTag)
+                && index < this.file_lines.size()) {
             if (start) {
                 lines.add(this.file_lines.get(index));
             } else if (this.file_lines.get(index).contains(startingTag)) {
@@ -197,6 +200,7 @@ public class GogolParser {
 
     /**
      * Fills the appropriate dependencies's map with the information of a dependency
+     *
      * @param dependency    name of the dependency
      * @param source    name of the source Transaction of the dependency
      * @param target    name of the target Transaction of the dependency
@@ -222,6 +226,7 @@ public class GogolParser {
 
     /**
      * associates the attribute and the searched content to correspond to the file syntax
+     *
      * @param attribute attribute whose we want to associate the content
      * @param content   content whose we want to add to the attribute
      * @return  the associated string made up by the attribute and the content
@@ -235,6 +240,7 @@ public class GogolParser {
 
     /**
      * created a tag from a tag name
+     *
      * @param tag   tag name
      * @param start if the created tag if an opening or a ending tag
      * @return

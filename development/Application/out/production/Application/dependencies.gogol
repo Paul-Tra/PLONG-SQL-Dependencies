@@ -10,9 +10,9 @@
 </DST>
 </Relation>
 
-<Relation ID="rw,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
+<Relation ID="ww,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
 <SRC>
-	l: 10	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
+	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
 </SRC>
 <DST>
 	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
@@ -28,9 +28,9 @@
 </DST>
 </Relation>
 
-<Relation ID="ww,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
+<Relation ID="rw,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
 <SRC>
-	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+	l: 10	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
 </SRC>
 <DST>
 	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;

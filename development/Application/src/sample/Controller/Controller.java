@@ -1,24 +1,21 @@
 package sample.Controller;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.CubicCurveTo;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+
+import javafx.stage.Stage;
 import sample.Parser.GogolParser;
 import sample.Parser.GraphmlParser;
 import sample.Placement;
@@ -32,14 +29,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
-import static java.lang.Thread.sleep;
 
 public class Controller implements Initializable {
     private final String GOGOLPATH = "./src/dependencies.gogol";
     public final double BOUND = 10;
     private String currentPath = "";
-    private ArrayList<Transaction> transactions = new ArrayList<>();
-    private ArrayList<Relation> relations = new ArrayList<>();
+    public ArrayList<Transaction> transactions = new ArrayList<>();
+    public ArrayList<Relation> relations = new ArrayList<>();
     private GogolParser gogolParser;
     @FXML
     public AnchorPane anchorPane1, anchorPane2, anchorPane3;
@@ -56,6 +52,42 @@ public class Controller implements Initializable {
     @FXML
     Button buttonHide;
 
+
+    @FXML
+    private void onMenuItemAppearance() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../View/Style.fxml"));
+        Parent root = null;
+        try {
+            root = loader.load();
+            StyleController styleController = loader.getController();
+            styleController.setMainController(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Stage stage = new Stage();
+        stage.setTitle("Appearance settings");
+        Scene scene = new Scene(root, 600, 600);
+        stage.setScene(scene);
+        stage.show();
+
+    }
+    @FXML
+    private void onMenuItemSettings() {
+    }
+
+    @FXML
+    private void onMenuItemExport() {
+        FileChooser fil_chooser = new FileChooser();
+        // add filters file's extension+
+        fil_chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("pdf files", ".pdf"));
+        File file = fil_chooser.showSaveDialog(this.anchorPane1.getScene().getWindow());
+        if (file != null) {
+            System.out.println("selected path: " + file.getAbsolutePath()
+                    + fil_chooser.getSelectedExtensionFilter().getExtensions().get(0));
+        }
+        /*TODO: implement to convertion function from graphml to pdf*/
+    }
     @FXML
     private void clickButtonHide() {
         this.anchorPane2.setVisible(false);
@@ -84,6 +116,7 @@ public class Controller implements Initializable {
 
     /**
      * fills the elements of the Pop-up by source and target files information
+     *
      * @param sourceLines   lines causing a dependency in the source file
      * @param targetLines   lines causing a dependency in the target file
      */
@@ -95,11 +128,14 @@ public class Controller implements Initializable {
         this.listViewSourceLines.getItems().addAll(sourceLines);
         this.listViewTargetLines.getItems().addAll(targetLines);
 
-
         this.anchorPane3.toFront();
         this.anchorPane3.setVisible(true);
     }
 
+    /**
+     * clear all listViews of the pop-up window which shows the dependency
+     * lines from the source and target files
+     */
     private void clearPopUp() {
         this.listViewSourceLines.getItems().clear();
         this.listViewTargetLines.getItems().clear();
@@ -225,6 +261,7 @@ public class Controller implements Initializable {
     /**
      * Hides all control circle of the the arrows excepted
      * the relation's control circles
+     *
      * @param relation relation whose do not want to hide the control circles
      */
     public void hideControlCircles(Relation relation) {

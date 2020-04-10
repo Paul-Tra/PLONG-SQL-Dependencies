@@ -90,6 +90,7 @@ public class Relation {
                 e.printStackTrace();
             }
             this.controller.labelName.setVisible(false);
+            this.controller.labelName.toBack();
         });
     }
 
@@ -102,6 +103,7 @@ public class Relation {
             this.controller.labelName.setVisible(true);
             this.controller.labelName.setLayoutX(mouseEvent.getX());
             this.controller.labelName.setLayoutY(mouseEvent.getY());
+            this.controller.labelName.toFront();
         });
     }
 
