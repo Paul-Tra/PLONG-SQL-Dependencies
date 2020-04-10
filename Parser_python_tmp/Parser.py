@@ -19,24 +19,97 @@ class Parser:
         self.conditional_Dependencies = dict() #  if request ... else : request .....       [src,dst] = ["ww;balbla(PK).attr","wr;......",.....]
         
     def play(self):
-        #print(".. working progress.. \n\nFind primary Key for each Table :")
         print("\tPath : ", self.work_folder+self.genDB)
         self.primary_key_obj = PrimaryKey(self.work_folder+self.genDB)
-        #print("\n-------------------------------------------------------------\n")
         self.dic_primary_key = self.primary_key_obj.dict_table_attr
         self.process()
-        #print("OK process OK")
-        #self.print_dependency()
         count,nb_edge = self.write_graphml()
-        print("## ", count, "Edges were found with : "+ str(nb_edge) + " relations , please see the grampl file ( into 'graphs' repo. ) ##\n")
-        print("Look at the .gogol file to see more details about relations")
+        #print("## ", count, "Edges were found with : "+ str(nb_edge) + " relations , please see the grampl file ( into 'graphs' repo. ) ##\n")
+        #print("Look at the .gogol file to see more details about relations")
         self.gogol = Gogol(self,"graphs/Mygraphml.graphml",self.work_folder)
+        self.re_write_graphml()
         
+        
+    def re_write_graphml(self):
+        self.liste = self.gogol.list_to_remove
+        
+        with open ( self.work_folder+"../graphs/Mygraphml.graphml","w+") as F :
+            self.write_en_tete(F)
+            cpt = 0
+            cpt2 = 0
+            check = True
+            for key,val in self.Dependencies.items() :
+                for elt in val :
+                    if ( "=" in elt ) :
+                        check = True
+                        break
+                    else :
+                        check = False
+                if ( check ) :
+                    for elt in val :
+                        if ( "(" in elt ) :
+                            check = True
+                            break
+                        else :
+                            check = False
+                if ( check and val != [] ) :
+                    src = key[0].file_name.split("/")[-1].strip()
+                    dst = key[1].file_name.split("/")[-1].strip()
+                    F.write ('<node id="'+src+'">\n')
+                    F.write ('\t<data key="d0">"'+src+'"</data>\n')
+                    F.write ('</node>\n')
+                    F.write ('<edge source="'+src+'" target="'+dst+'">\n')
+                    F.write ('\t<data key="d1">\n')
+                    for elt in val :
+                        s = src+" ; "+dst+" ; " + elt
+                        if ( s not in self.liste ) :
+                            if ( "rw" in elt or "wr" in elt or "ww" in elt ):
+                                cpt = cpt+1
+                            F.write ('\t'+elt+'\n')
+                    F.write ('</data>\n')
+                    F.write ('</edge>\n\n')
+                    
+            for key,val in self.conditional_Dependencies.items() :
+                for elt in val :
+                    if ( "=" in elt ) :
+                        check = True
+                        break
+                    else :
+                        check = False
+                if ( check ) :
+                    for elt in val :
+                        if ( "(" in elt ) :
+                            check = True
+                            break
+                        else :
+                            check = False
+                if ( check and val != []) :
+                    src = key[0].file_name.split("/")[-1].strip()
+                    dst = key[1].file_name.split("/")[-1].strip()
+                    F.write ('<node id="'+src+'">\n')
+                    F.write ('\t<data key="d0">"'+src+'"</data>\n')
+                    F.write ('</node>\n')
+                    F.write ('<edge source="'+src+'" target="'+dst+'">\n')
+                    F.write ('\t<data key="d2">\n')
+                    for elt in val :
+                        s = src+" ; "+dst+" ; " + elt
+                        if ( s not in self.liste ) :
+                            if ( "rw" in elt or "wr" in elt or "ww" in elt ):
+                                cpt = cpt+1
+                            F.write ('\t'+elt+'\n')
+                    F.write ('</data>\n')
+                    F.write ('</edge>\n\n')
+                    
+            
+            F.write ('</graph>\n')
+            F.write ('</graphml>\n')
+        
+        print("Count : " , cpt )
+        return cpt , cpt2    
         
     def process(self):
         for file in self.files_list :
             self.list_readFile.append(Read_file(self.work_folder+file , self.dic_primary_key )) # create all the Read_file object for each file contains in ''work_folder'' exept ''GenDB.sql''
-        
         for src in self.list_readFile :
             for dst in self.list_readFile :
                 if ( src.file_name == dst.file_name ) : # process "ww" relation on the same file . ( update / insert )
@@ -45,8 +118,11 @@ class Parser:
                     self.analyze_SELECT1(src,dst) # if there are a select according to an update or insert case
                 if ( src.file_name != dst.file_name ) : # check if src and dst are diff.
                     self.analyze_SELECT1(src,dst)
+                    self.analyze_SELECT1(dst,src)
                     self.analyze_SELECT2(dst,src)
+                    self.analyze_SELECT2(src,dst)
                     self.analyze_SELECT3(src,dst)
+                    self.analyze_SELECT3(dst,src)
                     
     def check_condional_dependencies(self,  src , request): # check if the 'request' in 'src' file is into an IF (.... ) else : ( ) ;
         for elt in request :
@@ -382,7 +458,6 @@ class Parser:
         dict_tmp_condi = dict(self.conditional_Dependencies)
         
         for k , v in dict_tmp.items():
-            #print("$$$$$$$$$$$$$$$ :",v)
             if ( k in self.Dependencies.keys() ) :
                 for elt in v :
                     self.Dependencies[k].append(elt)
@@ -406,11 +481,9 @@ class Parser:
         dict_tmp = dict(self.Dependencies)
         
         for k , v in dict_tmp.items():
-            #print("OKKKKKKKKKKKKKKKKKKK")
             if ( (k[1],k[0]) not in self.Dependencies.keys() ) :
                 self.Dependencies[k[1],k[0]] = []
                 for elt in v :
-                    #print("elt :" , elt )
                     a = elt.replace("wr","rw")
                     if ( a != elt ):
                         self.Dependencies[k[1],k[0]].append(a)
