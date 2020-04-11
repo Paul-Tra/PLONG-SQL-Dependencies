@@ -20,8 +20,8 @@ public class GogolParser {
     private File file;
     private ArrayList<String> file_lines = new ArrayList<>();
     private ArrayList<Relation> relations;
-    private HashMap<String[], ArrayList<String>[]> regularDependenciesMap = new HashMap<>();
-    private HashMap<String[], ArrayList<String>[]> conditionalDependenciesMap = new HashMap<>();
+    public HashMap<String[], ArrayList<String>[]> regularDependenciesMap = new HashMap<>();
+    public HashMap<String[], ArrayList<String>[]> conditionalDependenciesMap = new HashMap<>();
 
     public GogolParser(String path, ArrayList<Relation> relations) {
         if (!path.contains(EXTENSION)) {
@@ -133,13 +133,11 @@ public class GogolParser {
         for (Relation relation : this.relations) {
             ArrayList<String> dependencies = relation.getDependenciesLinesFromName();
             for (String dependency : dependencies) {
-                System.out.println("dependence :" + dependency);
                 String source = relation.getSource().getId();
                 String target = relation.getTarget().getId();
 
-                int index = indexRelation(dependency, source, target);
-                String c = buildAttributeWithContent(this.attributeCondition, "True");
-                boolean conditional = this.file_lines.get(index).contains(c);
+                boolean conditional = !relation.getArrow().getStrokeDashArray().isEmpty();
+                int index = indexRelation(dependency, source, target, conditional);
 
                 ArrayList<String> source_lines = new ArrayList<>();
                 index = getTagLinesFromIndex(index, source_lines, this.tagSource);
@@ -161,13 +159,15 @@ public class GogolParser {
      * @param target    name of the target Transaction of the dependency
      * @return  the index of the beginning of the dependency
      */
-    private int indexRelation(String dependency, String source, String target) {
+    private int indexRelation(String dependency, String source, String target, boolean conditional) {
         for (int i = 0; i < file_lines.size(); i++) {
             String id = buildAttributeWithContent(this.attributeId, dependency.trim());
             String s = buildAttributeWithContent(this.attributeSource, source);
             String t = buildAttributeWithContent(this.attributeTarget, target);
+            String c = conditional ? buildAttributeWithContent(this.attributeCondition, "True")
+                    : buildAttributeWithContent(this.attributeCondition, "False");
             if (file_lines.get(i).contains(id) && file_lines.get(i).contains(s)
-                    && file_lines.get(i).contains(t)) {
+                    && file_lines.get(i).contains(t) && file_lines.get(i).contains(c)) {
                 return i;
             }
         }
