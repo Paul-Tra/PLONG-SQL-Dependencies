@@ -62,21 +62,9 @@ public class Relation {
      * manages all the event about the arrow of the Relation
      */
     private void eventArrow() {
-        pressArrow();
         enterArrow();
         exitArrow();
         clickArrow();
-    }
-
-    /**
-     * manages the behavior of the Relation when we press on its arrow
-     */
-    private void pressArrow() {
-        this.arrow.setOnMousePressed(mouseEvent -> {
-            this.control1.setVisible(true);
-            this.control2.setVisible(true);
-        });
-
     }
 
     /**
@@ -84,13 +72,7 @@ public class Relation {
      */
     private void exitArrow() {
         this.arrow.setOnMouseExited(mouseEvent -> {
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             this.controller.labelName.setVisible(false);
-            this.controller.labelName.toBack();
         });
     }
 
@@ -101,9 +83,8 @@ public class Relation {
         this.arrow.setOnMouseEntered(mouseEvent -> {
             this.controller.labelName.setText(this.name);
             this.controller.labelName.setVisible(true);
-            this.controller.labelName.setLayoutX(mouseEvent.getX());
-            this.controller.labelName.setLayoutY(mouseEvent.getY());
             this.controller.labelName.toFront();
+            this.controller.positionLabelName(mouseEvent);
         });
     }
 
