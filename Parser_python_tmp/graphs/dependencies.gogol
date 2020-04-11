@@ -1,21 +1,21 @@
 #-- Created by TRAORE Paul & CADIOU Léo-Paul --#
 
 
-<Relation ID="rw,ORDERS(*).*" SRC="orderstatus.sql" DST="neworder.sql" CONDITION=False >
-<SRC>
-	l: 49	SELECT ORDERS.oId, ORDERS.carrierId, ORDERS.entryDate INTO o_id, o_carrier_id, ent_date FROM ORDERS O ORDER BY ORDERS.oId DESC;
-</SRC>
-<DST>
-	l: 37	INSERT INTO ORDERS(oId, dId, wId, cId, entryDate, oLCnt, allLocal) VALUES (o_id, d_Id, w_Id, c_Id, date_time, o_ol_cnt, o_all_local);
-</DST>
-</Relation>
-
 <Relation ID="rw,ORDERLINE(*).*" SRC="orderstatus.sql" DST="neworder.sql" CONDITION=False >
 <SRC>
 	l: 18	DECLARE c_line CURSOR FOR SELECT ORDERLINE.iId, ORDERLINE.supplyWId, ORDERLINE.quantity, ORDERLINE.amount, ORDERLINE.deliveryDate FROM ORDERLINE OL WHERE ORDERLINE.oId = o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
 </SRC>
 <DST>
 	l: 93	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
+</DST>
+</Relation>
+
+<Relation ID="rw,ORDERS(*).*" SRC="orderstatus.sql" DST="neworder.sql" CONDITION=False >
+<SRC>
+	l: 49	SELECT ORDERS.oId, ORDERS.carrierId, ORDERS.entryDate INTO o_id, o_carrier_id, ent_date FROM ORDERS O ORDER BY ORDERS.oId DESC;
+</SRC>
+<DST>
+	l: 37	INSERT INTO ORDERS(oId, dId, wId, cId, entryDate, oLCnt, allLocal) VALUES (o_id, d_Id, w_Id, c_Id, date_time, o_ol_cnt, o_all_local);
 </DST>
 </Relation>
 
@@ -48,15 +48,6 @@
 </DST>
 </Relation>
 
-<Relation ID="rw,ORDERLINE(['oId','dId','wId','number']).deliveryDate" SRC="orderstatus.sql" DST="delivery.sql" CONDITION=False >
-<SRC>
-	l: 18	DECLARE c_line CURSOR FOR SELECT ORDERLINE.iId, ORDERLINE.supplyWId, ORDERLINE.quantity, ORDERLINE.amount, ORDERLINE.deliveryDate FROM ORDERLINE OL WHERE ORDERLINE.oId = o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
-</SRC>
-<DST>
-	l: 34	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
-</DST>
-</Relation>
-
 <Relation ID="rw,ORDERS(['oId','dId','wId']).carrierId" SRC="orderstatus.sql" DST="delivery.sql" CONDITION=False >
 <SRC>
 	l: 49	SELECT ORDERS.oId, ORDERS.carrierId, ORDERS.entryDate INTO o_id, o_carrier_id, ent_date FROM ORDERS O ORDER BY ORDERS.oId DESC;
@@ -66,12 +57,12 @@
 </DST>
 </Relation>
 
-<Relation ID="wr,ORDERS(['oId','dId','wId']).carrierId" SRC="delivery.sql" DST="orderstatus.sql" CONDITION=False >
+<Relation ID="rw,ORDERLINE(['oId','dId','wId','number']).deliveryDate" SRC="orderstatus.sql" DST="delivery.sql" CONDITION=False >
 <SRC>
-	l: 31	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
+	l: 18	DECLARE c_line CURSOR FOR SELECT ORDERLINE.iId, ORDERLINE.supplyWId, ORDERLINE.quantity, ORDERLINE.amount, ORDERLINE.deliveryDate FROM ORDERLINE OL WHERE ORDERLINE.oId = o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
 </SRC>
 <DST>
-	l: 49	SELECT ORDERS.oId, ORDERS.carrierId, ORDERS.entryDate INTO o_id, o_carrier_id, ent_date FROM ORDERS O ORDER BY ORDERS.oId DESC;
+	l: 34	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
 </DST>
 </Relation>
 
@@ -84,21 +75,25 @@
 </DST>
 </Relation>
 
-<Relation ID="ww,ORDERLINE(*).*" SRC="neworder.sql" DST="neworder.sql" CONDITION=False >
+<Relation ID="wr,ORDERS(['oId','dId','wId']).carrierId" SRC="delivery.sql" DST="orderstatus.sql" CONDITION=False >
 <SRC>
-	l: 93	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
+	l: 31	UPDATE ORDERS SET carrierId = o_carrier_id WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
 </SRC>
 <DST>
-	l: 93	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
+	l: 49	SELECT ORDERS.oId, ORDERS.carrierId, ORDERS.entryDate INTO o_id, o_carrier_id, ent_date FROM ORDERS O ORDER BY ORDERS.oId DESC;
 </DST>
 </Relation>
 
-<Relation ID="ww,STOCK(['iId', 'wId']).quantity" SRC="neworder.sql" DST="neworder.sql" CONDITION=False >
+<Relation ID="ww,NEW_ORDER(*).*" SRC="neworder.sql" DST="neworder.sql" CONDITION=False >
 <SRC>
-	l: 84	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
+	l: 93	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
+	l: 37	INSERT INTO ORDERS(oId, dId, wId, cId, entryDate, oLCnt, allLocal) VALUES (o_id, d_Id, w_Id, c_Id, date_time, o_ol_cnt, o_all_local);
+	l: 40	INSERT INTO NEW_ORDER(oId, dId, wId) VALUES (o_id, d_Id, w_Id);
 </SRC>
 <DST>
-	l: 84	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
+	l: 93	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
+	l: 37	INSERT INTO ORDERS(oId, dId, wId, cId, entryDate, oLCnt, allLocal) VALUES (o_id, d_Id, w_Id, c_Id, date_time, o_ol_cnt, o_all_local);
+	l: 40	INSERT INTO NEW_ORDER(oId, dId, wId) VALUES (o_id, d_Id, w_Id);
 </DST>
 </Relation>
 
@@ -108,6 +103,15 @@
 </SRC>
 <DST>
 	l: 32	UPDATE DISTRICT SET nextOrdId = d_next_o_id + 1 WHERE DISTRICT.dId = d_id AND DISTRICT.wId = w_id;
+</DST>
+</Relation>
+
+<Relation ID="rw,STOCK(['iId','wId']).quantity" SRC="neworder.sql" DST="neworder.sql" CONDITION=False >
+<SRC>
+	l: 61	SELECT STOCK.quantity, STOCK.data, STOCK.dist01, STOCK.dist02, STOCK.dist03, STOCK.dist04, STOCK.dist05, STOCK.dist06, STOCK.dist07, STOCK.dist08, STOCK.dist09, STOCK.dist10 INTO s_quantity, s_data, s_dist01, s_dist02, s_dist03, s_dist04, s_dist05, s_dist06, s_dist07, s_dist08, s_dist09, s_dist10 FROM STOCK WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
+</SRC>
+<DST>
+	l: 84	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
 </DST>
 </Relation>
 
@@ -129,24 +133,6 @@
 </DST>
 </Relation>
 
-<Relation ID="ww,DISTRICT(['dId', 'wId']).nextOrdId" SRC="neworder.sql" DST="neworder.sql" CONDITION=False >
-<SRC>
-	l: 32	UPDATE DISTRICT SET nextOrdId = d_next_o_id + 1 WHERE DISTRICT.dId = d_id AND DISTRICT.wId = w_id;
-</SRC>
-<DST>
-	l: 32	UPDATE DISTRICT SET nextOrdId = d_next_o_id + 1 WHERE DISTRICT.dId = d_id AND DISTRICT.wId = w_id;
-</DST>
-</Relation>
-
-<Relation ID="rw,STOCK(['iId','wId']).quantity" SRC="neworder.sql" DST="neworder.sql" CONDITION=False >
-<SRC>
-	l: 61	SELECT STOCK.quantity, STOCK.data, STOCK.dist01, STOCK.dist02, STOCK.dist03, STOCK.dist04, STOCK.dist05, STOCK.dist06, STOCK.dist07, STOCK.dist08, STOCK.dist09, STOCK.dist10 INTO s_quantity, s_data, s_dist01, s_dist02, s_dist03, s_dist04, s_dist05, s_dist06, s_dist07, s_dist08, s_dist09, s_dist10 FROM STOCK WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
-</SRC>
-<DST>
-	l: 84	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
-</DST>
-</Relation>
-
 <Relation ID="wr,STOCK(['iId','wId']).quantity" SRC="neworder.sql" DST="neworder.sql" CONDITION=False >
 <SRC>
 	l: 84	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
@@ -156,16 +142,30 @@
 </DST>
 </Relation>
 
-<Relation ID="ww,NEW_ORDER(*).*" SRC="neworder.sql" DST="neworder.sql" CONDITION=False >
+<Relation ID="ww,STOCK(['iId', 'wId']).quantity" SRC="neworder.sql" DST="neworder.sql" CONDITION=False >
+<SRC>
+	l: 84	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
+</SRC>
+<DST>
+	l: 84	UPDATE STOCK SET quantity = s_quantity WHERE STOCK.iId = ol_i_id AND STOCK.wId = ol_supply_w_id;
+</DST>
+</Relation>
+
+<Relation ID="ww,DISTRICT(['dId', 'wId']).nextOrdId" SRC="neworder.sql" DST="neworder.sql" CONDITION=False >
+<SRC>
+	l: 32	UPDATE DISTRICT SET nextOrdId = d_next_o_id + 1 WHERE DISTRICT.dId = d_id AND DISTRICT.wId = w_id;
+</SRC>
+<DST>
+	l: 32	UPDATE DISTRICT SET nextOrdId = d_next_o_id + 1 WHERE DISTRICT.dId = d_id AND DISTRICT.wId = w_id;
+</DST>
+</Relation>
+
+<Relation ID="ww,ORDERLINE(*).*" SRC="neworder.sql" DST="neworder.sql" CONDITION=False >
 <SRC>
 	l: 93	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
-	l: 37	INSERT INTO ORDERS(oId, dId, wId, cId, entryDate, oLCnt, allLocal) VALUES (o_id, d_Id, w_Id, c_Id, date_time, o_ol_cnt, o_all_local);
-	l: 40	INSERT INTO NEW_ORDER(oId, dId, wId) VALUES (o_id, d_Id, w_Id);
 </SRC>
 <DST>
 	l: 93	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
-	l: 37	INSERT INTO ORDERS(oId, dId, wId, cId, entryDate, oLCnt, allLocal) VALUES (o_id, d_Id, w_Id, c_Id, date_time, o_ol_cnt, o_all_local);
-	l: 40	INSERT INTO NEW_ORDER(oId, dId, wId) VALUES (o_id, d_Id, w_Id);
 </DST>
 </Relation>
 
@@ -187,15 +187,6 @@
 </DST>
 </Relation>
 
-<Relation ID="wr,ORDERLINE(*).*" SRC="neworder.sql" DST="delivery.sql" CONDITION=False >
-<SRC>
-	l: 93	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
-</SRC>
-<DST>
-	l: 37	SELECT SUM(ORDERLINE.amount) INTO ol_total FROM ORDERLINE OL WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
-</DST>
-</Relation>
-
 <Relation ID="wr,NEW_ORDER(*).*" SRC="neworder.sql" DST="delivery.sql" CONDITION=False >
 <SRC>
 	l: 93	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
@@ -213,6 +204,15 @@
 </SRC>
 <DST>
 	l: 28	SELECT ORDERS.cId INTO c_id FROM ORDERS O WHERE ORDERS.oId = no_o_id AND ORDERS.dId = d_id AND ORDERS.wId = w_id;
+</DST>
+</Relation>
+
+<Relation ID="wr,ORDERLINE(*).*" SRC="neworder.sql" DST="delivery.sql" CONDITION=False >
+<SRC>
+	l: 93	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
+</SRC>
+<DST>
+	l: 37	SELECT SUM(ORDERLINE.amount) INTO ol_total FROM ORDERLINE OL WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
 </DST>
 </Relation>
 
@@ -245,6 +245,24 @@
 </DST>
 </Relation>
 
+<Relation ID="ww,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt" SRC="payment.sql" DST="payment.sql" CONDITION=False >
+<SRC>
+	l: 96	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+</SRC>
+<DST>
+	l: 96	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+</DST>
+</Relation>
+
+<Relation ID="ww,HISTORY(*).*" SRC="payment.sql" DST="payment.sql" CONDITION=False >
+<SRC>
+	l: 126	INSERT INTO HISTORY(cDId, cWId, cId, dId, wId, date, amount, data) VALUES (c_d_id, w_id, c_id, c_d_id, w_id, datetime, c_amount, c_data);
+</SRC>
+<DST>
+	l: 126	INSERT INTO HISTORY(cDId, cWId, cId, dId, wId, date, amount, data) VALUES (c_d_id, w_id, c_id, c_d_id, w_id, datetime, c_amount, c_data);
+</DST>
+</Relation>
+
 <Relation ID="ww,DISTRICT(['dId', 'wId']).dYTD" SRC="payment.sql" DST="payment.sql" CONDITION=False >
 <SRC>
 	l: 44	UPDATE DISTRICT SET dYTD = dYTD + h_amount WHERE DISTRICT.wId = w_id AND DISTRICT.dId = d_id;
@@ -263,24 +281,6 @@
 </DST>
 </Relation>
 
-<Relation ID="ww,HISTORY(*).*" SRC="payment.sql" DST="payment.sql" CONDITION=False >
-<SRC>
-	l: 126	INSERT INTO HISTORY(cDId, cWId, cId, dId, wId, date, amount, data) VALUES (c_d_id, w_id, c_id, c_d_id, w_id, datetime, c_amount, c_data);
-</SRC>
-<DST>
-	l: 126	INSERT INTO HISTORY(cDId, cWId, cId, dId, wId, date, amount, data) VALUES (c_d_id, w_id, c_id, c_d_id, w_id, datetime, c_amount, c_data);
-</DST>
-</Relation>
-
-<Relation ID="ww,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt" SRC="payment.sql" DST="payment.sql" CONDITION=False >
-<SRC>
-	l: 96	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-</SRC>
-<DST>
-	l: 96	UPDATE CUSTOMER SET paymtCnt = paymtCnt + 1 WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-</DST>
-</Relation>
-
 <Relation ID="wr,CUSTOMER(['cId','dId','wId']).balance" SRC="delivery.sql" DST="payment.sql" CONDITION=False >
 <SRC>
 	l: 41	UPDATE CUSTOMER SET balance = balance + ol_total WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
@@ -288,6 +288,15 @@
 <DST>
 	l: 39	ELSE SELECT CUSTOMER.first, CUSTOMER.middle, CUSTOMER.last, CUSTOMER.str1, CUSTOMER.str2, CUSTOMER.city, CUSTOMER.state, CUSTOMER.zip, CUSTOMER.phone, CUSTOMER.credit, CUSTOMER.creditLim, CUSTOMER.discount,CUSTOMER.balance, CUSTOMER.since INTO c_first,c_middle,c_last, c_str1, c_str2, c_city, c_state, c_zip, c_phone, c_credit, c_creditLim, c_discount,c_balance,c_since FROM CUSTOMER C WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 	l: 39	DECLARE c_byname CURSOR FOR SELECT CUSTOMER.first, CUSTOMER.middle, CUSTOMER.cId, CUSTOMER.str1, CUSTOMER.str2, CUSTOMER.city, CUSTOMER.state, CUSTOMER.zip, CUSTOMER.phone, CUSTOMER.credit, CUSTOMER.creditLim, CUSTOMER.discount,CUSTOMER.balance, CUSTOMER.since FROM CUSTOMER C WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.last = c_last ORDER BY CUSTOMER.first;
+</DST>
+</Relation>
+
+<Relation ID="ww,ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate" SRC="delivery.sql" DST="delivery.sql" CONDITION=False >
+<SRC>
+	l: 34	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
+</SRC>
+<DST>
+	l: 34	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
 </DST>
 </Relation>
 
@@ -306,15 +315,6 @@
 </SRC>
 <DST>
 	l: 45	-- added per transaction profile UPDATE CUSTOMER SET deliveryCnt = deliveryCnt + 1 WHERE CUSTOMER.cId = c_id AND CUSTOMER.dId = d_id AND CUSTOMER.wId = w_Id;
-</DST>
-</Relation>
-
-<Relation ID="ww,ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate" SRC="delivery.sql" DST="delivery.sql" CONDITION=False >
-<SRC>
-	l: 34	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
-</SRC>
-<DST>
-	l: 34	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
 </DST>
 </Relation>
 
@@ -337,14 +337,14 @@
 </DST>
 </Relation>
 
-<Relation ID="wr,CUSTOMER(['cId','dId','wId']).balance" SRC="payment.sql" DST="payment.sql" CONDITION=True >
+<Relation ID="ww,CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="payment.sql" DST="payment.sql" CONDITION=True >
 <SRC>
 	l: 108	UPDATE CUSTOMER SET balance = c_balance, data = c_new_data WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 	l: 112	ELSE UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 </SRC>
 <DST>
-	l: 39	ELSE SELECT CUSTOMER.first, CUSTOMER.middle, CUSTOMER.last, CUSTOMER.str1, CUSTOMER.str2, CUSTOMER.city, CUSTOMER.state, CUSTOMER.zip, CUSTOMER.phone, CUSTOMER.credit, CUSTOMER.creditLim, CUSTOMER.discount,CUSTOMER.balance, CUSTOMER.since INTO c_first,c_middle,c_last, c_str1, c_str2, c_city, c_state, c_zip, c_phone, c_credit, c_creditLim, c_discount,c_balance,c_since FROM CUSTOMER C WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-	l: 39	DECLARE c_byname CURSOR FOR SELECT CUSTOMER.first, CUSTOMER.middle, CUSTOMER.cId, CUSTOMER.str1, CUSTOMER.str2, CUSTOMER.city, CUSTOMER.state, CUSTOMER.zip, CUSTOMER.phone, CUSTOMER.credit, CUSTOMER.creditLim, CUSTOMER.discount,CUSTOMER.balance, CUSTOMER.since FROM CUSTOMER C WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.last = c_last ORDER BY CUSTOMER.first;
+	l: 108	UPDATE CUSTOMER SET balance = c_balance, data = c_new_data WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+	l: 112	ELSE UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 </DST>
 </Relation>
 
@@ -357,14 +357,14 @@
 </DST>
 </Relation>
 
-<Relation ID="ww,CUSTOMER(['cId', 'dId', 'wId']).balance" SRC="payment.sql" DST="payment.sql" CONDITION=True >
+<Relation ID="wr,CUSTOMER(['cId','dId','wId']).balance" SRC="payment.sql" DST="payment.sql" CONDITION=True >
 <SRC>
 	l: 108	UPDATE CUSTOMER SET balance = c_balance, data = c_new_data WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 	l: 112	ELSE UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 </SRC>
 <DST>
-	l: 108	UPDATE CUSTOMER SET balance = c_balance, data = c_new_data WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
-	l: 112	ELSE UPDATE CUSTOMER SET balance = c_balance WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+	l: 39	ELSE SELECT CUSTOMER.first, CUSTOMER.middle, CUSTOMER.last, CUSTOMER.str1, CUSTOMER.str2, CUSTOMER.city, CUSTOMER.state, CUSTOMER.zip, CUSTOMER.phone, CUSTOMER.credit, CUSTOMER.creditLim, CUSTOMER.discount,CUSTOMER.balance, CUSTOMER.since INTO c_first,c_middle,c_last, c_str1, c_str2, c_city, c_state, c_zip, c_phone, c_credit, c_creditLim, c_discount,c_balance,c_since FROM CUSTOMER C WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
+	l: 39	DECLARE c_byname CURSOR FOR SELECT CUSTOMER.first, CUSTOMER.middle, CUSTOMER.cId, CUSTOMER.str1, CUSTOMER.str2, CUSTOMER.city, CUSTOMER.state, CUSTOMER.zip, CUSTOMER.phone, CUSTOMER.credit, CUSTOMER.creditLim, CUSTOMER.discount,CUSTOMER.balance, CUSTOMER.since FROM CUSTOMER C WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.last = c_last ORDER BY CUSTOMER.first;
 </DST>
 </Relation>
 
