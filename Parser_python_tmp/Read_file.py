@@ -57,21 +57,17 @@ class Read_file:
             select = str(self.prev_select_list[a].replace(";","").strip())
             #print(select)
         for i in range(0,len(line)):
-            
             l = line[i].replace(";","").strip()
             if ( l in select ) :
                 
                 if ( "UPDATE" in l ) :
-                    print("Looking for : " , select )
-                    #print(select , "\nL:",line[i],'\n\n')
+                    select = "UPDATE "+select.split("UPDATE")[1].strip()
+                    #print("Looking for : " , select )
                     match = i
                     for j in range(i,(len(line)) ) :
                         tmp = tmp+" "+ line[j]
-                        print("t:",line[j])
                         if ( ";" in line[j] ) :
                             tmp = "UPDATE "+tmp.split("UPDATE")[1].strip().replace(";","")
-                            print("TT:",tmp)
-                            print("SS:" , select )
                             if ( tmp.strip() == select.strip() ) :
                                 return match+1
                             else :
