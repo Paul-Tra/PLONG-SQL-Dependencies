@@ -4,7 +4,6 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.Event;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import sample.Controller.Controller;
@@ -45,8 +44,6 @@ public class Transaction {
         rectangle.setHeight(text.getLayoutBounds().getHeight() + WHITE_GAP);
         rectangle.setArcHeight(10);
         rectangle.setArcWidth(10);
-        rectangle.setFill(Color.WHITE);
-        rectangle.setStroke(Color.BLACK);
         rectangle.setStrokeWidth(2);
         rectangle.setLayoutX(0);
         rectangle.setLayoutY(0);
@@ -59,7 +56,6 @@ public class Transaction {
      */
     private void bindText() {
         text.setManaged(false);
-        text.setFill(Color.BLUE);
         text.layoutXProperty().bind(rectangle.layoutXProperty().add(WHITE_GAP/2));
         text.layoutYProperty().bind(rectangle.layoutYProperty().add((WHITE_GAP) ));
         text.setOnMousePressed(this::mouseEventSimulation);

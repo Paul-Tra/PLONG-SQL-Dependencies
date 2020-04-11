@@ -54,7 +54,7 @@ public class Relation {
                 side2, false);
         arrow = createCurve(sourceCoordinates, targetCoordinates, side2);
         endArrow = createCircleArrow(targetCoordinates);
-        arrowColorManagement();
+        arrowAspectManagement();
         eventArrow();
     }
 
@@ -90,6 +90,7 @@ public class Relation {
                 e.printStackTrace();
             }
             this.controller.labelName.setVisible(false);
+            this.controller.labelName.toBack();
         });
     }
 
@@ -102,6 +103,7 @@ public class Relation {
             this.controller.labelName.setVisible(true);
             this.controller.labelName.setLayoutX(mouseEvent.getX());
             this.controller.labelName.setLayoutY(mouseEvent.getY());
+            this.controller.labelName.toFront();
         });
     }
 
@@ -116,28 +118,22 @@ public class Relation {
     }
 
     /**
-     * looks after the color and aspect of the arrow following the facts that
-     * the relation can be a conditionnal relation or contains a Read-Write
-     * dependency
+     * looks after the aspect of the arrow following the facts that
+     * the relation can be a conditional relation
      */
-    private void arrowColorManagement() {
+    private void arrowAspectManagement() {
         if (this.key.equals("d2")) {
             arrow.getStrokeDashArray().addAll(3.0, 7.0, 3.0, 7.0);
-            //arrow.setStrokeDashOffset(10);
-        }
-        if (isRWRelation()) {
-            arrow.setStroke(Color.CORAL);
-            endArrow.setFill(Color.CORAL);
         }
     }
 
     /**
-     * checks if the current Relation have READ - WRITE dependency
-     *
-     * @return if this is RW relation or not
+     * checks if the current Relation have a selected dependency type
+     * @param pattern selected dependency type
+     * @return  if the relation have dependencies of type pattern or not
      */
-    private boolean isRWRelation() {
-        return this.name.contains("rw,");
+    public boolean isSelectedDependencyRelation(String pattern) {
+        return this.name.contains(pattern + ",");
     }
 
     /**
@@ -215,7 +211,7 @@ public class Relation {
         this.control1.setVisible(false);
         this.control2.setVisible(false);
         this.control1.setFill(Color.RED);
-        this.control2.setFill(Color.SALMON);
+        this.control2.setFill(Color.BLUE);
     }
 
     /**
@@ -280,7 +276,6 @@ public class Relation {
      */
     private Circle createControlCircle() {
         Circle c = new Circle();
-        c.setFill(Color.BLACK);
         c.setRadius(5);
         c.setOnMousePressed(mouseEvent -> {
             oldX = mouseEvent.getX();

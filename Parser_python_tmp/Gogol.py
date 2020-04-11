@@ -2,18 +2,22 @@ import re
 
 class Gogol:
     def __init__(self, parser , graphml , dossier):
+        print("Gogol crée.")
         self.parser = parser 
         self.file_graphml = graphml
         tmp = ""
+        self.list_to_remove = []
+        self.cpt = 0
         for elt in dossier.split("/")[:-2] :
             if elt != '' :
                 tmp = tmp+elt+"/"
                 
-        print(tmp )
-        print("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python_tmp/graphs")
+        #print(tmp )
+        #print("/home/cadiou/Documents/Projet_long/cadiou-traore-plong-1920/Parser_python_tmp/graphs")
         self.dossier = tmp
         self.write_entete()
         self.find_relation()
+        print("Count relation found : " , self.cpt )
         
     def write_entete(self):
         with open ( "/"+self.dossier+"graphs/dependencies.gogol","w+") as F :
@@ -123,7 +127,13 @@ class Gogol:
                 lsrc = ldst
                 ldst = ltmp
                 
+            if ( lsrc == [] or ldst == [] ) :
+                self.list_to_remove.append(src+" ; "+dst+" ; " + relation.strip() )
+                #print(src+" ; "+dst+" ; " + relation)
+                return
+                
             F.write('<Relation ID="'+relation.strip()+'" SRC="' + src + '" DST="'+ dst + '" CONDITION='+str(condi)+' >\n')
+            self.cpt = self.cpt +1
             F.write('<SRC>\n')
             for elt in lsrc :
                 if ( "IF" in elt and "INSERT" not in elt ) :
@@ -149,6 +159,7 @@ class Gogol:
                 F.write('\tl: ' + str(cpt) +'\t' + elt.replace(";","").replace("BEGIN","").strip() +';\n')
             F.write('</DST>\n')
             F.write('</Relation>\n\n')
+            
        
     def find_reason_WW( self , src , dst , relation , condi ):   
         lsrc = []

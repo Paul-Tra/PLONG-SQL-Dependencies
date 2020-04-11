@@ -35,7 +35,7 @@ class PrimaryKey :
                                 
     def print_table_primaryKey (self ) :
         for a,b in self.dict_table_attr.items() :
-            print ("\n--- Table :" , a , "\nPrimary_Key :" ,b )   
+            #print ("\n--- Table :" , a , "\nPrimary_Key :" ,b )   
             for cle in b :
                 tmp = a+"."+cle
                 self.util_list.append(tmp) 

@@ -54,22 +54,32 @@ class Read_file:
             for i in range(0,len(self.select_liste)):
                 if ( select in self.select_liste[i] ) :
                     a = i
-                    #print(self.select_liste[i])
-                    #print(str(self.prev_select_list[a].replace(";","").strip()))
             select = str(self.prev_select_list[a].replace(";","").strip())
-            #print("#",select)
+            #print(select)
         for i in range(0,len(line)):
-            #print (line[i] )
             l = line[i].replace(";","").strip()
-            #print("I:",i,"Line :", l )
             if ( l in select ) :
-                if ( "SELECT" in l or "UPDATE" in l or "INSERT" in l  ) :
+                
+                if ( "UPDATE" in l ) :
+                    select = "UPDATE "+select.split("UPDATE")[1].strip()
+                    #print("Looking for : " , select )
+                    match = i
+                    for j in range(i,(len(line)) ) :
+                        tmp = tmp+" "+ line[j]
+                        if ( ";" in line[j] ) :
+                            tmp = "UPDATE "+tmp.split("UPDATE")[1].strip().replace(";","")
+                            if ( tmp.strip() == select.strip() ) :
+                                return match+1
+                            else :
+                                break
+                            
+                if ( "SELECT" in l or "INSERT" in l  ) :
                     match = i
                 tmp = tmp+" " + l
                 check = True
                 cpt = i
-                #print("LL:",tmp)
                 if ( tmp.strip() == select.strip() ) :
+                    #print("Tmp : " , tmp , '\n select : ' , select )
                     return match+1
             else :
                 if ( cpt > 0 and tmp == select ) :
