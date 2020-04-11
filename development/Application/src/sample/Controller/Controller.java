@@ -27,9 +27,7 @@ import sample.Transaction;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ResourceBundle;
+import java.util.*;
 
 
 public class Controller implements Initializable {
@@ -109,7 +107,13 @@ public class Controller implements Initializable {
         if (this.labelDependencies.getText().contains("Conditional")) {
             conditional = true;
         }
-        gogolParser.getDependencyLines(dependency, source, target, conditional,
+        System.out.println(dependency +
+                source +
+                target +
+                conditional +
+                gogolParser +
+                targetLines);
+        this.gogolParser.getDependencyLines(dependency, source, target, conditional,
                 sourceLines, targetLines);
         System.out.println("sources :");
         sourceLines.forEach(s -> System.out.println(s));
@@ -198,7 +202,6 @@ public class Controller implements Initializable {
             // wait until p finished
             p.waitFor() ;
 
-
             System.out.println("cp " + s.getParent() + "/graphs/Mygraphml.graphml " + c_dir);
             System.out.println("cp " + s.getParent() + "/graphs/dependencies.gogol " + c_dir);
             Process q =Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/Mygraphml.graphml " + c_dir);
@@ -207,11 +210,11 @@ public class Controller implements Initializable {
             Process r = Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/dependencies.gogol " + c_dir);
             r.waitFor();
 
-            this.currentPath = "src/Mygraphml.graphml";
-            onMenuItemClearLaunch();
         } catch (Exception e) {
             System.out.println("issue causing by python3.7 execution" + e );
         }
+        this.currentPath = "src/Mygraphml.graphml";
+        onMenuItemClearLaunch();
     }
 
     @FXML
@@ -262,7 +265,17 @@ public class Controller implements Initializable {
         this.relations.forEach((r) -> r.setController(this));
         //behaviorRelation();
         this.gogolParser = new GogolParser(GOGOLPATH, this.relations);
+        //printallgogol();
+    }
 
+    private void printallgogol() {
+        Set keys = this.gogolParser.conditionalDependenciesMap.keySet();
+        Iterator iterator = keys.iterator();
+        String[] key;
+        while (iterator.hasNext()) {
+            key = (String[]) iterator.next();
+            System.out.println(key[0]+"; "+key[1]+"; "+key[2]);
+        }
     }
 
     /**
