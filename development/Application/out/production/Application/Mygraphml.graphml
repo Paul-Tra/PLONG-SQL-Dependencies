@@ -9,11 +9,20 @@
 </node>
 <edge source="stocklevel.sql" target="neworder.sql">
 	<data key="d1">
+<<<<<<< HEAD
+	ww,ITEMS(['iId']).nbids
+	ww,BIDS(*).*
+	rw,ITEMS(['iId']).nbids
+	wr,ITEMS(['iId']).nbids
+	StoreBId.['i_id'] = StoreBId.['i_id']
+	StoreBId.* = StoreBId.*
+=======
 	rw,DISTRICT(['dId','wId']).nextOrdId
 	stocklevel.['w_id'] = neworder.['ol_supply_w_id']
 	stocklevel.['ORDERLINE'] = neworder.['ol_i_id']
 	stocklevel.['w_id'] = neworder.['w_id']
 	stocklevel.['d_id'] = neworder.['d_id']
+>>>>>>> a4916ccc705062e669db74a62a6920a717294182
 </data>
 </edge>
 
@@ -22,11 +31,17 @@
 </node>
 <edge source="neworder.sql" target="stocklevel.sql">
 	<data key="d1">
+<<<<<<< HEAD
+	rw,BIDS(*).*
+	rw,ITEMS(['iId']).nbids
+	ViewItem.['i_id'] = StoreBId.['i_id']
+=======
 	wr,DISTRICT(['dId','wId']).nextOrdId
 	stocklevel.['w_id'] = neworder.['ol_supply_w_id']
 	stocklevel.['ORDERLINE'] = neworder.['ol_i_id']
 	stocklevel.['w_id'] = neworder.['w_id']
 	stocklevel.['d_id'] = neworder.['d_id']
+>>>>>>> a4916ccc705062e669db74a62a6920a717294182
 </data>
 </edge>
 
@@ -35,6 +50,11 @@
 </node>
 <edge source="orderstatus.sql" target="neworder.sql">
 	<data key="d1">
+<<<<<<< HEAD
+	wr,BIDS(*).*
+	wr,ITEMS(['iId']).nbids
+	ViewItem.['i_id'] = StoreBId.['i_id']
+=======
 	rw,ORDERS(*).*
 	rw,ORDERLINE(*).*
 	orderstatus.['o_id'] = neworder.['o_id']
@@ -266,6 +286,7 @@
 	payment.['w_id', 'w_id'] = delivery.['w_Id']
 	payment.['c_d_id'] = delivery.['d_id']
 	payment.['c_id'] = delivery.['c_id']
+>>>>>>> a4916ccc705062e669db74a62a6920a717294182
 </data>
 </edge>
 

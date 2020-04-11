@@ -1,11 +1,18 @@
 #-- Created by TRAORE Paul & CADIOU Léo-Paul --#
 
 
+<<<<<<< HEAD
+<Relation ID="ww,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
+=======
 <Relation ID="rw,DISTRICT(['dId','wId']).nextOrdId" SRC="stocklevel.sql" DST="neworder.sql" CONDITION=False >
+>>>>>>> a4916ccc705062e669db74a62a6920a717294182
 <SRC>
 	l: 8	SELECT DISTRICT.nextOrdId INTO o_id FROM DISTRICT D WHERE DISTRICT.wId = w_id AND DISTRICT.dId = d_id;
 </SRC>
 <DST>
+<<<<<<< HEAD
+	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+=======
 	l: 31	UPDATE DISTRICT SET nextOrdId = d_next_o_id + 1 WHERE DISTRICT.dId = d_id AND DISTRICT.wId = w_id;
 </DST>
 </Relation>
@@ -16,6 +23,7 @@
 </SRC>
 <DST>
 	l: 8	SELECT DISTRICT.nextOrdId INTO o_id FROM DISTRICT D WHERE DISTRICT.wId = w_id AND DISTRICT.dId = d_id;
+>>>>>>> a4916ccc705062e669db74a62a6920a717294182
 </DST>
 </Relation>
 
@@ -28,21 +36,36 @@
 </DST>
 </Relation>
 
+<<<<<<< HEAD
+<Relation ID="rw,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
+<SRC>
+	l: 10	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
+=======
 <Relation ID="rw,ORDERLINE(*).*" SRC="orderstatus.sql" DST="neworder.sql" CONDITION=False >
 <SRC>
 	l: 18	DECLARE c_line CURSOR FOR SELECT ORDERLINE.iId, ORDERLINE.supplyWId, ORDERLINE.quantity, ORDERLINE.amount, ORDERLINE.deliveryDate FROM ORDERLINE OL WHERE ORDERLINE.oId = o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
+>>>>>>> a4916ccc705062e669db74a62a6920a717294182
 </SRC>
 <DST>
 	l: 93	INSERT INTO ORDERLINE(oId, dId, wId, number, iId, supplyWId, quantity, amount, distInfo) VALUES (o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info);
 </DST>
 </Relation>
 
+<<<<<<< HEAD
+<Relation ID="wr,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
+<SRC>
+	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+</SRC>
+<DST>
+	l: 10	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
+=======
 <Relation ID="wr,ORDERS(*).*" SRC="neworder.sql" DST="orderstatus.sql" CONDITION=False >
 <SRC>
 	l: 37	INSERT INTO ORDERS(oId, dId, wId, cId, entryDate, oLCnt, allLocal) VALUES (o_id, d_Id, w_Id, c_Id, date_time, o_ol_cnt, o_all_local);
 </SRC>
 <DST>
 	l: 49	SELECT ORDERS.oId, ORDERS.carrierId, ORDERS.entryDate INTO o_id, o_carrier_id, ent_date FROM ORDERS O ORDER BY ORDERS.oId DESC;
+>>>>>>> a4916ccc705062e669db74a62a6920a717294182
 </DST>
 </Relation>
 
@@ -55,12 +78,21 @@
 </DST>
 </Relation>
 
+<<<<<<< HEAD
+<Relation ID="rw,ITEMS(['iId']).nbids" SRC="ViewItem.sql" DST="StoreBId.sql" CONDITION=False >
+<SRC>
+	l: 12	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
+</SRC>
+<DST>
+	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+=======
 <Relation ID="rw,ORDERLINE(['oId','dId','wId','number']).deliveryDate" SRC="orderstatus.sql" DST="delivery.sql" CONDITION=False >
 <SRC>
 	l: 18	DECLARE c_line CURSOR FOR SELECT ORDERLINE.iId, ORDERLINE.supplyWId, ORDERLINE.quantity, ORDERLINE.amount, ORDERLINE.deliveryDate FROM ORDERLINE OL WHERE ORDERLINE.oId = o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
 </SRC>
 <DST>
 	l: 33	UPDATE ORDERLINE SET deliveryDate = date_time WHERE ORDERLINE.oId = no_o_id AND ORDERLINE.dId = d_id AND ORDERLINE.wId = w_id;
+>>>>>>> a4916ccc705062e669db74a62a6920a717294182
 </DST>
 </Relation>
 
@@ -407,6 +439,15 @@
 <DST>
 	l: 39	ELSE SELECT CUSTOMER.first, CUSTOMER.middle, CUSTOMER.last, CUSTOMER.str1, CUSTOMER.str2, CUSTOMER.city, CUSTOMER.state, CUSTOMER.zip, CUSTOMER.phone, CUSTOMER.credit, CUSTOMER.creditLim, CUSTOMER.discount,CUSTOMER.balance, CUSTOMER.since INTO c_first,c_middle,c_last, c_str1, c_str2, c_city, c_state, c_zip, c_phone, c_credit, c_creditLim, c_discount,c_balance,c_since FROM CUSTOMER C WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.cId = c_id;
 	l: 39	DECLARE c_byname CURSOR FOR SELECT CUSTOMER.first, CUSTOMER.middle, CUSTOMER.cId, CUSTOMER.str1, CUSTOMER.str2, CUSTOMER.city, CUSTOMER.state, CUSTOMER.zip, CUSTOMER.phone, CUSTOMER.credit, CUSTOMER.creditLim, CUSTOMER.discount,CUSTOMER.balance, CUSTOMER.since FROM CUSTOMER C WHERE CUSTOMER.wId = w_id AND CUSTOMER.dId = c_d_id AND CUSTOMER.last = c_last ORDER BY CUSTOMER.first;
+</DST>
+</Relation>
+
+<Relation ID="wr,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="ViewItem.sql" CONDITION=False >
+<SRC>
+	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+</SRC>
+<DST>
+	l: 12	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
 </DST>
 </Relation>
 

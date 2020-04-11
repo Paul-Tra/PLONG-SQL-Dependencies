@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
@@ -259,10 +260,31 @@ public class Controller implements Initializable {
 
         this.transactions.forEach((t) -> t.setController(this));
         this.relations.forEach((r) -> r.setController(this));
-
+        //behaviorRelation();
         this.gogolParser = new GogolParser(GOGOLPATH, this.relations);
 
     }
+
+    /**
+     * manage the position of the labelName when we click on a Relation's arrow
+     */
+    public void positionLabelName(MouseEvent mouseEvent) {
+        if ((mouseEvent.getX() + this.labelName.getWidth()) > this.anchorPane1.getWidth()-this.BOUND ) {
+            this.labelName.setLayoutX(mouseEvent.getX() - this.labelName.getWidth());
+        }else{
+            this.labelName.setLayoutX(mouseEvent.getX());
+        }
+        if ((mouseEvent.getY() + this.labelName.getHeight()) > this.anchorPane1.getHeight() - this.BOUND) {
+            this.labelName.setLayoutY(mouseEvent.getY() - this.labelName.getHeight());
+        } else {
+            this.labelName.setLayoutY(mouseEvent.getY());
+        }
+
+        this.labelName.setTranslateX(this.BOUND);
+        this.labelName.setTranslateY(this.BOUND);
+
+    }
+
 
     /**
      * manages the coloration of the Transactions of the generated graph
@@ -308,6 +330,8 @@ public class Controller implements Initializable {
                     relation1.getControl1().setVisible(false);
                     relation1.getControl2().setVisible(false);
                 }else{
+                    relation.getControl1().setVisible(true);
+                    relation.getControl2().setVisible(true);
                     relation.getControl1().toFront();
                     relation.getControl2().toFront();
                 }
@@ -422,7 +446,6 @@ public class Controller implements Initializable {
         this.listViewSourceLines.setStyle("-fx-font-size : 11");
 
         this.listViewTargetLines.setStyle("-fx-font-size : 11");
-        labelName.toFront();
         this.anchorPane3.setVisible(false);
     }
 }
