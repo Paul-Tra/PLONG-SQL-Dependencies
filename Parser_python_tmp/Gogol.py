@@ -129,7 +129,7 @@ class Gogol:
                 
             if ( lsrc == [] or ldst == [] ) :
                 self.list_to_remove.append(src+" ; "+dst+" ; " + relation.strip() )
-                print(src+" ; "+dst+" ; " + relation)
+                #print(src+" ; "+dst+" ; " + relation)
                 return
                 
             F.write('<Relation ID="'+relation.strip()+'" SRC="' + src + '" DST="'+ dst + '" CONDITION='+str(condi)+' >\n')
