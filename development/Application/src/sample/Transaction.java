@@ -1,21 +1,14 @@
 package sample;
 
-import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.Event;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import sample.Controller.Controller;
 
 public class Transaction {
-    // color attributes
-    private Color strokeColor,backgroundColor, textColor;
-
     // dragging attributes
     private double oldX;
     private double oldY;
@@ -51,10 +44,6 @@ public class Transaction {
         rectangle.setHeight(text.getLayoutBounds().getHeight() + WHITE_GAP);
         rectangle.setArcHeight(10);
         rectangle.setArcWidth(10);
-        this.backgroundColor = Color.WHITE;
-        this.strokeColor = Color.BLACK;
-        this.rectangle.setStroke(this.strokeColor);
-        this.rectangle.setFill(this.backgroundColor);
         rectangle.setStrokeWidth(2);
         rectangle.setLayoutX(0);
         rectangle.setLayoutY(0);
@@ -67,8 +56,6 @@ public class Transaction {
      */
     private void bindText() {
         text.setManaged(false);
-        this.textColor = Color.BLUE;
-        text.setFill(Color.BLUE);
         text.layoutXProperty().bind(rectangle.layoutXProperty().add(WHITE_GAP/2));
         text.layoutYProperty().bind(rectangle.layoutYProperty().add((WHITE_GAP) ));
         text.setOnMousePressed(this::mouseEventSimulation);
@@ -183,15 +170,4 @@ public class Transaction {
         this.controller = c;
     }
 
-    public void setStrokeColor(Color strokeColor) {
-        this.strokeColor = strokeColor;
-    }
-
-    public void setBackgroundColor(Color backgroundColor) {
-        this.backgroundColor = backgroundColor;
-    }
-
-    public void setTextColor(Color textColor) {
-        this.textColor = textColor;
-    }
 }

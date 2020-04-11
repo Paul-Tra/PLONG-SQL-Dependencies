@@ -8,7 +8,7 @@
 
 <BorderPane fx:id="borderPane1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefWidth="1000.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller.Controller">
     <center>
-        <AnchorPane fx:id="anchorPane1" minHeight="571.0" minWidth="552.0" prefHeight="571.0" prefWidth="750.0" style="-fx-background-color: lightcyan;" BorderPane.alignment="CENTER">
+        <AnchorPane fx:id="anchorPane1" minHeight="571.0" minWidth="552.0" prefHeight="571.0" prefWidth="750.0" BorderPane.alignment="CENTER">
             <children>
                 <Label fx:id="labelName" layoutX="171.0" layoutY="244.0" text="Label" textAlignment="CENTER">
                     <font>
@@ -70,14 +70,9 @@
                     </items>
                 </Menu>
             <Menu fx:id="menuHelp1" mnemonicParsing="false" text="Tools">
-               <items>
-                  <MenuItem fx:id="menuItemSettings" mnemonicParsing="false" onAction="#onMenuItemSettings" text="settings" />
-               </items>
-            </Menu>
-            <Menu fx:id="menuHelp11" mnemonicParsing="false" text="Style">
-               <items>
-                  <MenuItem fx:id="menuItemAppearance" mnemonicParsing="false" onAction="#onMenuItemAppearance" text="appearance" />
-               </items>
+                <items>
+                    <MenuItem fx:id="menuItemAppearance" mnemonicParsing="false" onAction="#onMenuItemAppearance" text="appearance" />
+                </items>
             </Menu>
             </menus>
         </MenuBar>

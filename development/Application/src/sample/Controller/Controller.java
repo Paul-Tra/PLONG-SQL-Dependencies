@@ -20,6 +20,7 @@ import sample.Parser.GogolParser;
 import sample.Parser.GraphmlParser;
 import sample.Placement;
 import sample.Relation;
+import sample.Style;
 import sample.Transaction;
 
 import java.io.File;
@@ -36,6 +37,8 @@ public class Controller implements Initializable {
     private String currentPath = "";
     public ArrayList<Transaction> transactions = new ArrayList<>();
     public ArrayList<Relation> relations = new ArrayList<>();
+    /* todo : add style classs */
+    public Style style = new Style();
     private GogolParser gogolParser;
     @FXML
     public AnchorPane anchorPane1, anchorPane2, anchorPane3;
@@ -66,7 +69,7 @@ public class Controller implements Initializable {
         }
         Stage stage = new Stage();
         stage.setTitle("Appearance settings");
-        Scene scene = new Scene(root, 600, 600);
+        Scene scene = new Scene(root, 600, 400);
         stage.setScene(scene);
         stage.show();
 
@@ -248,6 +251,9 @@ public class Controller implements Initializable {
         placement.placementTransaction(this.transactions);
         this.relations.forEach(Relation::buildRelationShape);
 
+        colorRelations();
+        colorTransactions();
+
         addRelationsToPane(this.relations);
         addTransactionsToPane(this.transactions);
 
@@ -256,6 +262,32 @@ public class Controller implements Initializable {
 
         this.gogolParser = new GogolParser(GOGOLPATH, this.relations);
 
+    }
+
+    /**
+     * manages the coloration of the Transactions of the generated graph
+     */
+    public void colorTransactions() {
+        this.transactions.forEach(transaction -> {
+            transaction.getRectangle().setStroke(this.style.getStrokeColor());
+            transaction.getRectangle().setFill(this.style.getBackgroundColor());
+            transaction.getText().setFill(this.style.getTextColor());
+        });
+    }
+
+    /**
+     * manages the coloration of the Relation of the generated graph
+     */
+    public void colorRelations() {
+        this.relations.forEach(relation -> {
+            if (relation.isSelectedDependencyRelation(this.style.getPattern())) {
+                relation.getArrow().setStroke(this.style.getSelectedDependencyColor());
+                relation.getEndArrow().setFill(this.style.getSelectedDependencyColor());
+            }else{
+                relation.getArrow().setStroke(this.style.getClassicDependencyColor());
+                relation.getEndArrow().setFill(this.style.getClassicDependencyColor());
+            }
+        });
     }
 
     /**
