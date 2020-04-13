@@ -17,12 +17,9 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import javafx.stage.Stage;
+import sample.*;
 import sample.Parser.GogolParser;
 import sample.Parser.GraphmlParser;
-import sample.Placement;
-import sample.Relation;
-import sample.Style;
-import sample.Transaction;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +29,7 @@ import java.util.*;
 
 public class Controller implements Initializable {
     private final String GOGOLPATH = "./src/dependencies.gogol";
+    private final String DOTPATH = "./src/graph.dot";
     public final double BOUND = 10;
     private String currentPath = "";
     public ArrayList<Transaction> transactions = new ArrayList<>();
@@ -80,15 +78,59 @@ public class Controller implements Initializable {
     @FXML
     private void onMenuItemExport() {
         FileChooser fil_chooser = new FileChooser();
-        // add filters file's extension+
+        /*
+        * .ps  -Tps
+        * .xdot -Txdot
+        * .json
+        **/
+        // add filters file's extension
         fil_chooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("pdf files", ".pdf"));
+                new FileChooser.ExtensionFilter("pdf files", ".pdf"),
+                new FileChooser.ExtensionFilter("xdot files", ".xdot"),
+                new FileChooser.ExtensionFilter("dot files", ".dot"),
+                new FileChooser.ExtensionFilter("PostScript files", ".ps"),
+                new FileChooser.ExtensionFilter("XFIG files", ".fig"),
+                new FileChooser.ExtensionFilter("png files", ".png"),
+                new FileChooser.ExtensionFilter("gif files", ".gif"),
+                new FileChooser.ExtensionFilter("jpeg files", ".jpeg"),
+                new FileChooser.ExtensionFilter("jpg files", ".jpg"),
+                new FileChooser.ExtensionFilter("json files", ".json"),
+                new FileChooser.ExtensionFilter("svg files", ".svg"));
+
         File file = fil_chooser.showSaveDialog(this.anchorPane1.getScene().getWindow());
-        if (file != null) {
-            System.out.println("selected path: " + file.getAbsolutePath()
-                    + fil_chooser.getSelectedExtensionFilter().getExtensions().get(0));
+        String filePath;
+        String fileExtension;
+        if (file == null) {
+            System.out.println(" chosen file null");
+            return;
         }
-        /*TODO: implement to convertion function from graphml to pdf*/
+        filePath = file.getAbsolutePath();
+        fileExtension = fil_chooser.getSelectedExtensionFilter().getExtensions().get(0);
+        filePath += fileExtension;
+        System.out.println("selected path: " + filePath);
+        System.out.println("selected extension: " + fileExtension);
+        /*TODO: manages the different extensions */
+        DotWriter dotWriter = new DotWriter(this.DOTPATH, this.relations, this.style.getPattern());
+        conversion(fileExtension, filePath);
+    }
+
+    /**
+     * looks after the conversion of the generated .dot file following an extension
+     *
+     * @param extension required extension for the conversion
+     * @param filePath  path of the file whose we want to convert
+     */
+    private void conversion(String extension, String filePath) {
+        String option = "-T";
+        option += extension.replace(".", "");
+        try {
+            /*command line ex: dot -Tpdf graph.dot -o filepath.pdf  */
+            Process p = Runtime.getRuntime().exec("dot " + option + this.DOTPATH
+                    + " -o " + filePath);
+            p.waitFor();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
     @FXML
     private void clickButtonHide() {
