@@ -125,7 +125,7 @@ public class Controller implements Initializable {
         option += extension.replace(".", "");
         try {
             /*command line ex: dot -Tpdf graph.dot -o filepath.pdf  */
-            Process p = Runtime.getRuntime().exec("dot " + option + this.DOTPATH
+            Process p = Runtime.getRuntime().exec("dot " + option + " " + this.DOTPATH
                     + " -o " + filePath);
             p.waitFor();
         } catch (IOException | InterruptedException e) {
