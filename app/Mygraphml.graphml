@@ -9,12 +9,12 @@
 </node>
 <edge source="StoreBId.sql" target="StoreBId.sql">
 	<data key="d1">
-	wr,ITEMS(['iId']).nbids
 	ww,BIDS(*).*
 	ww,ITEMS(['iId']).nbids
+	wr,ITEMS(['iId']).nbids
 	rw,ITEMS(['iId']).nbids
-	StoreBId.['i_id'] = StoreBId.['i_id']
 	StoreBId.* = StoreBId.*
+	StoreBId.['i_id'] = StoreBId.['i_id']
 </data>
 </edge>
 

@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class Placement {
+    /**
+     * internal node class
+     */
     private class Node{
         protected double x ;
         protected double y ;
@@ -44,6 +47,10 @@ public class Placement {
             this.dy += dy;
         }
     }
+
+    /**
+     * internal edge class
+     */
     private class Edge{
         private Node u;
         private Node v;
@@ -64,6 +71,7 @@ public class Placement {
     private final int NB_ITERATONS = 1000;
     private static final double IDEAL_COEFFICIENT = 1.4;
     private double temperature; // is the maximum amount of movement allowed for a node
+
     public Placement(ArrayList<Transaction> transactions, ArrayList<Relation> relations,
                      double width, double height) {
         this.nb_node = transactions.size();
@@ -76,6 +84,7 @@ public class Placement {
 
     /**
      * applies Fruchterman-Reingold force-directed layout algorithm
+     * @see
      */
     public void fruchtermanReingold(){
         temperature = width / 10;
@@ -93,6 +102,7 @@ public class Placement {
 
     /**
      * applies a loop turn of Fruchterman-Reingold algorithm
+     *
      * @param cooling   value to subtract to the temperature at each loop turn
      * @param k ideal size of edge
      */
@@ -137,8 +147,11 @@ public class Placement {
                 double y = v.y + dy * d;
                 x = Math.min(width, Math.max(0, x)) - width / 2;
                 y = Math.min(heigth, Math.max(0, y)) - heigth / 2;
-                v.setPos(Math.min(Math.sqrt(width * width / 4 - y * y), Math.max(-Math.sqrt(width * width / 4 - y * y), x)) + width / 2,
-                        Math.min(Math.sqrt(Math.abs(heigth * heigth / 4 - x * x)), Math.max(-Math.sqrt(Math.abs(heigth * heigth / 4 - x * x)), y)) + heigth / 2);
+                v.setPos(Math.min(Math.sqrt((width * width / 4) - (y * y)),
+                        Math.max(-Math.sqrt((width * width / 4) - (y * y)), x)) + (width / 2),
+                        Math.min(Math.sqrt(Math.abs((heigth * heigth / 4) - (x * x))),
+                                Math.max(-Math.sqrt(Math.abs((heigth * heigth / 4) - (x * x))),
+                                        y))+ (heigth / 2));
             }
         }
         temperature -= cooling;
@@ -167,6 +180,7 @@ public class Placement {
 
     /**
      * places the transactions at the same positions as the corresponding nodes
+     *
      * @param transactions list of transaction that we want to place
      */
     public void placementTransaction(ArrayList<Transaction> transactions) {
@@ -176,15 +190,14 @@ public class Placement {
         }
         for (int i = 0; i < nodes.size(); i++) {
             transactions.get(i).getRectangle().setLayoutX((int) nodes.get(i).x);
-            //transactions.get(i).getRectangle().setX((int) nodes.get(i).x);
             transactions.get(i).getRectangle().setLayoutY((int) nodes.get(i).y);
-            //transactions.get(i).getRectangle().setY((int) nodes.get(i).y);
-            /*System.out.println(nodes.get(i).x + "; " + nodes.get(i).y);*/
+            System.out.println(nodes.get(i).x + "; " + nodes.get(i).y);
         }
     }
 
     /**
      * looks after the filling of the different structures
+     *
      * @param transactions
      * @param relations
      */
@@ -196,6 +209,7 @@ public class Placement {
 
     /**
      * fill the map with transaction's id as content from transaction's list
+     *
      * @param transactions transaction's list
      */
     private void fillMap(ArrayList<Transaction> transactions) {
@@ -219,6 +233,7 @@ public class Placement {
 
     /**
      * Initialize the edges corresponding to the relations
+     *
      * @param relations relations that we to initialize under edge's shape
      */
     private void initEdges(ArrayList<Relation> relations){
@@ -232,6 +247,7 @@ public class Placement {
 
     /**
      * find a key in by the content in the map
+     *
      * @param s content that we want to match in the map to find its key
      * @return  the key of the content representing by s
      */

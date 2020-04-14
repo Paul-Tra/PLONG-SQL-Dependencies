@@ -1,0 +1,18 @@
+digraph G{
+	rankdir=LR
+	size="8,5"
+	nodesep=1.0
+	node[shape=box style=rounded peripheries=2]
+"StoreBId.sql"->"StoreBId.sql"[ label = "ww,BIDS(*).*
+	ww,ITEMS(['iId']).nbids
+	wr,ITEMS(['iId']).nbids
+	rw,ITEMS(['iId']).nbids
+	StoreBId.* = StoreBId.*
+	StoreBId.['i_id'] = StoreBId.['i_id']", style = solid, color = red ]
+"ViewItem.sql"->"StoreBId.sql"[ label = "rw,BIDS(*).*
+	rw,ITEMS(['iId']).nbids
+	ViewItem.['i_id'] = StoreBId.['i_id']", style = solid, color = red ]
+"StoreBId.sql"->"ViewItem.sql"[ label = "wr,BIDS(*).*
+	wr,ITEMS(['iId']).nbids
+	ViewItem.['i_id'] = StoreBId.['i_id']", style = solid, color = black ]
+}

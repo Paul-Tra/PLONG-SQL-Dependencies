@@ -1,10 +1,10 @@
 package sample.Controller;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -12,34 +12,30 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.CubicCurveTo;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+
+import javafx.stage.Stage;
+import sample.*;
 import sample.Parser.GogolParser;
 import sample.Parser.GraphmlParser;
-import sample.Placement;
-import sample.Relation;
-import sample.Transaction;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ResourceBundle;
+import java.util.*;
 
-import static java.lang.Thread.sleep;
 
 public class Controller implements Initializable {
     private final String GOGOLPATH = "dependencies.gogol";
+    private final String DOTPATH = "graph.dot";
     public final double BOUND = 10;
     private String currentPath = "";
-    private ArrayList<Transaction> transactions = new ArrayList<>();
-    private ArrayList<Relation> relations = new ArrayList<>();
+    public ArrayList<Transaction> transactions = new ArrayList<>();
+    public ArrayList<Relation> relations = new ArrayList<>();
+    /* todo : add style classs */
+    public Style style = new Style();
     private GogolParser gogolParser;
     @FXML
     public AnchorPane anchorPane1, anchorPane2, anchorPane3;
@@ -56,6 +52,78 @@ public class Controller implements Initializable {
     @FXML
     Button buttonHide;
 
+
+    @FXML
+    private void onMenuItemAppearance() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../View/Style.fxml"));
+        Parent root = null;
+        try {
+            root = loader.load();
+            StyleController styleController = loader.getController();
+            styleController.setMainController(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Stage stage = new Stage();
+        stage.setTitle("Appearance settings");
+        Scene scene = new Scene(root, 600, 400);
+        stage.setScene(scene);
+        stage.show();
+
+    }
+    @FXML
+    private void onMenuItemSettings() {
+    }
+
+    @FXML
+    private void onMenuItemExport() {
+        FileChooser fil_chooser = new FileChooser();
+        // add filters file's extension
+        fil_chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("pdf files", ".pdf"),
+                new FileChooser.ExtensionFilter("xdot files", ".xdot"),
+                new FileChooser.ExtensionFilter("dot files", ".dot"),
+                new FileChooser.ExtensionFilter("PostScript files", ".ps"),
+                new FileChooser.ExtensionFilter("XFIG files", ".fig"),
+                new FileChooser.ExtensionFilter("png files", ".png"),
+                new FileChooser.ExtensionFilter("gif files", ".gif"),
+                new FileChooser.ExtensionFilter("jpeg files", ".jpeg"),
+                new FileChooser.ExtensionFilter("jpg files", ".jpg"),
+                new FileChooser.ExtensionFilter("json files", ".json"),
+                new FileChooser.ExtensionFilter("svg files", ".svg"));
+
+        File file = fil_chooser.showSaveDialog(this.anchorPane1.getScene().getWindow());
+        String filePath;
+        String fileExtension;
+        if (file == null) {
+            System.out.println(" chosen file null");
+            return;
+        }
+        filePath = file.getAbsolutePath();
+        fileExtension = fil_chooser.getSelectedExtensionFilter().getExtensions().get(0);
+        filePath += fileExtension;
+        DotWriter dotWriter = new DotWriter(this.DOTPATH, this.relations, this.style.getPattern());
+        conversion(fileExtension, filePath);
+    }
+
+    /**
+     * looks after the conversion of the generated .dot file following an extension
+     *
+     * @param extension required extension for the conversion
+     * @param filePath  path of the file whose we want to convert
+     */
+    private void conversion(String extension, String filePath) {
+        String option = "-T";
+        option += extension.replace(".", "");
+        try {
+            /*command line ex: dot -Tpdf graph.dot -o filepath.pdf  */
+            Process p = Runtime.getRuntime().exec("dot " + option + " " + this.DOTPATH
+                    + " -o " + filePath);
+            p.waitFor();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void clickButtonHide() {
         this.anchorPane2.setVisible(false);
@@ -73,29 +141,43 @@ public class Controller implements Initializable {
         if (this.labelDependencies.getText().contains("Conditional")) {
             conditional = true;
         }
-        gogolParser.getDependencyLines(dependency, source, target, conditional,
+        System.out.println(dependency +
+                source +
+                target +
+                conditional +
+                gogolParser +
+                targetLines);
+        this.gogolParser.getDependencyLines(dependency, source, target, conditional,
                 sourceLines, targetLines);
+        System.out.println("sources :");
+        sourceLines.forEach(s -> System.out.println(s));
+        System.out.println("targets :");
+        targetLines.forEach(s -> System.out.println(s));
         fillPopUp(sourceLines, targetLines);
     }
 
     /**
      * fills the elements of the Pop-up by source and target files information
+     *
      * @param sourceLines   lines causing a dependency in the source file
      * @param targetLines   lines causing a dependency in the target file
      */
     private void fillPopUp(ArrayList<String> sourceLines, ArrayList<String> targetLines) {
         clearPopUp();
 
-        this.labelFileSource2.setText(this.labelSource2.getText() + ".sql");
-        this.labelFileTarget2.setText(this.labelTarget2.getText() + ".sql");
+        this.labelFileSource2.setText(this.labelSource2.getText() );
+        this.labelFileTarget2.setText(this.labelTarget2.getText() );
         this.listViewSourceLines.getItems().addAll(sourceLines);
         this.listViewTargetLines.getItems().addAll(targetLines);
-
 
         this.anchorPane3.toFront();
         this.anchorPane3.setVisible(true);
     }
 
+    /**
+     * clear all listViews of the pop-up window which shows the dependency
+     * lines from the source and target files
+     */
     private void clearPopUp() {
         this.listViewSourceLines.getItems().clear();
         this.listViewTargetLines.getItems().clear();
@@ -104,6 +186,7 @@ public class Controller implements Initializable {
      * manages the event when a Path is pressed in the anchorPane1
      */
     public void pressAnchorPane1Path(Relation relation) {
+        System.out.println("pressAnchorPane1Path");
         this.anchorPane3.setVisible(false);
         this.anchorPane2.setVisible(true);
         this.anchorPane2.toFront();
@@ -118,6 +201,7 @@ public class Controller implements Initializable {
         ArrayList<String> dependencies = relation.getDependenciesLinesFromName();
         this.listViewDependencies.getItems().clear();
         this.listViewDependencies.getItems().addAll(dependencies);
+        System.out.println("fin pressAnchorPane1Path");
     }
 
     @FXML
@@ -145,20 +229,26 @@ public class Controller implements Initializable {
         File s = chooser.showDialog(this.anchorPane1.getScene().getWindow());
         String c_dir = System.getProperty("user.dir");
         try {
+            System.out.println("Dir : " + c_dir);
+            System.out.println("folder : " + s.getParent() );
+            System.out.println("cmd : " + "python3.7 " + s.getParent() + "/Parser.py " + s + "/" );
             Process p = Runtime.getRuntime().exec("python3.7 " + s.getParent() + "/Parser.py " + s + "/");
             // wait until p finished
             p.waitFor() ;
+
+            System.out.println("cp " + s.getParent() + "/graphs/Mygraphml.graphml " + c_dir);
+            System.out.println("cp " + s.getParent() + "/graphs/dependencies.gogol " + c_dir);
             Process q =Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/Mygraphml.graphml " + c_dir);
             // wait until p finished
             q.waitFor() ;
             Process r = Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/dependencies.gogol " + c_dir);
             r.waitFor();
 
-            this.currentPath = "Mygraphml.graphml";
-            onMenuItemClearLaunch();
         } catch (Exception e) {
             System.out.println("issue causing by python3.7 execution" + e );
         }
+        this.currentPath = "Mygraphml.graphml";
+        onMenuItemClearLaunch();
     }
 
     @FXML
@@ -199,6 +289,9 @@ public class Controller implements Initializable {
         placement.placementTransaction(this.transactions);
         this.relations.forEach(Relation::buildRelationShape);
 
+        colorRelations();
+        colorTransactions();
+
         addRelationsToPane(this.relations);
         addTransactionsToPane(this.transactions);
 
@@ -206,12 +299,59 @@ public class Controller implements Initializable {
         this.relations.forEach((r) -> r.setController(this));
 
         this.gogolParser = new GogolParser(GOGOLPATH, this.relations);
+    }
 
+    /**
+     * manage the position of the labelName when we click on a Relation's arrow
+     */
+    public void positionLabelName(MouseEvent mouseEvent) {
+        if ((mouseEvent.getX() + this.labelName.getWidth()) > this.anchorPane1.getWidth()-this.BOUND ) {
+            this.labelName.setLayoutX(mouseEvent.getX() - this.labelName.getWidth());
+        }else{
+            this.labelName.setLayoutX(mouseEvent.getX());
+        }
+        if ((mouseEvent.getY() + this.labelName.getHeight()) > this.anchorPane1.getHeight() - this.BOUND) {
+            this.labelName.setLayoutY(mouseEvent.getY() - this.labelName.getHeight());
+        } else {
+            this.labelName.setLayoutY(mouseEvent.getY());
+        }
+
+        this.labelName.setTranslateX(this.BOUND);
+        this.labelName.setTranslateY(this.BOUND);
+
+    }
+
+
+    /**
+     * manages the coloration of the Transactions of the generated graph
+     */
+    public void colorTransactions() {
+        this.transactions.forEach(transaction -> {
+            transaction.getRectangle().setStroke(this.style.getStrokeColor());
+            transaction.getRectangle().setFill(this.style.getBackgroundColor());
+            transaction.getText().setFill(this.style.getTextColor());
+        });
+    }
+
+    /**
+     * manages the coloration of the Relation of the generated graph
+     */
+    public void colorRelations() {
+        this.relations.forEach(relation -> {
+            if (relation.isSelectedDependencyRelation(this.style.getPattern())) {
+                relation.getArrow().setStroke(this.style.getSelectedDependencyColor());
+                relation.getEndArrow().setFill(this.style.getSelectedDependencyColor());
+            }else{
+                relation.getArrow().setStroke(this.style.getClassicDependencyColor());
+                relation.getEndArrow().setFill(this.style.getClassicDependencyColor());
+            }
+        });
     }
 
     /**
      * Hides all control circle of the the arrows excepted
      * the relation's control circles
+     *
      * @param relation relation whose do not want to hide the control circles
      */
     public void hideControlCircles(Relation relation) {
@@ -226,6 +366,8 @@ public class Controller implements Initializable {
                     relation1.getControl1().setVisible(false);
                     relation1.getControl2().setVisible(false);
                 }else{
+                    relation.getControl1().setVisible(true);
+                    relation.getControl2().setVisible(true);
                     relation.getControl1().toFront();
                     relation.getControl2().toFront();
                 }
@@ -340,7 +482,6 @@ public class Controller implements Initializable {
         this.listViewSourceLines.setStyle("-fx-font-size : 11");
 
         this.listViewTargetLines.setStyle("-fx-font-size : 11");
-        labelName.toFront();
         this.anchorPane3.setVisible(false);
     }
 }

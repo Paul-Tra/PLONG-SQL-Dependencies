@@ -1,15 +1,6 @@
 #-- Created by TRAORE Paul & CADIOU Léo-Paul --#
 
 
-<Relation ID="wr,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
-<SRC>
-	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
-</SRC>
-<DST>
-	l: 10	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
-</DST>
-</Relation>
-
 <Relation ID="ww,BIDS(*).*" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
 <SRC>
 	l: 8	INSERT INTO BIDS ( bId , iId ) VALUES ( i_id, val);
@@ -25,6 +16,15 @@
 </SRC>
 <DST>
 	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+</DST>
+</Relation>
+
+<Relation ID="wr,ITEMS(['iId']).nbids" SRC="StoreBId.sql" DST="StoreBId.sql" CONDITION=False >
+<SRC>
+	l: 14	UPDATE ITEMS SET nbids = n + 1 WHERE ITEMS.iId = i_id;
+</SRC>
+<DST>
+	l: 10	SELECT ITEMS.nbids FROM ITEMS I WHERE ITEMS.iId = i_id;
 </DST>
 </Relation>
 

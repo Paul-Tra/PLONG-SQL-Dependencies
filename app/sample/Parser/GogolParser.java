@@ -20,8 +20,8 @@ public class GogolParser {
     private File file;
     private ArrayList<String> file_lines = new ArrayList<>();
     private ArrayList<Relation> relations;
-    private HashMap<String[], ArrayList<String>[]> regularDependenciesMap = new HashMap<>();
-    private HashMap<String[], ArrayList<String>[]> conditionalDependenciesMap = new HashMap<>();
+    public HashMap<String[], ArrayList<String>[]> regularDependenciesMap = new HashMap<>();
+    public HashMap<String[], ArrayList<String>[]> conditionalDependenciesMap = new HashMap<>();
 
     public GogolParser(String path, ArrayList<Relation> relations) {
         if (!path.contains(EXTENSION)) {
@@ -30,7 +30,7 @@ public class GogolParser {
         }
         this.file = new File(path);
         if (this.file == null) {
-            System.out.println("gogol file null");
+            System.out.println("fill du gogol vide et null");
         }
         this.relations = relations;
         getFileLines();
@@ -85,6 +85,7 @@ public class GogolParser {
             key = (String[]) iterator.next();
             if (key[0].equals(dependency) && key[1].equals(source)
                     && key[2].equals(target)) {
+                System.out.println("Give me a \"Hell Yeh\" !!");
                 sourceLines.addAll(map.get(key)[0]);
                 targetLines.addAll(map.get(key)[1]);
             }
@@ -115,15 +116,28 @@ public class GogolParser {
     // TODO : 3.7 executionjava.lang.IndexOutOfBoundsException: Index -1 out of bounds for length 65
 
     private void fillDependencies() {
+        int cpt = 0;
+        for (Relation relation : this.relations) {
+            ArrayList<String> dependencies = relation.getDependenciesLinesFromName();
+            cpt += dependencies.size();
+        }
+        System.out.println("nb dependence graphml :" + cpt);
+        cpt = 0;
+        for (String file_line : this.file_lines) {
+            if (file_line.contains("<Relation")) {
+                cpt++;
+            }
+        }
+        System.out.println("nb relation gogol :" + cpt);
+
         for (Relation relation : this.relations) {
             ArrayList<String> dependencies = relation.getDependenciesLinesFromName();
             for (String dependency : dependencies) {
                 String source = relation.getSource().getId();
                 String target = relation.getTarget().getId();
 
-                int index = indexRelation(dependency, source, target);
-                String c = buildAttributeWithContent(this.attributeCondition, "True");
-                boolean conditional = this.file_lines.get(index).contains(c);
+                boolean conditional = !relation.getArrow().getStrokeDashArray().isEmpty();
+                int index = indexRelation(dependency, source, target, conditional);
 
                 ArrayList<String> source_lines = new ArrayList<>();
                 index = getTagLinesFromIndex(index, source_lines, this.tagSource);
@@ -139,18 +153,21 @@ public class GogolParser {
 
     /**
      * Finds the index from where the dependency begin in the file_lines
+     *
      * @param dependency    name of the dependency
      * @param source    name of the source Transaction of the dependency
      * @param target    name of the target Transaction of the dependency
      * @return  the index of the beginning of the dependency
      */
-    private int indexRelation(String dependency, String source, String target) {
+    private int indexRelation(String dependency, String source, String target, boolean conditional) {
         for (int i = 0; i < file_lines.size(); i++) {
             String id = buildAttributeWithContent(this.attributeId, dependency.trim());
             String s = buildAttributeWithContent(this.attributeSource, source);
             String t = buildAttributeWithContent(this.attributeTarget, target);
+            String c = conditional ? buildAttributeWithContent(this.attributeCondition, "True")
+                    : buildAttributeWithContent(this.attributeCondition, "False");
             if (file_lines.get(i).contains(id) && file_lines.get(i).contains(s)
-                    && file_lines.get(i).contains(t)) {
+                    && file_lines.get(i).contains(t) && file_lines.get(i).contains(c)) {
                 return i;
             }
         }
@@ -159,6 +176,7 @@ public class GogolParser {
 
     /**
      * Fills the lines list by dependencies lines thanks to the index and the tag
+     *
      * @param index index where we began to search the tag lines
      * @param lines list where we plug the searched lines
      * @param tag   tag of the searched lines
@@ -168,7 +186,8 @@ public class GogolParser {
         String startingTag = buildTag(tag, true);
         String closingTag = buildTag(tag, false);
         boolean start = false;
-        while (!this.file_lines.get(index).contains(closingTag) && index < this.file_lines.size()) {
+        while (!this.file_lines.get(index).contains(closingTag)
+                && index < this.file_lines.size()) {
             if (start) {
                 lines.add(this.file_lines.get(index));
             } else if (this.file_lines.get(index).contains(startingTag)) {
@@ -181,6 +200,7 @@ public class GogolParser {
 
     /**
      * Fills the appropriate dependencies's map with the information of a dependency
+     *
      * @param dependency    name of the dependency
      * @param source    name of the source Transaction of the dependency
      * @param target    name of the target Transaction of the dependency
@@ -206,6 +226,7 @@ public class GogolParser {
 
     /**
      * associates the attribute and the searched content to correspond to the file syntax
+     *
      * @param attribute attribute whose we want to associate the content
      * @param content   content whose we want to add to the attribute
      * @return  the associated string made up by the attribute and the content
@@ -219,6 +240,7 @@ public class GogolParser {
 
     /**
      * created a tag from a tag name
+     *
      * @param tag   tag name
      * @param start if the created tag if an opening or a ending tag
      * @return
