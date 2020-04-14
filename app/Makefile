@@ -15,19 +15,30 @@ CLASSES = \
 
 MAIN = Main
 MODULES = --module-path lib/ --add-modules=javafx.controls,javafx.fxml
+DOT = /usr/bin/dot
+
+
+
 checkJava: 
       ifeq ($(shell java --version 2>&1|grep "openjdk 14" >/dev/null; printf $$?),0)
-		@make clean
-		@ls sample/
-		@make compile
-		@make run
+		@make checkDOT
       else
            $(error "Could not find correct java version, please install 14")
       endif
-all : checkJavaclean
+
+all : checkJava clean
 compile :	
 	$(JC) $(MODULES) $(PACKAGE)/*.java
 run :
 	$(JVM) $(MODULES) $(PACKAGE).$(MAIN)
 clean :
 	$(RM) $(PACKAGE)/*.class
+
+checkDOT : 
+	ifeq ($(shell command -v dot 2>&1 | grep "dot","/usr/bin/dot"))
+		@make clean
+		@make compile
+		@make run
+	else
+		$(error "dot is not available, please install graphviz")
+	endif
