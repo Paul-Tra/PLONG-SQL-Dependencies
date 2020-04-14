@@ -20,11 +20,11 @@ DOT = /usr/bin/dot
 
 
 checkJava: 
-      ifeq ($(shell java --version 2>&1|grep "openjdk 14" >/dev/null; printf $$?),0)
-		@make checkDOT
-      else
-           $(error "Could not find correct java version, please install 14")
-      endif
+ifeq ($(shell java --version 2>&1|grep "openjdk 14" >/dev/null; printf $$?),0)
+	@make checkDOT
+else
+	$(error "Could not find correct java version, please install 14")
+endif
 
 all : checkJava clean
 compile :	
@@ -35,10 +35,10 @@ clean :
 	$(RM) $(PACKAGE)/*.class
 
 checkDOT : 
-	ifeq ($(shell command -v dot 2>&1 | grep "dot","/usr/bin/dot"))
-		@make clean
-		@make compile
-		@make run
-	else
-		$(error "dot is not available, please install graphviz")
-	endif
+ifeq ($(shell command -v dot 2>&1 | grep dot >/dev/null; printf $$?),0)
+	@make clean
+	@make compile
+	@make run
+else
+	$(error "dot is not available, please install graphviz")	
+endif
