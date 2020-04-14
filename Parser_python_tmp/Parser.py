@@ -47,7 +47,7 @@ class Parser:
                         check = False
                 if ( check ) :
                     for elt in val :
-                        if ( "(" in elt ) :
+                        if ( "rw" in elt or "wr" in elt or "ww" in elt ) :
                             check = True
                             break
                         else :
@@ -78,7 +78,7 @@ class Parser:
                         check = False
                 if ( check ) :
                     for elt in val :
-                        if ( "(" in elt ) :
+                        if ( "rw" in elt or "wr" in elt or "ww" in elt ) :
                             check = True
                             break
                         else :
@@ -116,6 +116,9 @@ class Parser:
                     self.analyze_UPDATE(src) # update on a same file -> ww on this same file
                     self.analyze_INSERT1(src,dst) # we have to check if there is a 'select' on the same attr on this file
                     self.analyze_SELECT1(src,dst) # if there are a select according to an update or insert case
+                    self.analyze_SELECT2(src,dst)
+                    self.analyze_SELECT3(src,dst)
+                    
                 if ( src.file_name != dst.file_name ) : # check if src and dst are diff.
                     self.analyze_SELECT1(src,dst)
                     self.analyze_SELECT1(dst,src)
@@ -155,6 +158,7 @@ class Parser:
                                 self.conditional_Dependencies[file_src,file_dst] = [string]
                             else :
                                 self.conditional_Dependencies[file_src,file_dst].append(string)
+                                
                         else :
                             str = self.returnPk(up_table)
                             string = ["rw,"+up_table+"("+str(str)+")"+at]
@@ -201,6 +205,9 @@ class Parser:
                                 self.conditional_Dependencies[file_src,file_dst] = [string]
                             else :
                                 self.conditional_Dependencies[file_src,file_dst].append(string)
+                            ######
+                            #print(file_src.file_name , file_dst.file_name )
+                            #print(condi , self.conditional_Dependencies[file_src,file_dst] )
                         else : 
                             if ( (file_src,file_dst) not in self.Dependencies.keys() ) :
                                 self.Dependencies[file_src,file_dst] = [string]
@@ -217,12 +224,16 @@ class Parser:
                                 string = string +"'"+ elt +"',"
                             string = string[:-1] + "])." + at 
                             condi = self.check_condional_dependencies(file_src,res)
+                            
                             if ( condi ) :
                                 if ( (file_src,file_dst) not in self.conditional_Dependencies.keys() ) :
                                     self.conditional_Dependencies[file_src,file_dst] = [string]
                                 else :
                                     if ( string not in self.conditional_Dependencies[file_src,file_dst] ) :
                                         self.conditional_Dependencies[file_src,file_dst].append(string) 
+                                ######
+                                #print(file_src.file_name , file_dst.file_name )
+                                #print(condi , self.conditional_Dependencies[file_src,file_dst] )
                             else :
                                 if ( (file_src,file_dst) not in self.Dependencies.keys() ) :
                                     self.Dependencies[file_src,file_dst] = [string]
@@ -257,7 +268,7 @@ class Parser:
                             self.Dependencies[file_dst,file_src] = [string]
                         else :
                             self.Dependencies[file_dst,file_src].append(string)
-                    
+
    
     def analyze_INSERT1(self,file_src,file_dst):
         for table in file_src.list_table_insert :
@@ -329,8 +340,11 @@ class Parser:
                             self.conditional_Dependencies[file_src,file_src] = [string]
                         else :
                             self.conditional_Dependencies[file_src,file_src].append(string)
+
+                        #print(condi , self.conditional_Dependencies[file_src,file_src] )
                     else :
                         self.Dependencies[file_src,file_src] = [string]
+                        #print(condi , self.conditional_Dependencies[file_src,file_src] )
             else :
                 for a in attr :
                     if ( "=" in a ):
@@ -343,9 +357,11 @@ class Parser:
                             self.conditional_Dependencies[file_src,file_src] = [string]
                         else :
                             self.conditional_Dependencies[file_src,file_src].append(string)
+                        #print(condi , self.conditional_Dependencies[file_src,file_src] )
                     else :        
                         if ( string not in self.Dependencies[file_src,file_src] ):
                             self.Dependencies[file_src,file_src].append(string)
+                        #print(condi , self.conditional_Dependencies[file_src,file_src] )
     
                         
     def write_en_tete(self,F):
@@ -357,7 +373,7 @@ class Parser:
         F.write('<graph id="G" edgedefault="directed">\n')
     
     def print_list(self):
-        #print("####### CONDI \n")
+        print("####### CONDI \n")
         for key,val in self.conditional_Dependencies.items() :
             print(key[0].file_name,key[1].file_name,val,'\n')
         print("##### REGULAR \n")
@@ -365,168 +381,67 @@ class Parser:
             print(key[0].file_name,key[1].file_name,val,'\n')
         
     def write_graphml(self):
-        dict_tmp = dict()
-        dict_tmp_condi = dict()
-        
-        #for k,v in self.conditional_Dependencies.items():
-        #    dict_tmp_condi[k] = v
-        #self.print_list()
-        
-        #if ( dict_tmp_condi != None ) :
-        if (  self.Dependencies != None ) :
-            for k , v in self.conditional_Dependencies.items() :
-                #print("##",k[0].file_name ,k[1].file_name ,v)
-                if ( ( k[1],k[0] ) in self.conditional_Dependencies.keys() ):
-                    for elt in v :
-                        #print("###",elt)
-                        if ( ( elt.replace("rw","wr") != elt ) and elt.replace("rw","wr") not in self.conditional_Dependencies[k[1],k[0]] ) :
-                            b = elt.replace("rw","wr")
-                            if ( b not in self.conditional_Dependencies[k[1],k[0]] and b != elt ):
-                                self.conditional_Dependencies[k[1],k[0]].append(b)
-                                a = elt.replace("rw","wr")
-                                if ( (k[1],k[0]) in self.Dependencies.keys() and a in self.Dependencies[k[1],k[0]] ):
-                                    self.Dependencies[k[1],k[0]].remove(a)
-                           
-                else :
-                    for elt in v :
-                        c = elt.replace("rw","wr")
-                        if ( c  != elt ):
-                            dict_tmp_condi[k[1],k[0]] = [c]
-                            
-                            
-            for k ,v in self.conditional_Dependencies.items() :
-                for elt in v :
-                    if ( k in self.Dependencies.keys() and elt in self.Dependencies[k] ) :
-                        self.Dependencies[k].remove(k)
-            
-            
-            for k , v in dict_tmp_condi.items():
-                if ( k in self.conditional_Dependencies.keys() ) :
-                    for elt in v :
-                        self.conditional_Dependencies[k].append(elt)
-                else :
-                    self.conditional_Dependencies[k] = v
-            
-            for k , v in self.Dependencies.items() :
-                for elt in v :
-                    a = elt.replace("wr","rw") 
-                    if ( (k[1],k[0]) in self.Dependencies.keys() and a != elt and a not in self.Dependencies[k[1],k[0]] ):
-                        self.Dependencies[k].remove(elt)
-                        
-            
-        for k,v in dict_tmp.items():
-            for val in v :
-                if ( k in dict_tmp_condi.keys() ) :
-                    for cv  in dict_tmp_condi[k] :
-                        if ( val.split(",")[1] in cv ):
-                            if ( val in dict_tmp[k] ) :
-                                dict_tmp[k].remove(val)
-        
-        for k , v in self.conditional_Dependencies.items() :
-            if ( k[0] == k[1] ): 
-                for elt in v :
-                    if ( "ww" in elt ):
-                        for key , val in self.Dependencies.items() :
-                            for a in val :
-                                if ( elt.replace("ww","wr") == a ):
-                                    val = val.remove(a)
-                                    if ( key in dict_tmp_condi.keys() ):
-                                        dict_tmp_condi[key].append(a)
-                                    else :
-                                        dict_tmp_condi[key] = [a]
-                                elif ( elt.replace("ww","rw") == a ):
-                                    val = val.remove(a)
-                                    if ( key in dict_tmp_condi.keys() ):
-                                        dict_tmp_condi[key].append(a)
-                                    else :
-                                        dict_tmp_condi[key] = [a]
-                                        
-                        
-        for k,v in self.conditional_Dependencies.items():
-            self.conditional_Dependencies[k] = list(set(v))
-        for k,v in self.Dependencies.items():
-            self.Dependencies[k] = list(set(v)) 
-        
-        for k , v in dict_tmp_condi.items():
-            if ( k in self.conditional_Dependencies.keys() ) :
-                for elt in v :
-                    self.conditional_Dependencies[k].append(elt)
-            else :
-                self.conditional_Dependencies[k] = v        
-        
-        
-        dict_tmp_condi = dict(self.conditional_Dependencies)
-        
-        for k , v in dict_tmp.items():
-            if ( k in self.Dependencies.keys() ) :
-                for elt in v :
-                    self.Dependencies[k].append(elt)
-            else :
-                self.Dependencies[k] = v        
-        
-        for k , v in self.conditional_Dependencies.items() :
-            l = []
-            if ( k[0] == k[1] ):
-                for elt in v :
-                    if ( "wr" in elt ) :
-                        a = elt.replace("wr","rw")
-                        l.append(a)
-                    elif ( "rw" in elt ) :
-                        a = elt.replace("rw","wr")
-                        l.append(a)
-            for elt in l :
-                self.conditional_Dependencies[k].append(elt)
-         
-                        
         dict_tmp = dict(self.Dependencies)
+        dict_condi = dict(self.conditional_Dependencies)
         
-        for k , v in dict_tmp.items():
-            if ( (k[1],k[0]) not in self.Dependencies.keys() ) :
-                self.Dependencies[k[1],k[0]] = []
-                for elt in v :
-                    a = elt.replace("wr","rw")
-                    if ( a != elt ):
-                        self.Dependencies[k[1],k[0]].append(a)
-                        
-                    else :
-                        a = elt.replace("wr","rw")
-                        if ( a != elt ):
-                            self.Dependencies[k[1],k[0]].append(a)
-                            
-            else :
-                for elt in v :
-                    a = elt.replace("wr","rw")
-                    if ( a != elt and a not in self.Dependencies[k[1],k[0]] ):
-                        self.Dependencies[k[1],k[0]].append(a)
-                        
-                    else :
-                        a = elt.replace("rw","wr")
-                        if ( a != elt and a not in self.Dependencies[k[1],k[0]]):
-                            self.Dependencies[k[1],k[0]].append(a)
-                            
-        for k , v in self.Dependencies.items():
+        # check if k0,k1 : rw and k1,k0 : wr  , are in graphml
+        for k,v in self.Dependencies.items() :
             for elt in v :
-                if ( k in self.conditional_Dependencies.keys() and elt in self.conditional_Dependencies[k] ):
-                    self.conditional_Dependencies[k].remove(elt)
-                        
+                if ( "wr" in elt ) :
+                    tmp = elt.replace("wr","rw")
+                    if ( (k[1],k[0]) in dict_tmp.keys() ) :
+                        if ( tmp not in dict_tmp[k[1],k[0]] ) :
+                            dict_tmp[k[1],k[0]].append(tmp)
+                    else : # create dict k1,k0
+                        dict_tmp[k[1],k[0]] = [tmp]
+                elif ( "rw" in elt ) :
+                    tmp = elt.replace("rw","wr")
+                    #print(k[0].file_name,k[1].file_name ,"Elt:" , elt , "\nTmp:",tmp)
+                    if ( (k[1],k[0]) in self.Dependencies.keys() ) :
+                        if ( tmp not in self.Dependencies[k[1],k[0]] ) :
+                            self.Dependencies[k[1],k[0]].append(tmp)
+                    else : # create dict k1,k0
+                        self.Dependencies[k[1],k[0]] = [tmp]
         
-        self.Dependencies = dict(dict_tmp)                
-        self.conditional_Dependencies = dict(dict_tmp_condi)
+        for k,v in self.conditional_Dependencies.items() :
+            for elt in v :
+                if ( "wr" in elt ) :
+                    tmp = elt.replace("wr","rw")
+                    if ( (k[1],k[0]) in dict_condi.keys() ) :
+                        if ( tmp not in dict_condi[k[1],k[0]] ) :
+                            dict_condi[k[1],k[0]].append(tmp)
+                    else : # create dict k1,k0
+                        dict_condi[k[1],k[0]] = [tmp]
+                elif ( "rw" in elt ) :
+                    tmp = elt.replace("rw","wr")
+                    if ( (k[1],k[0]) in dict_condi.keys() ) :
+                        if ( tmp not in dict_condi[k[1],k[0]] ) :
+                            dict_condi[k[1],k[0]].append(tmp)
+                    else : # create dict k1,k0
+                        dict_condi[k[1],k[0]] = [tmp]
         
         
+        
+        
+        
+        self.conditional_Dependencies = dict(dict_condi)
+        self.Dependencies = dict(dict_tmp)
         
         for k,v in self.conditional_Dependencies.items():
-            self.conditional_Dependencies[k] = list(set(v))
+            if ( len(v) > 1 ) :
+                self.conditional_Dependencies[k] = list(set(v))
         for k,v in self.Dependencies.items():
-            self.Dependencies[k] = list(set(v)) 
+            if ( len(v) > 1 ) :
+                self.Dependencies[k] = list(set(v)) 
             
-            
-        self.check_dep(self.conditional_Dependencies)
-        self.check_dep(self.Dependencies)
+        self.print_list()
+        # Adding dependences reason
         self.add_reason(self.Dependencies)
         self.add_reason(self.conditional_Dependencies)
-        
-        #self.print_list()
+        # Check ww dependences
+        self.check_dep(self.conditional_Dependencies)
+        self.check_dep(self.Dependencies)
+        # avoid double items
         
         
         with open ( self.work_folder+"../graphs/Mygraphml.graphml","w+") as F :
@@ -543,7 +458,7 @@ class Parser:
                         check = False
                 if ( check ) :
                     for elt in val :
-                        if ( "(" in elt ) :
+                        if ( "rw" in elt or "wr" in elt or "ww" in elt ) :
                             check = True
                             break
                         else :
@@ -575,7 +490,7 @@ class Parser:
                         check = False
                 if ( check ) :
                     for elt in val :
-                        if ( "(" in elt ) :
+                        if ( "rw" in elt or "wr" in elt or "ww" in elt ) :
                             check = True
                             break
                         else :
