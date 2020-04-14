@@ -434,7 +434,7 @@ class Parser:
             if ( len(v) > 1 ) :
                 self.Dependencies[k] = list(set(v)) 
             
-        self.print_list()
+        #self.print_list()
         # Adding dependences reason
         self.add_reason(self.Dependencies)
         self.add_reason(self.conditional_Dependencies)

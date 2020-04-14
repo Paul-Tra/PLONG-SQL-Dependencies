@@ -72,8 +72,20 @@ class Read_file:
                                 return match+1
                             else :
                                 break
-                            
-                if ( "SELECT" in l or "INSERT" in l  ) :
+                                
+                if ( "SELECT" in l ) :
+                    select = "SELECT "+select.split("SELECT")[1].strip()
+                    #print("Looking for : " , select )
+                    match = i
+                    for j in range(i,(len(line)) ) :
+                        tmp = tmp+" "+ line[j]
+                        if ( ";" in line[j] ) :
+                            tmp = "SELECT "+tmp.split("SELECT")[1].strip().replace(";","")
+                            if ( tmp.strip() == select.strip() ) :
+                                return match+1
+                            else :
+                                break            
+                if ( "INSERT" in l  ) :
                     match = i
                 tmp = tmp+" " + l
                 check = True
