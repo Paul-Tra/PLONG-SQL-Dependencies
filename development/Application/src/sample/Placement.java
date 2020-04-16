@@ -69,7 +69,7 @@ public class Placement {
     double width;
     double heigth;
     private final int NB_ITERATONS = 1000;
-    private static final double IDEAL_COEFFICIENT = 1.4;
+    private static final double IDEAL_COEFFICIENT = 4.6;
     private double temperature; // is the maximum amount of movement allowed for a node
 
     public Placement(ArrayList<Transaction> transactions, ArrayList<Relation> relations,

@@ -5,10 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuBar;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -41,6 +38,9 @@ public class Controller implements Initializable {
     public AnchorPane anchorPane1, anchorPane2, anchorPane3;
     @FXML
     public MenuBar menuBar;
+    @FXML
+    private MenuItem menuItemExport, menuItemClearLaunch;
+
     @FXML
     BorderPane borderPane1;
     @FXML
@@ -78,11 +78,6 @@ public class Controller implements Initializable {
     @FXML
     private void onMenuItemExport() {
         FileChooser fil_chooser = new FileChooser();
-        /*
-        * .ps  -Tps
-        * .xdot -Txdot
-        * .json
-        **/
         // add filters file's extension
         fil_chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("pdf files", ".pdf"),
@@ -107,9 +102,6 @@ public class Controller implements Initializable {
         filePath = file.getAbsolutePath();
         fileExtension = fil_chooser.getSelectedExtensionFilter().getExtensions().get(0);
         filePath += fileExtension;
-        System.out.println("selected path: " + filePath);
-        System.out.println("selected extension: " + fileExtension);
-        /*TODO: manages the different extensions */
         DotWriter dotWriter = new DotWriter(this.DOTPATH, this.relations, this.style.getPattern());
         conversion(fileExtension, filePath);
     }
@@ -173,8 +165,8 @@ public class Controller implements Initializable {
     private void fillPopUp(ArrayList<String> sourceLines, ArrayList<String> targetLines) {
         clearPopUp();
 
-        this.labelFileSource2.setText(this.labelSource2.getText() + ".sql");
-        this.labelFileTarget2.setText(this.labelTarget2.getText() + ".sql");
+        this.labelFileSource2.setText(this.labelSource2.getText() );
+        this.labelFileTarget2.setText(this.labelTarget2.getText() );
         this.listViewSourceLines.getItems().addAll(sourceLines);
         this.listViewTargetLines.getItems().addAll(targetLines);
 
@@ -217,6 +209,8 @@ public class Controller implements Initializable {
         if (this.currentPath.isEmpty() || this.currentPath.isBlank()) {
             return;
         }
+        this.menuItemClearLaunch.setDisable(false);
+        this.menuItemExport.setDisable(false);
         this.anchorPane2.setVisible(false);
         this.anchorPane1.getChildren().clear();
 
@@ -235,6 +229,7 @@ public class Controller implements Initializable {
         File defaultDirectory = new File("../../");
         chooser.setInitialDirectory(defaultDirectory);
         File s = chooser.showDialog(this.anchorPane1.getScene().getWindow());
+        
         String c_dir = System.getProperty("user.dir") + "/src/" ;
         try {
             System.out.println("Dir : " + c_dir);
@@ -305,19 +300,8 @@ public class Controller implements Initializable {
 
         this.transactions.forEach((t) -> t.setController(this));
         this.relations.forEach((r) -> r.setController(this));
-        //behaviorRelation();
-        this.gogolParser = new GogolParser(GOGOLPATH, this.relations);
-        //printallgogol();
-    }
 
-    private void printallgogol() {
-        Set keys = this.gogolParser.conditionalDependenciesMap.keySet();
-        Iterator iterator = keys.iterator();
-        String[] key;
-        while (iterator.hasNext()) {
-            key = (String[]) iterator.next();
-            System.out.println(key[0]+"; "+key[1]+"; "+key[2]);
-        }
+        this.gogolParser = new GogolParser(GOGOLPATH, this.relations);
     }
 
     /**
@@ -357,7 +341,11 @@ public class Controller implements Initializable {
      */
     public void colorRelations() {
         this.relations.forEach(relation -> {
-            if (relation.isSelectedDependencyRelation(this.style.getPattern())) {
+            if (this.style.getPattern().isEmpty()) {
+                System.out.println("No one selected");
+                relation.getArrow().setStroke(this.style.getClassicDependencyColor());
+                relation.getEndArrow().setFill(this.style.getClassicDependencyColor());
+            }else if (relation.isSelectedDependencyRelation(this.style.getPattern())) {
                 relation.getArrow().setStroke(this.style.getSelectedDependencyColor());
                 relation.getEndArrow().setFill(this.style.getSelectedDependencyColor());
             }else{

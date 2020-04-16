@@ -35,6 +35,12 @@ public class StyleController implements Initializable {
     }
 
     @FXML
+    private void onRadioButtonNO() {
+        this.mainController.style.setPattern("");
+        this.mainController.colorRelations();
+    }
+
+    @FXML
     private void onRadioButtonRW() {
         this.mainController.style.setPattern("rw");
         this.mainController.colorRelations();
