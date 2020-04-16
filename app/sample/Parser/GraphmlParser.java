@@ -124,7 +124,6 @@ public class GraphmlParser {
             if (tab.length != 4) {
                 // 4: required number of parameter that identify a Relation as
                 // the function's parameters
-                System.out.println("check tab.length : " + tab.length);
                 return true; // if it is contained, we will not add it so no issues
             }
             if (tab[0].equals(source) && tab[1].equals(target) && tab[2].equals(name) &&

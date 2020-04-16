@@ -5,10 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuBar;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -41,6 +38,9 @@ public class Controller implements Initializable {
     public AnchorPane anchorPane1, anchorPane2, anchorPane3;
     @FXML
     public MenuBar menuBar;
+    @FXML
+    private MenuItem menuItemExport, menuItemClearLaunch;
+
     @FXML
     BorderPane borderPane1;
     @FXML
@@ -141,18 +141,8 @@ public class Controller implements Initializable {
         if (this.labelDependencies.getText().contains("Conditional")) {
             conditional = true;
         }
-        System.out.println(dependency +
-                source +
-                target +
-                conditional +
-                gogolParser +
-                targetLines);
         this.gogolParser.getDependencyLines(dependency, source, target, conditional,
                 sourceLines, targetLines);
-        System.out.println("sources :");
-        sourceLines.forEach(s -> System.out.println(s));
-        System.out.println("targets :");
-        targetLines.forEach(s -> System.out.println(s));
         fillPopUp(sourceLines, targetLines);
     }
 
@@ -186,7 +176,6 @@ public class Controller implements Initializable {
      * manages the event when a Path is pressed in the anchorPane1
      */
     public void pressAnchorPane1Path(Relation relation) {
-        System.out.println("pressAnchorPane1Path");
         this.anchorPane3.setVisible(false);
         this.anchorPane2.setVisible(true);
         this.anchorPane2.toFront();
@@ -201,7 +190,6 @@ public class Controller implements Initializable {
         ArrayList<String> dependencies = relation.getDependenciesLinesFromName();
         this.listViewDependencies.getItems().clear();
         this.listViewDependencies.getItems().addAll(dependencies);
-        System.out.println("fin pressAnchorPane1Path");
     }
 
     @FXML
@@ -209,6 +197,8 @@ public class Controller implements Initializable {
         if (this.currentPath.isEmpty() || this.currentPath.isBlank()) {
             return;
         }
+        this.menuItemClearLaunch.setDisable(false);
+        this.menuItemExport.setDisable(false);
         this.anchorPane2.setVisible(false);
         this.anchorPane1.getChildren().clear();
 
@@ -229,15 +219,10 @@ public class Controller implements Initializable {
         File s = chooser.showDialog(this.anchorPane1.getScene().getWindow());
         String c_dir = System.getProperty("user.dir");
         try {
-            System.out.println("Dir : " + c_dir);
-            System.out.println("folder : " + s.getParent() );
-            System.out.println("cmd : " + "python3.7 " + s.getParent() + "/Parser.py " + s + "/" );
             Process p = Runtime.getRuntime().exec("python3.7 " + s.getParent() + "/Parser.py " + s + "/");
             // wait until p finished
             p.waitFor() ;
 
-            System.out.println("cp " + s.getParent() + "/graphs/Mygraphml.graphml " + c_dir);
-            System.out.println("cp " + s.getParent() + "/graphs/dependencies.gogol " + c_dir);
             Process q =Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/Mygraphml.graphml " + c_dir);
             // wait until p finished
             q.waitFor() ;
@@ -338,7 +323,10 @@ public class Controller implements Initializable {
      */
     public void colorRelations() {
         this.relations.forEach(relation -> {
-            if (relation.isSelectedDependencyRelation(this.style.getPattern())) {
+            if (this.style.getPattern().isEmpty()) {
+                relation.getArrow().setStroke(this.style.getClassicDependencyColor());
+                relation.getEndArrow().setFill(this.style.getClassicDependencyColor());
+            }else if (relation.isSelectedDependencyRelation(this.style.getPattern())) {
                 relation.getArrow().setStroke(this.style.getSelectedDependencyColor());
                 relation.getEndArrow().setFill(this.style.getSelectedDependencyColor());
             }else{

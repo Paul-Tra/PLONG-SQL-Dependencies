@@ -12,7 +12,7 @@ public class Style {
     private Color selectedDependencyColor;
     private Color classicDependencyColor;
 
-    private String pattern = "rw"; // Read-Write
+    private String pattern = ""; // No one
 
     public Style() {
         /* Initial default colors */
