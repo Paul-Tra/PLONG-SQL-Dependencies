@@ -1,0 +1,316 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<graphml xmlns='http://graphml.graphdrawing.org/xmlns'>
+	<key id="d0" for="node" attr.name="weight" attr.type="string"/>
+	<key id="d1" for="edge" attr.name="weight" attr.type="string"/>
+	<key id="d2" for="edge" attr.name="weight" attr.type="string"/>
+<graph id="G" edgedefault="directed">
+<node id="orderstatus.sql">
+	<data key="d0">"orderstatus.sql"</data>
+</node>
+<edge source="orderstatus.sql" target="neworder.sql">
+	<data key="d1">
+	rw,ORDERS(*).*
+	rw,ORDERLINE(*).*
+	orderstatus.['o_id'] = neworder.['o_id']
+	orderstatus.['d_id'] = neworder.['d_id']
+	orderstatus.['w_id'] = neworder.['w_id']
+</data>
+</edge>
+
+<node id="neworder.sql">
+	<data key="d0">"neworder.sql"</data>
+</node>
+<edge source="neworder.sql" target="orderstatus.sql">
+	<data key="d1">
+	wr,ORDERS(*).*
+	wr,ORDERLINE(*).*
+	orderstatus.['o_id'] = neworder.['o_id']
+	orderstatus.['d_id'] = neworder.['d_id']
+	orderstatus.['w_id'] = neworder.['w_id']
+</data>
+</edge>
+
+<node id="payment.sql">
+	<data key="d0">"payment.sql"</data>
+</node>
+<edge source="payment.sql" target="orderstatus.sql">
+	<data key="d1">
+	wr,CUSTOMER(['cId','dId','wId']).balance
+	orderstatus.['d_id'] = payment.['c_d_id']
+	orderstatus.['w_id', 'w_Id'] = payment.['w_id', 'w_id']
+	orderstatus.['c_id'] = payment.['c_id', 'c_id']
+</data>
+</edge>
+
+<node id="orderstatus.sql">
+	<data key="d0">"orderstatus.sql"</data>
+</node>
+<edge source="orderstatus.sql" target="delivery.sql">
+	<data key="d1">
+	rw,CUSTOMER(['cId','dId','wId']).balance
+	rw,ORDERS(['oId','dId','wId']).carrierId
+	rw,ORDERLINE(['oId','dId','wId','number']).deliveryDate
+	orderstatus.['d_id'] = delivery.['d_id']
+	orderstatus.['w_id', 'w_Id'] = delivery.['w_Id']
+	orderstatus.['c_id'] = delivery.['c_id']
+	orderstatus.['o_id'] = delivery.['no_o_id']
+	orderstatus.['w_id'] = delivery.['w_id']
+</data>
+</edge>
+
+<node id="delivery.sql">
+	<data key="d0">"delivery.sql"</data>
+</node>
+<edge source="delivery.sql" target="orderstatus.sql">
+	<data key="d1">
+	wr,ORDERLINE(['oId','dId','wId','number']).deliveryDate
+	wr,CUSTOMER(['cId','dId','wId']).balance
+	wr,ORDERS(['oId','dId','wId']).carrierId
+	orderstatus.['d_id'] = delivery.['d_id']
+	orderstatus.['w_id', 'w_Id'] = delivery.['w_Id']
+	orderstatus.['c_id'] = delivery.['c_id']
+	orderstatus.['o_id'] = delivery.['no_o_id']
+	orderstatus.['w_id'] = delivery.['w_id']
+</data>
+</edge>
+
+<node id="neworder.sql">
+	<data key="d0">"neworder.sql"</data>
+</node>
+<edge source="neworder.sql" target="neworder.sql">
+	<data key="d1">
+	wr,STOCK(['iId','wId']).quantity
+	ww,ORDERS(*).*
+	rw,STOCK(['iId','wId']).quantity
+	rw,DISTRICT(['dId','wId']).nextOrdId
+	wr,DISTRICT(['dId','wId']).nextOrdId
+	ww,NEW_ORDER(*).*
+	ww,ORDERLINE(*).*
+	ww,STOCK(['iId', 'wId']).quantity
+	ww,DISTRICT(['dId', 'wId']).nextOrdId
+	neworder.['ol_i_id'] = neworder.['ol_i_id']
+	neworder.['ol_supply_w_id'] = neworder.['ol_supply_w_id']
+	neworder.* = neworder.*
+	neworder.['d_id'] = neworder.['d_id']
+	neworder.['w_id'] = neworder.['w_id']
+</data>
+</edge>
+
+<node id="stocklevel.sql">
+	<data key="d0">"stocklevel.sql"</data>
+</node>
+<edge source="stocklevel.sql" target="neworder.sql">
+	<data key="d1">
+	rw,DISTRICT(['dId','wId']).nextOrdId
+	stocklevel.['w_id'] = neworder.['ol_supply_w_id']
+	stocklevel.['ORDERLINE'] = neworder.['ol_i_id']
+	stocklevel.['w_id'] = neworder.['w_id']
+	stocklevel.['d_id'] = neworder.['d_id']
+</data>
+</edge>
+
+<node id="neworder.sql">
+	<data key="d0">"neworder.sql"</data>
+</node>
+<edge source="neworder.sql" target="stocklevel.sql">
+	<data key="d1">
+	wr,DISTRICT(['dId','wId']).nextOrdId
+	stocklevel.['w_id'] = neworder.['ol_supply_w_id']
+	stocklevel.['ORDERLINE'] = neworder.['ol_i_id']
+	stocklevel.['w_id'] = neworder.['w_id']
+	stocklevel.['d_id'] = neworder.['d_id']
+</data>
+</edge>
+
+<node id="neworder.sql">
+	<data key="d0">"neworder.sql"</data>
+</node>
+<edge source="neworder.sql" target="delivery.sql">
+	<data key="d1">
+	wr,NEW_ORDER(*).*
+	wr,ORDERS(*).*
+	wr,ORDERLINE(*).*
+	delivery.['no_o_id'] = neworder.['o_id']
+	delivery.['d_id'] = neworder.['d_Id']
+	delivery.['w_id'] = neworder.['w_Id']
+	delivery.['d_id'] = neworder.['d_id']
+	delivery.['w_id'] = neworder.['w_id']
+</data>
+</edge>
+
+<node id="delivery.sql">
+	<data key="d0">"delivery.sql"</data>
+</node>
+<edge source="delivery.sql" target="neworder.sql">
+	<data key="d1">
+	rw,ORDERS(*).*
+	rw,ORDERLINE(*).*
+	rw,NEW_ORDER(*).*
+	delivery.['no_o_id'] = neworder.['o_id']
+	delivery.['d_id'] = neworder.['d_Id']
+	delivery.['w_id'] = neworder.['w_Id']
+	delivery.['d_id'] = neworder.['d_id']
+	delivery.['w_id'] = neworder.['w_id']
+</data>
+</edge>
+
+<node id="payment.sql">
+	<data key="d0">"payment.sql"</data>
+</node>
+<edge source="payment.sql" target="payment.sql">
+	<data key="d1">
+	ww,DISTRICT(['dId', 'wId']).dYTD
+	ww,WAREHOUSE(['wId']).wYTD
+	ww,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
+	ww,HISTORY(*).*
+	payment.['w_id'] = payment.['w_id']
+	payment.['d_id'] = payment.['d_id']
+	payment.['c_d_id'] = payment.['c_d_id']
+	payment.['c_id'] = payment.['c_id']
+	payment.* = payment.*
+</data>
+</edge>
+
+<node id="delivery.sql">
+	<data key="d0">"delivery.sql"</data>
+</node>
+<edge source="delivery.sql" target="payment.sql">
+	<data key="d1">
+	wr,CUSTOMER(['cId','dId','wId']).balance
+	payment.['w_id', 'w_id'] = delivery.['w_Id']
+	payment.['c_d_id'] = delivery.['d_id']
+	payment.['c_id'] = delivery.['c_id']
+</data>
+</edge>
+
+<node id="delivery.sql">
+	<data key="d0">"delivery.sql"</data>
+</node>
+<edge source="delivery.sql" target="delivery.sql">
+	<data key="d1">
+	ww,CUSTOMER(['cId', 'dId', 'wId']).balance
+	ww,ORDERS(['oId', 'dId', 'wId']).carrierId
+	ww,ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate
+	ww,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
+	delivery.['c_id'] = delivery.['c_id']
+	delivery.['d_id'] = delivery.['d_id']
+	delivery.['w_Id'] = delivery.['w_Id']
+	delivery.['no_o_id'] = delivery.['no_o_id']
+	delivery.['w_id'] = delivery.['w_id']
+</data>
+</edge>
+
+<node id="orderstatus.sql">
+	<data key="d0">"orderstatus.sql"</data>
+</node>
+<edge source="orderstatus.sql" target="payment.sql">
+	<data key="d1">
+	rw,CUSTOMER(['cId','dId','wId']).balance
+	orderstatus.['d_id'] = payment.['c_d_id']
+	orderstatus.['w_id', 'w_Id'] = payment.['w_id', 'w_id']
+	orderstatus.['c_id'] = payment.['c_id', 'c_id']
+</data>
+</edge>
+
+<node id="payment.sql">
+	<data key="d0">"payment.sql"</data>
+</node>
+<edge source="payment.sql" target="delivery.sql">
+	<data key="d1">
+	rw,CUSTOMER(['cId','dId','wId']).balance
+	payment.['w_id', 'w_id'] = delivery.['w_Id']
+	payment.['c_d_id'] = delivery.['d_id']
+	payment.['c_id'] = delivery.['c_id']
+</data>
+</edge>
+
+<node id="orderstatus.sql">
+	<data key="d0">"orderstatus.sql"</data>
+</node>
+<edge source="orderstatus.sql" target="payment.sql">
+	<data key="d2">
+	rw,CUSTOMER(['cId','dId','wId']).balance
+	orderstatus.['d_id'] = payment.['c_d_id']
+	orderstatus.['w_id', 'w_Id'] = payment.['w_id', 'w_id']
+	orderstatus.['c_id'] = payment.['c_id', 'c_id']
+</data>
+</edge>
+
+<node id="orderstatus.sql">
+	<data key="d0">"orderstatus.sql"</data>
+</node>
+<edge source="orderstatus.sql" target="delivery.sql">
+	<data key="d2">
+	rw,CUSTOMER(['cId','dId','wId']).balance
+	orderstatus.['d_id'] = delivery.['d_id']
+	orderstatus.['w_id', 'w_Id'] = delivery.['w_Id']
+	orderstatus.['c_id'] = delivery.['c_id']
+</data>
+</edge>
+
+<node id="payment.sql">
+	<data key="d0">"payment.sql"</data>
+</node>
+<edge source="payment.sql" target="payment.sql">
+	<data key="d2">
+	rw,CUSTOMER(['cId','dId','wId']).balance
+	ww,CUSTOMER(['cId', 'dId', 'wId']).data
+	wr,CUSTOMER(['cId','dId','wId']).balance
+	ww,CUSTOMER(['cId', 'dId', 'wId']).balance
+	payment.['w_id', 'w_id'] = payment.['w_id', 'w_id']
+	payment.['c_d_id'] = payment.['c_d_id']
+	payment.['c_id'] = payment.['c_id', 'c_id']
+	payment.['c_id', 'c_id'] = payment.['c_id', 'c_id']
+</data>
+</edge>
+
+<node id="payment.sql">
+	<data key="d0">"payment.sql"</data>
+</node>
+<edge source="payment.sql" target="delivery.sql">
+	<data key="d2">
+	rw,CUSTOMER(['cId','dId','wId']).balance
+	payment.['w_id', 'w_id'] = delivery.['w_Id']
+	payment.['c_d_id'] = delivery.['d_id']
+	payment.['c_id'] = delivery.['c_id']
+</data>
+</edge>
+
+<node id="payment.sql">
+	<data key="d0">"payment.sql"</data>
+</node>
+<edge source="payment.sql" target="orderstatus.sql">
+	<data key="d2">
+	wr,CUSTOMER(['cId','dId','wId']).balance
+	orderstatus.['d_id'] = payment.['c_d_id']
+	orderstatus.['w_id', 'w_Id'] = payment.['w_id', 'w_id']
+	orderstatus.['c_id'] = payment.['c_id', 'c_id']
+</data>
+</edge>
+
+<node id="delivery.sql">
+	<data key="d0">"delivery.sql"</data>
+</node>
+<edge source="delivery.sql" target="orderstatus.sql">
+	<data key="d2">
+	wr,CUSTOMER(['cId','dId','wId']).balance
+	orderstatus.['d_id'] = delivery.['d_id']
+	orderstatus.['w_id', 'w_Id'] = delivery.['w_Id']
+	orderstatus.['c_id'] = delivery.['c_id']
+</data>
+</edge>
+
+<node id="delivery.sql">
+	<data key="d0">"delivery.sql"</data>
+</node>
+<edge source="delivery.sql" target="payment.sql">
+	<data key="d2">
+	wr,CUSTOMER(['cId','dId','wId']).balance
+	payment.['w_id', 'w_id'] = delivery.['w_Id']
+	payment.['c_d_id'] = delivery.['d_id']
+	payment.['c_id'] = delivery.['c_id']
+</data>
+</edge>
+
+</graph>
+</graphml>

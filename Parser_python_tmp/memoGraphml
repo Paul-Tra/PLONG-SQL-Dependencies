@@ -1,0 +1,236 @@
+    def write_graphml(self):
+        dict_tmp = dict()
+        dict_tmp_condi = dict()
+        
+        #for k,v in self.conditional_Dependencies.items():
+        #    dict_tmp_condi[k] = v
+        #self.print_list()
+        
+        #if ( dict_tmp_condi != None ) :
+        if (  self.Dependencies != None ) :
+            for k , v in self.conditional_Dependencies.items() :
+                #print("##",k[0].file_name ,k[1].file_name ,v)
+                if ( ( k[1],k[0] ) in self.conditional_Dependencies.keys() ):
+                    for elt in v :
+                        #print("###",elt)
+                        if ( ( elt.replace("rw","wr") != elt ) and elt.replace("rw","wr") not in self.conditional_Dependencies[k[1],k[0]] ) :
+                            b = elt.replace("rw","wr")
+                            if ( b not in self.conditional_Dependencies[k[1],k[0]] and b != elt ):
+                                self.conditional_Dependencies[k[1],k[0]].append(b)
+                                a = elt.replace("rw","wr")
+                                if ( (k[1],k[0]) in self.Dependencies.keys() and a in self.Dependencies[k[1],k[0]] ):
+                                    self.Dependencies[k[1],k[0]].remove(a)
+                           
+                else :
+                    for elt in v :
+                        c = elt.replace("rw","wr")
+                        if ( c  != elt ):
+                            dict_tmp_condi[k[1],k[0]] = [c]
+                            
+                            
+            for k ,v in self.conditional_Dependencies.items() :
+                for elt in v :
+                    if ( k in self.Dependencies.keys() and elt in self.Dependencies[k] ) :
+                        self.Dependencies[k].remove(k)
+            
+            
+            for k , v in dict_tmp_condi.items():
+                if ( k in self.conditional_Dependencies.keys() ) :
+                    for elt in v :
+                        self.conditional_Dependencies[k].append(elt)
+                else :
+                    self.conditional_Dependencies[k] = v
+            
+            for k , v in self.Dependencies.items() :
+                for elt in v :
+                    a = elt.replace("wr","rw") 
+                    if ( (k[1],k[0]) in self.Dependencies.keys() and a != elt and a not in self.Dependencies[k[1],k[0]] ):
+                        self.Dependencies[k].remove(elt)
+                        
+            
+        for k,v in dict_tmp.items():
+            for val in v :
+                if ( k in dict_tmp_condi.keys() ) :
+                    for cv  in dict_tmp_condi[k] :
+                        if ( val.split(",")[1] in cv ):
+                            if ( val in dict_tmp[k] ) :
+                                dict_tmp[k].remove(val)
+        
+        for k , v in self.conditional_Dependencies.items() :
+            if ( k[0] == k[1] ): 
+                for elt in v :
+                    if ( "ww" in elt ):
+                        for key , val in self.Dependencies.items() :
+                            for a in val :
+                                if ( elt.replace("ww","wr") == a ):
+                                    val = val.remove(a)
+                                    if ( key in dict_tmp_condi.keys() ):
+                                        dict_tmp_condi[key].append(a)
+                                    else :
+                                        dict_tmp_condi[key] = [a]
+                                elif ( elt.replace("ww","rw") == a ):
+                                    val = val.remove(a)
+                                    if ( key in dict_tmp_condi.keys() ):
+                                        dict_tmp_condi[key].append(a)
+                                    else :
+                                        dict_tmp_condi[key] = [a]
+                                        
+                        
+        for k,v in self.conditional_Dependencies.items():
+            self.conditional_Dependencies[k] = list(set(v))
+        for k,v in self.Dependencies.items():
+            self.Dependencies[k] = list(set(v)) 
+        
+        for k , v in dict_tmp_condi.items():
+            if ( k in self.conditional_Dependencies.keys() ) :
+                for elt in v :
+                    self.conditional_Dependencies[k].append(elt)
+            else :
+                self.conditional_Dependencies[k] = v        
+        
+        
+        dict_tmp_condi = dict(self.conditional_Dependencies)
+        
+        for k , v in dict_tmp.items():
+            if ( k in self.Dependencies.keys() ) :
+                for elt in v :
+                    self.Dependencies[k].append(elt)
+            else :
+                self.Dependencies[k] = v        
+        
+        for k , v in self.conditional_Dependencies.items() :
+            l = []
+            if ( k[0] == k[1] ):
+                for elt in v :
+                    if ( "wr" in elt ) :
+                        a = elt.replace("wr","rw")
+                        l.append(a)
+                    elif ( "rw" in elt ) :
+                        a = elt.replace("rw","wr")
+                        l.append(a)
+            for elt in l :
+                self.conditional_Dependencies[k].append(elt)
+         
+                        
+        dict_tmp = dict(self.Dependencies)
+        
+        for k , v in dict_tmp.items():
+            if ( (k[1],k[0]) not in self.Dependencies.keys() ) :
+                self.Dependencies[k[1],k[0]] = []
+                for elt in v :
+                    a = elt.replace("wr","rw")
+                    if ( a != elt ):
+                        self.Dependencies[k[1],k[0]].append(a)
+                        
+                    else :
+                        a = elt.replace("wr","rw")
+                        if ( a != elt ):
+                            self.Dependencies[k[1],k[0]].append(a)
+            else :
+                for elt in v :
+                    a = elt.replace("wr","rw")
+                    if ( a != elt and a not in self.Dependencies[k[1],k[0]] ):
+                        self.Dependencies[k[1],k[0]].append(a)
+                    else :
+                        a = elt.replace("rw","wr")
+                        if ( a != elt and a not in self.Dependencies[k[1],k[0]]):
+                            self.Dependencies[k[1],k[0]].append(a)
+                            
+        for k , v in self.Dependencies.items():
+            for elt in v :
+                if ( k in self.conditional_Dependencies.keys() and elt in self.conditional_Dependencies[k] ):
+                    self.conditional_Dependencies[k].remove(elt)
+                        
+        
+        self.Dependencies = dict(dict_tmp)                
+        self.conditional_Dependencies = dict(dict_tmp_condi)
+        
+        
+        
+        for k,v in self.conditional_Dependencies.items():
+            self.conditional_Dependencies[k] = list(set(v))
+        for k,v in self.Dependencies.items():
+            self.Dependencies[k] = list(set(v)) 
+            
+            
+        self.check_dep(self.conditional_Dependencies)
+        self.check_dep(self.Dependencies)
+        self.add_reason(self.Dependencies)
+        self.add_reason(self.conditional_Dependencies)
+        
+        #self.print_list()
+        
+        
+        with open ( self.work_folder+"../graphs/Mygraphml.graphml","w+") as F :
+            self.write_en_tete(F)
+            cpt = 0
+            cpt2 = 0
+            check = True
+            for key,val in self.Dependencies.items() :
+                for elt in val :
+                    if ( "=" in elt ) :
+                        check = True
+                        break
+                    else :
+                        check = False
+                if ( check ) :
+                    for elt in val :
+                        if ( "rw" in elt or "wr" in elt or "ww" in elt ) :
+                            check = True
+                            break
+                        else :
+                            check = False
+                if ( check and val != [] ) :
+                    src = key[0].file_name.split("/")[-1].strip()
+                    dst = key[1].file_name.split("/")[-1].strip()
+                    F.write ('<node id="'+src+'">\n')
+                    F.write ('\t<data key="d0">"'+src+'"</data>\n')
+                    F.write ('</node>\n')
+                    F.write ('<edge source="'+src+'" target="'+dst+'">\n')
+                    F.write ('\t<data key="d1">\n')
+                    for elt in val :
+                        #if ( ( "rw" in elt or "wr" in elt ) and "=" in elt ):
+                        #    elt = elt.split("=")[0].strip() 
+                        F.write ('\t'+elt+'\n')
+                        if ( ',' in elt ) :
+                            cpt2 = cpt2 +1
+                    F.write ('</data>\n')
+                    F.write ('</edge>\n\n')
+                    cpt = cpt + 1
+                    
+            for key,val in self.conditional_Dependencies.items() :
+                for elt in val :
+                    if ( "=" in elt ) :
+                        check = True
+                        break
+                    else :
+                        check = False
+                if ( check ) :
+                    for elt in val :
+                        if ( "rw" in elt or "wr" in elt or "ww" in elt ) :
+                            check = True
+                            break
+                        else :
+                            check = False
+                if ( check and val != []) :
+                    src = key[0].file_name.split("/")[-1].strip()
+                    dst = key[1].file_name.split("/")[-1].strip()
+                    F.write ('<node id="'+src+'">\n')
+                    F.write ('\t<data key="d0">"'+src+'"</data>\n')
+                    F.write ('</node>\n')
+                    F.write ('<edge source="'+src+'" target="'+dst+'">\n')
+                    F.write ('\t<data key="d2">\n')
+                    for elt in val :
+                        #if ( ( "rw" in elt or "wr" in elt ) and "=" in elt ):
+                        #    elt = elt.split("=")[0].strip() 
+                        F.write ('\t'+elt+'\n')
+                        if ( ',' in elt ) :
+                            cpt2 = cpt2 +1
+                    F.write ('</data>\n')
+                    F.write ('</edge>\n\n')
+                    cpt = cpt + 1
+                    
+            
+            F.write ('</graph>\n')
+            F.write ('</graphml>\n')
+        return cpt , cpt2

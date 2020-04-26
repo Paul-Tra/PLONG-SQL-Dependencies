@@ -1,0 +1,21 @@
+CREATE OR REPLACE FUNCTION viewitem(i_id INTEGER) {
+
+RETURNS VOID AS $$
+DECLARE
+	nothing void;
+BEGIN
+
+	SELECT B.bId
+	FROM BIDS B
+	WHERE B.bId = i_id;
+
+	SELECT ITEMS.nbids 
+	FROM ITEMS I
+	WHERE I.iId = i_id;
+
+	SELECT T.iId
+	FROM TEST T
+	WHERE TEST.iId = i_id;
+
+END;
+}
