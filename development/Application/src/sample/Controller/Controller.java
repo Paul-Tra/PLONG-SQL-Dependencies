@@ -1,19 +1,25 @@
 package sample.Controller;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Path;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import sample.*;
 import sample.Parser.GogolParser;
 import sample.Parser.GraphmlParser;
@@ -31,7 +37,6 @@ public class Controller implements Initializable {
     private String currentPath = "";
     public ArrayList<Transaction> transactions = new ArrayList<>();
     public ArrayList<Relation> relations = new ArrayList<>();
-    /* todo : add style classs */
     public Style style = new Style();
     private GogolParser gogolParser;
     @FXML
@@ -39,7 +44,7 @@ public class Controller implements Initializable {
     @FXML
     public MenuBar menuBar;
     @FXML
-    private MenuItem menuItemExport, menuItemClearLaunch;
+    private MenuItem menuItemExport, menuItemClearLaunch, menuItemAppearance;
 
     @FXML
     BorderPane borderPane1;
@@ -68,11 +73,9 @@ public class Controller implements Initializable {
         stage.setTitle("Appearance settings");
         Scene scene = new Scene(root, 600, 400);
         stage.setScene(scene);
+        this.menuItemAppearance.setDisable(true);
         stage.show();
-
-    }
-    @FXML
-    private void onMenuItemSettings() {
+        stage.setOnCloseRequest(windowEvent -> menuItemAppearance.setDisable(false));
     }
 
     @FXML
@@ -141,18 +144,10 @@ public class Controller implements Initializable {
         if (this.labelDependencies.getText().contains("Conditional")) {
             conditional = true;
         }
-        System.out.println(dependency +
-                source +
-                target +
-                conditional +
-                gogolParser +
-                targetLines);
+
         this.gogolParser.getDependencyLines(dependency, source, target, conditional,
                 sourceLines, targetLines);
-        System.out.println("sources :");
-        sourceLines.forEach(s -> System.out.println(s));
-        System.out.println("targets :");
-        targetLines.forEach(s -> System.out.println(s));
+
         fillPopUp(sourceLines, targetLines);
     }
 
@@ -186,7 +181,6 @@ public class Controller implements Initializable {
      * manages the event when a Path is pressed in the anchorPane1
      */
     public void pressAnchorPane1Path(Relation relation) {
-        System.out.println("pressAnchorPane1Path");
         this.anchorPane3.setVisible(false);
         this.anchorPane2.setVisible(true);
         this.anchorPane2.toFront();
@@ -201,7 +195,6 @@ public class Controller implements Initializable {
         ArrayList<String> dependencies = relation.getDependenciesLinesFromName();
         this.listViewDependencies.getItems().clear();
         this.listViewDependencies.getItems().addAll(dependencies);
-        System.out.println("fin pressAnchorPane1Path");
     }
 
     @FXML
@@ -229,24 +222,17 @@ public class Controller implements Initializable {
         File defaultDirectory = new File("../../");
         chooser.setInitialDirectory(defaultDirectory);
         File s = chooser.showDialog(this.anchorPane1.getScene().getWindow());
-        
         String c_dir = System.getProperty("user.dir") + "/src/" ;
         try {
-            System.out.println("Dir : " + c_dir);
-            System.out.println("folder : " + s.getParent() );
-            System.out.println("cmd : " + "python3.7 " + s.getParent() + "/Parser.py " + s + "/" );
-            Process p = Runtime.getRuntime().exec("python3.7 " + s.getParent() + "/Parser.py " + s + "/");
+           Process p = Runtime.getRuntime().exec("python3.7 " + s.getParent() + "/Parser.py " + s + "/");
             // wait until p finished
             p.waitFor() ;
 
-            System.out.println("cp " + s.getParent() + "/graphs/Mygraphml.graphml " + c_dir);
-            System.out.println("cp " + s.getParent() + "/graphs/dependencies.gogol " + c_dir);
-            Process q =Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/Mygraphml.graphml " + c_dir);
+           Process q =Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/Mygraphml.graphml " + c_dir);
             // wait until p finished
             q.waitFor() ;
             Process r = Runtime.getRuntime().exec("cp " + s.getParent() + "/graphs/dependencies.gogol " + c_dir);
             r.waitFor();
-
         } catch (Exception e) {
             System.out.println("issue causing by python3.7 execution" + e );
         }
@@ -280,7 +266,6 @@ public class Controller implements Initializable {
         HashMap<Integer, String> map = graphmlParser.getTransactionMap();
         HashMap<Integer, String[]> map2 = graphmlParser.getRelationMap();
 
-
         fillListTransactionFromMap(map, this.transactions);
         fillListRelationFromMap(map2, this.relations, this.transactions);
 
@@ -290,7 +275,9 @@ public class Controller implements Initializable {
         Placement placement = new Placement(this.transactions, this.relations,
                 boundWidth, boundHeight);
         placement.placementTransaction(this.transactions);
+
         this.relations.forEach(Relation::buildRelationShape);
+
 
         colorRelations();
         colorTransactions();
@@ -305,15 +292,140 @@ public class Controller implements Initializable {
     }
 
     /**
+     * looks after the shape of the entrant/ outgoing
+     *
+     * @param transaction Transaction on which we released the mouse
+     */
+    public void manageReleaseRectangle(Transaction transaction){
+        this.relations.forEach(relation -> {
+            if (relation.getSource().getId().equals(transaction.getId())
+                    || relation.getTarget().getId().equals(transaction.getId())) {
+                manageRelationArrowUpdate(relation);
+            }
+        });
+        colorRelations();
+    }
+
+    /**
+     * manages the update of the Relation's arrow
+     * @param relation
+     */
+    private void manageRelationArrowUpdate(Relation relation){
+        if (relation.isLoop()) {
+            /* do not take care about loop arrows now */
+            /* TODO: manages the decreasing of translations */
+            return;
+        }
+        boolean curveFind = false;
+        boolean endPointFind = false;
+        Path path;
+        Circle circle;
+        if ((path = findRelationCurve(relation)) != null) {
+            curveFind = true;
+        } if ((circle = findRelationEndPoint(relation)) != null) {
+            endPointFind = true;
+        }
+        if (curveFind && endPointFind) {
+            if (removeRelationControlCircles(relation)) {
+                activateRelationBuildingArrow(relation, path, circle);
+            }
+        }
+    }
+
+    /**
+     * looks after the recovering of the Relation's arrow curve into pane view
+     *
+     * @param relation relation which we want to find the arrow in the view
+     * @return the element of the view corresponding to  the Relation's arrow curve
+     */
+    private Path findRelationCurve(Relation relation) {
+        for (Node child : this.anchorPane1.getChildren()) {
+            if (child.getClass() == Path.class) {
+                Path curve = (Path) child;
+                if (curve == relation.getArrow()) {
+                    return curve;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * looks after the recovering of the Relation's endPoint circle into pane view
+     *
+     * @param relation relation which we want to find the endPoint in the view
+     * @return the element of the view corresponding to the Relation's endPoint circle
+     */
+    private Circle findRelationEndPoint(Relation relation) {
+        for (Node child : this.anchorPane1.getChildren()) {
+            if (child.getClass() == Circle.class) {
+                Circle endPoint = (Circle) child;
+                if (endPoint == relation.getEndArrow() ) {
+                    return endPoint;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find and remove the the control circles of a Relation in the view
+     * @param relation Relation which we want to find and remove the control
+     *                  circle into the view
+     * @return if the two control circles have been deleted from the view or not
+     */
+    private boolean removeRelationControlCircles(Relation relation) {
+        boolean cc1find = false;
+        boolean cc2find = false;
+        Circle cc1 = new Circle();
+        Circle cc2 = new Circle();
+        for (Node child : this.anchorPane1.getChildren()) {
+            if (child.getClass() == Circle.class) {
+                Circle c = (Circle) child;
+                if (c == relation.getControl1() ) {
+                    cc1 = c;
+                    cc1find = true;
+                } else if (c == relation.getControl2()) {
+                    cc2 = c;
+                    cc2find = true;
+                }
+            }
+        }
+        if (cc1find && cc2find) {
+            this.anchorPane1.getChildren().removeAll(cc1, cc2);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * manages the substitution of the Relation's arrow in the view
+     *
+     * @param relation  relation which we have to update the arrow in the view
+     * @param path former arrow of the relation
+     * @param circle former endPoint circle of the relation
+     */
+    public void activateRelationBuildingArrow(Relation relation, Path path,
+                                              Circle circle) {
+        this.anchorPane1.getChildren().remove(path);
+        this.anchorPane1.getChildren().remove(circle);
+        relation.buildRelationShape();
+        this.anchorPane1.getChildren().addAll(relation.getEndArrow(),
+                relation.getArrow(), relation.getControl1(), relation.getControl2());
+    }
+
+    /**
      * manage the position of the labelName when we click on a Relation's arrow
      */
     public void positionLabelName(MouseEvent mouseEvent) {
-        if ((mouseEvent.getX() + this.labelName.getWidth()) > this.anchorPane1.getWidth()-this.BOUND ) {
+        if ((mouseEvent.getX() + this.labelName.getWidth()) >
+                this.anchorPane1.getWidth()-this.BOUND ) {
             this.labelName.setLayoutX(mouseEvent.getX() - this.labelName.getWidth());
         }else{
             this.labelName.setLayoutX(mouseEvent.getX());
         }
-        if ((mouseEvent.getY() + this.labelName.getHeight()) > this.anchorPane1.getHeight() - this.BOUND) {
+        if ((mouseEvent.getY() + this.labelName.getHeight()) >
+                this.anchorPane1.getHeight() - this.BOUND) {
             this.labelName.setLayoutY(mouseEvent.getY() - this.labelName.getHeight());
         } else {
             this.labelName.setLayoutY(mouseEvent.getY());
@@ -323,6 +435,7 @@ public class Controller implements Initializable {
         this.labelName.setTranslateY(this.BOUND);
 
     }
+
 
 
     /**
@@ -342,15 +455,11 @@ public class Controller implements Initializable {
     public void colorRelations() {
         this.relations.forEach(relation -> {
             if (this.style.getPattern().isEmpty()) {
-                System.out.println("No one selected");
-                relation.getArrow().setStroke(this.style.getClassicDependencyColor());
-                relation.getEndArrow().setFill(this.style.getClassicDependencyColor());
-            }else if (relation.isSelectedDependencyRelation(this.style.getPattern())) {
-                relation.getArrow().setStroke(this.style.getSelectedDependencyColor());
-                relation.getEndArrow().setFill(this.style.getSelectedDependencyColor());
-            }else{
-                relation.getArrow().setStroke(this.style.getClassicDependencyColor());
-                relation.getEndArrow().setFill(this.style.getClassicDependencyColor());
+                relation.manageColorRelation(this.style.getClassicDependencyColor());
+            } else if (relation.isSelectedDependencyRelation(this.style.getPattern())) {
+                relation.manageColorRelation(this.style.getSelectedDependencyColor());
+            } else {
+                relation.manageColorRelation(this.style.getClassicDependencyColor());
             }
         });
     }
