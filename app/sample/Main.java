@@ -12,7 +12,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         /*GogolParser gogolParser = new GogolParser("./src/dependencies.gogol");*/
         Parent root = FXMLLoader.load(getClass().getResource("View/sample.fxml"));
-        primaryStage.setTitle("SQL Dependency Graph");
+        primaryStage.setTitle("Hello World");
         Scene scene = new Scene(root, 1000, 600);
         primaryStage.setScene(scene);
         primaryStage.show();

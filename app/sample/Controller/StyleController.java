@@ -75,6 +75,7 @@ public class StyleController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        System.out.println("Initialisation de fenetre appareance");
         /* default value */
         this.choiceBoxVertex.setValue(this.vertexElements[0]);
         this.choiceBoxEdge.setValue(this.edgeElements[0]);

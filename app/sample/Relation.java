@@ -18,7 +18,7 @@ public class Relation {
     private Transaction source;
     private Transaction target;
     // Shape of Relation
-    boolean loop;
+    private boolean loop;
     public static final double loopSize = 90;
     Path arrow;
     CubicCurveTo curve = new CubicCurveTo();
@@ -37,6 +37,13 @@ public class Relation {
     }
 
     /**
+     * manages the creation of the Relation's arrow
+     */
+    public void drawRelationShape(){
+        buildRelationShape();
+    }
+
+    /**
      * looks after the building of the Relation shape so the arrow with all it needs
      * (end Point, curve, control points, ...)
      */
@@ -45,7 +52,6 @@ public class Relation {
                 this.target.getRectangle());
         // way we choose the opposite side following side2
         int side1 = loop ? side2 : (side2 + 2) % 4;
-        // System.out.println("loop : " + loop);
         this.source.increaseSide(side1);
         this.target.increaseSide(side2);
         double[] sourceCoordinates = getPointsArrow(this.source.getRectangle(),
@@ -54,6 +60,13 @@ public class Relation {
                 side2, false);
         arrow = createCurve(sourceCoordinates, targetCoordinates, side2);
         endArrow = createCircleArrow(targetCoordinates);
+        setRelationBehavior();
+    }
+
+    /**
+     * looks after the events and the aspects of th Relation's arrow
+     */
+    private void setRelationBehavior(){
         arrowAspectManagement();
         eventArrow();
     }
@@ -394,6 +407,14 @@ public class Relation {
         return Math.abs(diff_X) <= Math.abs(diff_Y);
     }
 
+    /**
+     * looks after the coloration of the Relation's arrow, with the endPoint arrow
+     * @param color color which we have to apply to the arrow
+     */
+    public void manageColorRelation(Color color) {
+        this.arrow.setStroke(color);
+        this.endArrow.setFill(color);
+    }
 
     public Transaction getSource() {
         return source;
@@ -447,4 +468,7 @@ public class Relation {
         this.controller = c;
     }
 
+    public boolean isLoop() {
+        return loop;
+    }
 }

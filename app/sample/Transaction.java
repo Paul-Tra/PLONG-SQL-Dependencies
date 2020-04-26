@@ -12,6 +12,7 @@ public class Transaction {
     // dragging attributes
     private double oldX;
     private double oldY;
+    private boolean drag = false;
     // identifications
     private String id = "";
     // positions
@@ -60,6 +61,7 @@ public class Transaction {
         text.layoutYProperty().bind(rectangle.layoutYProperty().add((WHITE_GAP) ));
         text.setOnMousePressed(this::mouseEventSimulation);
         text.setOnMouseDragged(this::mouseEventSimulation);
+        text.setOnMouseReleased(this::mouseEventSimulation);
     }
 
 // action methods --------------
@@ -70,8 +72,18 @@ public class Transaction {
     private void actionRectangle() {
         pressRectangle();
         dragRectangle();
+        releaseRectangle();
     }
 
+    private void releaseRectangle() {
+      rectangle.setOnMouseReleased(mouseEvent -> {
+          if (!this.drag) {
+              return;
+          }
+          this.controller.manageReleaseRectangle(this);
+          this.drag = false;
+      });
+    }
     /**
      * manages the mouse press event of the rectangle
      */
@@ -79,8 +91,6 @@ public class Transaction {
         rectangle.setOnMousePressed(mouseEvent -> {
             oldX = mouseEvent.getX();
             oldY = mouseEvent.getY();
-            //this.controller.pressAnchorPane1Rectangle(this);
-            //this.controller.anchorPane2.setVisible(false);
             this.controller.hideControlCircles(null);
         });
     }
@@ -93,10 +103,12 @@ public class Transaction {
             if (mouseEvent.getSceneX() > controller.BOUND &&
                     mouseEvent.getSceneX() < controller.anchorPane1.getScene().getWidth() - controller.BOUND) {
                 rectangle.setLayoutX(rectangle.getLayoutX() + mouseEvent.getX() - oldX);
+                this.drag = true;
             }
             if (mouseEvent.getSceneY() > controller.menuBar.getHeight() + controller.BOUND &&
                     mouseEvent.getSceneY() < controller.anchorPane1.getScene().getHeight() - controller.BOUND) {
                 rectangle.setLayoutY(rectangle.getLayoutY() + mouseEvent.getY() - oldY);
+                this.drag = true;
             }
         });
     }
@@ -170,4 +182,19 @@ public class Transaction {
         this.controller = c;
     }
 
+    public double getOldX() {
+        return oldX;
+    }
+
+    public double getOldY() {
+        return oldY;
+    }
+
+    public boolean isDrag() {
+        return drag;
+    }
+
+    public void setDrag(boolean drag) {
+        this.drag = drag;
+    }
 }
