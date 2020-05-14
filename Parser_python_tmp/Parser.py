@@ -30,7 +30,7 @@ class Parser:
         self.reformat_dependencies()
         self.gogol = Gogol(self,"graphs/Mygraphml.graphml",self.work_folder)
         self.re_write_graphml()
-        
+        self.gogol = Gogol(self,"graphs/Mygraphml.graphml",self.work_folder)
         
     def ww_dependencies(self):
         dict_tmp = dict()
