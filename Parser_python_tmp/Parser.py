@@ -27,6 +27,7 @@ class Parser:
         #print("## ", count, "Edges were found with : "+ str(nb_edge) + " relations , please see the grampl file ( into 'graphs' repo. ) ##\n")
         #print("Look at the .gogol file to see more details about relations")
         self.ww_dependencies()
+        self.reformat_dependencies()
         self.gogol = Gogol(self,"graphs/Mygraphml.graphml",self.work_folder)
         self.re_write_graphml()
         
@@ -119,14 +120,19 @@ class Parser:
             self.Dependencies[k] = list(set(v))
         
     def reformat_dependencies(self) :
-        
         tmp = dict() 
         for k , v in self.Dependencies.items() :
             tmp[k] = []
             for elt in v :
-                tmp[k].append(elt.strip())
-        
+                tmp[k].append(elt.replace(" ","").strip())
+                
         self.Dependencies = tmp
+        tmp = dict() 
+        for k , v in self.conditional_Dependencies.items() :
+            tmp[k] = []
+            for elt in v :
+                tmp[k].append(elt.replace(" ","").strip())
+        self.conditional_Dependencies = tmp
             
     def re_write_graphml(self):
         self.liste = self.gogol.list_to_remove

@@ -132,7 +132,7 @@ class Gogol:
                 #print(src+" ; "+dst+" ; " + relation)
                 return
                 
-            F.write('<Relation ID="'+relation.strip()+'" SRC="' + src + '" DST="'+ dst + '" CONDITION='+str(condi)+' >\n')
+            F.write('<Relation ID="'+relation.replace(" ","").strip()+'" SRC="' + src + '" DST="'+ dst + '" CONDITION='+str(condi)+' >\n')
             self.cpt = self.cpt +1
             F.write('<SRC>\n')
             for elt in lsrc :
