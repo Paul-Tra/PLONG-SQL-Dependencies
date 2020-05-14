@@ -433,7 +433,6 @@ public class Controller implements Initializable {
 
         this.labelName.setTranslateX(this.BOUND);
         this.labelName.setTranslateY(this.BOUND);
-
     }
 
 

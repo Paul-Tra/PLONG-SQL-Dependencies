@@ -135,4 +135,18 @@ digraph G{
 	payment.['w_id', 'w_id'] = delivery.['w_Id']
 	payment.['c_d_id'] = delivery.['d_id']
 	payment.['c_id'] = delivery.['c_id']", style = dashed, color = red ]
+
+
+
+	
+Foo [label=<
+<table border="0" cellborder="1" cellspacing="0">
+  <tr><td><i>Input Foo</i></td></tr>
+  <tr><td port="1">one</td></tr>
+  <tr><td port="2">two</td></tr>
+  <tr><td port="3">three</td></tr>
+  <tr><td port="4">four</td></tr>
+  <tr><td port="5">five</td></tr>
+  <tr><td port="6">six</td></tr>
+</table>>];
 }
