@@ -143,6 +143,8 @@ class Gogol:
                     elt = "INSERT " + elt.split("INSERT")[1].strip().replace(";","")
                 if ( "SELECT" in elt ) :
                     elt = "SELECT " + elt.split("SELECT")[1].strip().replace(";","")
+                if ( "UPDATE" in elt ) :
+                    elt = "UPDATE " + elt.split("UPDATE")[1].strip().replace(";","")
                     
                 for f in self.parser.list_readFile :
                     if ( f.file_name.split("/")[-1] == src ) :
@@ -162,6 +164,8 @@ class Gogol:
                     elt = "INSERT " + elt.split("INSERT")[1].strip().replace(";","")
                 if ( "SELECT" in elt ) :
                     elt = "SELECT " + elt.split("SELECT")[1].strip().replace(";","")
+                if ( "UPDATE" in elt ) :
+                    elt = "UPDATE " + elt.split("UPDATE")[1].strip().replace(";","")
                     
                 for f in self.parser.list_readFile :
                     if ( f.file_name.split("/")[-1] == dst ) :
