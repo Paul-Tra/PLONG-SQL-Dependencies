@@ -19,7 +19,7 @@ class Parser:
         self.conditional_Dependencies = dict() #  if request ... else : request .....       [src,dst] = ["ww;balbla(PK).attr","wr;......",.....]
         
     def play(self):
-        print("\tPath : ", self.work_folder+self.genDB)
+        print("\tPath GenDB : ", self.work_folder+self.genDB)
         self.primary_key_obj = PrimaryKey(self.work_folder+self.genDB)
         self.dic_primary_key = self.primary_key_obj.dict_table_attr
         self.process()
@@ -211,7 +211,7 @@ class Parser:
             F.write ('</graph>\n')
             F.write ('</graphml>\n')
         
-        print("Count : " , cpt )
+        print("Relation Count : " , cpt )
         return cpt , cpt2    
         
     def process(self):

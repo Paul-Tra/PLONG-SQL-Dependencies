@@ -33,9 +33,9 @@ class Read_file:
         self.find_select()
         #self.print_new_select()
         
-    def return_line_numbor_of(self,select ) :
+    def return_line_numbor_of(self,select , index) :
         select = select.strip()
-        return self.read_line_numbers(select)
+        return self.read_line_numbers(select, index)
 
     def read_by_line(self) :
         with open(self.file_name) as file :
@@ -43,7 +43,7 @@ class Read_file:
                 self.content_line_by_line.append(line.strip())
                 self.new_content_line_by_line.append(line.strip())
         
-    def read_line_numbers(self,select):
+    def read_line_numbers(self,select, index):
         check = False
         tmp = ""
         line = self.new_content_line_by_line
@@ -56,7 +56,7 @@ class Read_file:
                     a = i
             select = str(self.prev_select_list[a].replace(";","").strip())
             #print(select)
-        for i in range(0,len(line)):
+        for i in range(index,len(line)):
             l = line[i].replace(";","").strip()
             if ( l in select ) :
                 

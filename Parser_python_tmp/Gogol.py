@@ -2,7 +2,7 @@ import re
 
 class Gogol:
     def __init__(self, parser , graphml , dossier):
-        print("Gogol crée.")
+        #print("Gogol crée.")
         self.parser = parser 
         self.file_graphml = graphml
         tmp = ""
@@ -17,7 +17,7 @@ class Gogol:
         self.dossier = tmp
         self.write_entete()
         self.find_relation()
-        print("Count relation found : " , self.cpt )
+        #print("Count relation found : " , self.cpt )
         
     def write_entete(self):
         with open ( "/"+self.dossier+"graphs/dependencies.gogol","w+") as F :
@@ -135,28 +135,40 @@ class Gogol:
             F.write('<Relation ID="'+relation.replace(" ","").strip()+'" SRC="' + src + '" DST="'+ dst + '" CONDITION='+str(condi)+' >\n')
             self.cpt = self.cpt +1
             F.write('<SRC>\n')
+            count = list()
             for elt in lsrc :
                 if ( "IF" in elt and "INSERT" not in elt ) :
                     elt = elt.split(")")[1].strip().replace(";","")
                 if ( "INSERT" in elt ) :
                     elt = "INSERT " + elt.split("INSERT")[1].strip().replace(";","")
+                if ( "SELECT" in elt ) :
+                    elt = "SELECT " + elt.split("SELECT")[1].strip().replace(";","")
+                    
                 for f in self.parser.list_readFile :
                     if ( f.file_name.split("/")[-1] == src ) :
-                        cpt = f.return_line_numbor_of(elt.replace("BEGIN","").strip())
-                        
+                        cpt = f.return_line_numbor_of(elt.replace("BEGIN","").strip() , 0 )
+                        while ( cpt in count ) :
+                            cpt = f.return_line_numbor_of(elt.replace("BEGIN","").strip() , count[-1] )
+                        count.append(cpt)
                 F.write('\tl: ' + str(cpt) +'\t' + elt.replace(";","").replace("BEGIN","").strip() +';\n')
             F.write('</SRC>\n')
             F.write('<DST>\n')
+            count = list()
             for elt in ldst :
                         
                 if ( "IF" in elt and "INSERT" not in elt ) :
                     elt = elt.split(")")[1].strip().replace(";","")
                 if ( "INSERT" in elt ) :
                     elt = "INSERT " + elt.split("INSERT")[1].strip().replace(";","")
+                if ( "SELECT" in elt ) :
+                    elt = "SELECT " + elt.split("SELECT")[1].strip().replace(";","")
                     
                 for f in self.parser.list_readFile :
                     if ( f.file_name.split("/")[-1] == dst ) :
-                        cpt = f.return_line_numbor_of(elt.replace("BEGIN","").strip())
+                        cpt = f.return_line_numbor_of(elt.replace("BEGIN","").strip() , 0 )
+                        while ( cpt in count ) :
+                            cpt = f.return_line_numbor_of(elt.replace("BEGIN","").strip() , count[-1] )
+                        count.append(cpt)
                 F.write('\tl: ' + str(cpt) +'\t' + elt.replace(";","").replace("BEGIN","").strip() +';\n')
             F.write('</DST>\n')
             F.write('</Relation>\n\n')
