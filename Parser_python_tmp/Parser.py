@@ -84,38 +84,29 @@ class Parser:
             for elt in v :
                 if ( ("ww" in elt or "wr" in elt) and "*" in elt and k[0] != k[1] ) :
                     table = elt.split(",")[1].split("(")[0]
-                    #print("Table : " , table , k[0].file_name.split("/")[-1] ) 
                     for k2 , v2 in self.conditional_Dependencies.items() :
                         for elt in v2 :
                             if ( k != k2 and table in elt and ("ww" in elt or "wr" in elt)  ) :
-                                #print("OK2")
                                 if ( (k[0],k2[0]) not in dict_condi.keys() ) :
                                     dict_condi[k[0],k2[0]] = [elt.replace("wr","ww").strip()]
                                     dict_condi[k2[0],k[0]] = [elt.replace("wr","ww").strip()]
-                                    #print(k[0].file_name.split("/")[-1] , k2[0].file_name.split("/")[-1]  , elt.strip())
                                 else :
                                     dict_condi[k[0],k2[0]].append(elt.strip().replace("wr","ww").strip())
                                     dict_condi[k2[0],k[0]].append(elt.strip().replace("wr","ww").strip())
-                                    #print(k[0].file_name.split("/")[-1] , k2[0].file_name.split("/")[-1]  , elt.strip())
-                    
-                    
+                                    
         for k,v in dict_tmp.items():
             for elt in v :
                 if ( elt.strip() not in self.Dependencies[k] and k in self.Dependencies.keys() and ( k[0].file_name.strip() != k[1].file_name.strip() ) ) :
                     if ( elt not in self.Dependencies[k] ) :
                         self.Dependencies[k].append(elt.replace(" ","").strip())
-                        #print("3", k[0].file_name.split("/")[-1] , k[1].file_name.split("/")[-1]  , elt.strip())
                 elif ( elt.strip() not in self.Dependencies[k] and k not in self.Dependencies.keys() and k[0].file_name.strip() != k[1].file_name.strip() ) :
                     self.Dependencies[k] = [elt]
-                    #print("1" , k[0].file_name.split("/")[-1] , k[1].file_name.split("/")[-1]  , elt.strip())
                     
         for k,v in dict_condi.items():
             for elt in v :
                 if (k in self.conditional_Dependencies.keys() and  elt.strip() not in self.conditional_Dependencies[k] and k[0].file_name != k[1].file_name ) :
                     self.conditional_Dependencies[k].append(elt)
-                    #print("2",k[0].file_name.split("/")[-1] , k[1].file_name.split("/")[-1]  , elt.strip())
-                
-        
+                    
         for k , v in self.Dependencies.items():
             self.Dependencies[k] = list(set(v))
         
@@ -137,8 +128,6 @@ class Parser:
     def re_write_graphml(self):
         self.liste = self.gogol.list_to_remove
         self.reformat_dependencies()
-        
-        
         
         with open ( self.work_folder+"../graphs/Mygraphml.graphml","w+") as F :
             self.write_en_tete(F)
@@ -206,11 +195,8 @@ class Parser:
                             F.write ('\t'+elt+'\n')
                     F.write ('</data>\n')
                     F.write ('</edge>\n\n')
-                    
-            
             F.write ('</graph>\n')
             F.write ('</graphml>\n')
-        
         print("Relation Count : " , cpt )
         return cpt , cpt2    
         
@@ -223,11 +209,11 @@ class Parser:
                     self.analyze_UPDATE(src) # update on a same file -> ww on this same file
                     self.analyze_INSERT1(src,dst) # we have to check if there is a 'select' on the same attr on this file
                     self.analyze_SELECT1(src,dst) # if there are a select according to an update or insert case
-                    self.analyze_SELECT2(src,dst)
+                    self.analyze_SELECT2(src,dst) 
                     self.analyze_SELECT3(src,dst)
                     
                 if ( src.file_name != dst.file_name ) : # check if src and dst are diff.
-                    self.analyze_SELECT1(src,dst)
+                    self.analyze_SELECT1(src,dst) # try for both file , all possibilities
                     self.analyze_SELECT1(dst,src)
                     self.analyze_SELECT2(dst,src)
                     self.analyze_SELECT2(src,dst)
@@ -237,7 +223,6 @@ class Parser:
         
     def check_condional_dependencies(self,  src , request): # check if the 'request' in 'src' file is into an IF (.... ) else : ( ) ;
         for elt in request :
-            #print("CHECK condi dans : " , src.file_name , " pour : " , elt)
             tmp = src.new_content.split(";")
             cpt = 0
             for line in tmp :
