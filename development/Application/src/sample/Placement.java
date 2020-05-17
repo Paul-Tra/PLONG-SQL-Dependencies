@@ -77,7 +77,6 @@ public class Placement {
         this.nb_node = transactions.size();
         this.width = width;
         this.heigth = height;
-        //System.out.println(width + ";" + height);
         fillAttributes(transactions, relations);
         fruchtermanReingold();
     }
@@ -91,10 +90,7 @@ public class Placement {
         double cooling = temperature / (NB_ITERATONS + 1);
         double area = width * heigth;
         double k = Math.sqrt(area / nb_node)*IDEAL_COEFFICIENT;
-       // System.out.println("temperature :"+ temperature);
-        //System.out.println("cooling :"+ cooling);
         while (iterations < NB_ITERATONS) {
-           // System.out.println("temperature :"+ temperature);
             manageFRPlacement(cooling, k);
         }
 
@@ -108,9 +104,7 @@ public class Placement {
      */
     private void manageFRPlacement(double cooling, double k) {
         for (Node node : nodes) {
-            //node.disp.set(0, 0);
             node.setDisp(0, 0);
-           // System.out.println("coord : "+node.x+" :: "+node.y);
             for (Node node1 : nodes) {
                 if (!node.equals(node1)) {
                     double dx = node.x - node1.x;
@@ -191,7 +185,6 @@ public class Placement {
         for (int i = 0; i < nodes.size(); i++) {
             transactions.get(i).getRectangle().setLayoutX((int) nodes.get(i).x);
             transactions.get(i).getRectangle().setLayoutY((int) nodes.get(i).y);
-            System.out.println(nodes.get(i).x + "; " + nodes.get(i).y);
         }
     }
 
@@ -227,7 +220,6 @@ public class Placement {
             Node n = new Node();
             n.randPos(width, heigth);
             nodes.add(n);
-           // System.out.println(n.x + "; " + n.y);
         }
     }
 

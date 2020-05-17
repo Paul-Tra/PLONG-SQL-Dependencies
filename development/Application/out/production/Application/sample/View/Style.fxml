@@ -16,13 +16,13 @@
          <font>
             <Font size="14.0" />
          </font></Label>
-      <RadioButton fx:id="radioButtonWW" layoutX="115.0" layoutY="200.0" mnemonicParsing="false" onAction="#onRadioButtonWW" text="Write-Write">
+      <RadioButton fx:id="radioButtonWW" layoutX="82.0" layoutY="200.0" mnemonicParsing="false" onAction="#onRadioButtonWW" text="Write-Write">
          <toggleGroup>
             <ToggleGroup fx:id="toggleGroupType" />
          </toggleGroup>
       </RadioButton>
-      <RadioButton fx:id="radioButtonRW" layoutX="230.0" layoutY="200.0" mnemonicParsing="false" onAction="#onRadioButtonRW" selected="true" text="Read-Write" toggleGroup="$toggleGroupType" />
-      <RadioButton fx:id="radioButtonWR" layoutX="344.0" layoutY="200.0" mnemonicParsing="false" onAction="#onRadioButtonWR" text="Write-Read" toggleGroup="$toggleGroupType" />
+      <RadioButton fx:id="radioButtonRW" layoutX="197.0" layoutY="200.0" mnemonicParsing="false" onAction="#onRadioButtonRW" text="Read-Write" toggleGroup="$toggleGroupType" />
+      <RadioButton fx:id="radioButtonWR" layoutX="311.0" layoutY="200.0" mnemonicParsing="false" onAction="#onRadioButtonWR" text="Write-Read" toggleGroup="$toggleGroupType" />
       <Label layoutX="65.0" layoutY="55.0" text="Color settings of Vertex :" underline="true">
          <font>
             <Font size="14.0" />
@@ -31,5 +31,6 @@
          <font>
             <Font size="14.0" />
          </font></Label>
+      <RadioButton fx:id="radioButtonNO" layoutX="423.0" layoutY="200.0" mnemonicParsing="false" onAction="#onRadioButtonNO" selected="true" text="No one" toggleGroup="$toggleGroupType" />
    </children>
 </AnchorPane>

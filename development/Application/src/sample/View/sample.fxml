@@ -72,6 +72,7 @@
             <Menu fx:id="menuHelp1" mnemonicParsing="false" text="Tools">
                 <items>
                     <MenuItem fx:id="menuItemAppearance" mnemonicParsing="false" onAction="#onMenuItemAppearance" text="appearance" />
+                  <MenuItem fx:id="menuItemSelection" mnemonicParsing="false" onAction="#onMenuItemSelection" text="selection" />
                 </items>
             </Menu>
             </menus>
