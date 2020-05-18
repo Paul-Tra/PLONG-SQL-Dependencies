@@ -1,6 +1,5 @@
 package sample.Controller;
 
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -8,18 +7,15 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import sample.*;
 import sample.Parser.GogolParser;
 import sample.Parser.GraphmlParser;
@@ -38,13 +34,15 @@ public class Controller implements Initializable {
     public ArrayList<Transaction> transactions = new ArrayList<>();
     public ArrayList<Relation> relations = new ArrayList<>();
     public Style style = new Style();
+    public Selection selection;
     private GogolParser gogolParser;
+    private boolean fileChoose = false;
     @FXML
     public AnchorPane anchorPane1, anchorPane2, anchorPane3;
     @FXML
     public MenuBar menuBar;
     @FXML
-    private MenuItem menuItemExport, menuItemClearLaunch, menuItemAppearance;
+    public MenuItem menuItemExport, menuItemClearLaunch, menuItemAppearance, menuItemSelection;
 
     @FXML
     BorderPane borderPane1;
@@ -76,6 +74,11 @@ public class Controller implements Initializable {
         this.menuItemAppearance.setDisable(true);
         stage.show();
         stage.setOnCloseRequest(windowEvent -> menuItemAppearance.setDisable(false));
+    }
+
+    @FXML
+    private void onMenuItemSelection(){
+        this.selection.stageConfiguration(this);
     }
 
     @FXML
@@ -134,6 +137,9 @@ public class Controller implements Initializable {
     }
     @FXML
     private void clickListViewDependencies() {
+        if (this.fileChoose) {
+            return;
+        }
         String dependency = (String)
                 this.listViewDependencies.getSelectionModel().getSelectedItem();
         String source = this.labelSource2.getText();
@@ -213,6 +219,8 @@ public class Controller implements Initializable {
         this.relations.clear();
         this.transactions.clear();
         generateGraph();
+        this.menuItemSelection.setDisable(false);
+
     }
 
     @FXML
@@ -222,6 +230,10 @@ public class Controller implements Initializable {
         File defaultDirectory = new File("../../");
         chooser.setInitialDirectory(defaultDirectory);
         File s = chooser.showDialog(this.anchorPane1.getScene().getWindow());
+        if (s == null) {
+            return;
+        }
+        this.fileChoose = false;
         String c_dir = System.getProperty("user.dir") + "/src/" ;
         try {
            Process p = Runtime.getRuntime().exec("python3.7 " + s.getParent() + "/Parser.py " + s + "/");
@@ -250,6 +262,7 @@ public class Controller implements Initializable {
         File file = fil_chooser.showOpenDialog(this.anchorPane1.getScene().getWindow());
         if (file != null) {
             this.currentPath = file.getAbsolutePath();
+            this.fileChoose = true;
             onMenuItemClearLaunch();
         }
     }
@@ -278,15 +291,16 @@ public class Controller implements Initializable {
 
         this.relations.forEach(Relation::buildRelationShape);
 
-
         colorRelations();
         colorTransactions();
 
         addRelationsToPane(this.relations);
         addTransactionsToPane(this.transactions);
 
-        this.transactions.forEach((t) -> t.setController(this));
-        this.relations.forEach((r) -> r.setController(this));
+        this.selection = new Selection(this.transactions);
+
+        this.transactions.forEach(t -> t.setController(this));
+        this.relations.forEach(r -> r.setController(this));
 
         this.gogolParser = new GogolParser(GOGOLPATH, this.relations);
     }
@@ -308,12 +322,11 @@ public class Controller implements Initializable {
 
     /**
      * manages the update of the Relation's arrow
-     * @param relation
+     * @param relation relation that we have to update the arrow path
      */
     private void manageRelationArrowUpdate(Relation relation){
         if (relation.isLoop()) {
             /* do not take care about loop arrows now */
-            /* TODO: manages the decreasing of translations */
             return;
         }
         boolean curveFind = false;
@@ -407,11 +420,20 @@ public class Controller implements Initializable {
      */
     public void activateRelationBuildingArrow(Relation relation, Path path,
                                               Circle circle) {
+        boolean arrowVisible = relation.getArrow().isVisible();
         this.anchorPane1.getChildren().remove(path);
         this.anchorPane1.getChildren().remove(circle);
         relation.buildRelationShape();
         this.anchorPane1.getChildren().addAll(relation.getEndArrow(),
                 relation.getArrow(), relation.getControl1(), relation.getControl2());
+
+        relation.getEndArrow().toBack();
+        relation.getArrow().toBack();
+        relation.getControl1().toBack();
+        relation.getControl2().toBack();
+
+        relation.getArrow().setVisible(arrowVisible);
+        relation.getEndArrow().setVisible(arrowVisible);
     }
 
     /**
@@ -419,21 +441,22 @@ public class Controller implements Initializable {
      */
     public void positionLabelName(MouseEvent mouseEvent) {
         if ((mouseEvent.getX() + this.labelName.getWidth()) >
-                this.anchorPane1.getWidth()-this.BOUND ) {
-            this.labelName.setLayoutX(mouseEvent.getX() - this.labelName.getWidth());
-        }else{
+                this.anchorPane1.getWidth() - this.BOUND) {
+            this.labelName.setLayoutX(mouseEvent.getX() - this.labelName.getWidth()
+                    - this.BOUND*2);
+        } else {
             this.labelName.setLayoutX(mouseEvent.getX());
         }
         if ((mouseEvent.getY() + this.labelName.getHeight()) >
                 this.anchorPane1.getHeight() - this.BOUND) {
-            this.labelName.setLayoutY(mouseEvent.getY() - this.labelName.getHeight());
+            this.labelName.setLayoutY(mouseEvent.getY() - this.labelName.getHeight()
+                    - this.BOUND*2);
         } else {
             this.labelName.setLayoutY(mouseEvent.getY());
         }
 
         this.labelName.setTranslateX(this.BOUND);
         this.labelName.setTranslateY(this.BOUND);
-
     }
 
 
@@ -544,7 +567,6 @@ public class Controller implements Initializable {
                                          ArrayList<Transaction> transactions) {
         for (int i = 0; i < map.size(); i++) {
             String content[] = map.get(i);
-
             Relation r = new Relation(getTransactionFromId(transactions, content[0]),
                     getTransactionFromId(transactions, content[1]), content[2], content[3]);
             relations.add(r);
@@ -599,5 +621,6 @@ public class Controller implements Initializable {
 
         this.listViewTargetLines.setStyle("-fx-font-size : 11");
         this.anchorPane3.setVisible(false);
+        this.menuItemSelection.setDisable(true);
     }
 }
