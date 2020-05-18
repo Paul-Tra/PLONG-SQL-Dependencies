@@ -33,10 +33,12 @@ public class GraphmlParser {
         }
         try {
             document.getDocumentElement().normalize();
-            documentAnalysis();
+            System.out.println("normalisation faite !!! ");
         } catch (NullPointerException e) {
             System.out.println("The generated document is null");
+            return;
         }
+        documentAnalysis();
     }
 
 
@@ -65,9 +67,15 @@ public class GraphmlParser {
             Element e = (Element) nodeList.item(i);
             String source = e.getAttribute("source");
             String target = e.getAttribute("target");
-            String name = e.getElementsByTagName("data").item(0).getTextContent();
-            // recovering of the key value  ( d0, d1,...) :
-            String key = getFirstDataKey(e);
+            String name = "";
+            String key = "";
+            if (e.getElementsByTagName("data") != null &&
+                    e.getElementsByTagName("data").item(0) != null &&
+                    e.getElementsByTagName("data").item(0).getTextContent() != null) {
+                name = e.getElementsByTagName("data").item(0).getTextContent();
+                // recovering of the key value  ( d0, d1,...) :
+                key = getFirstDataKey(e);
+            }
             if (!isContained(source, target, name, key)) {
                 relationMap.put(relationMap.size(), new String[]{source, target, name, key});
             }
