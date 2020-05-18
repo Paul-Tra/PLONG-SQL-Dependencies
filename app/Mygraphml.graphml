@@ -10,10 +10,10 @@
 <edge source="stocklevel.sql" target="neworder.sql">
 	<data key="d1">
 	rw,DISTRICT(['dId','wId']).nextOrdId
-	stocklevel.['w_id'] = neworder.['w_id']
-	stocklevel.['d_id'] = neworder.['d_id']
 	stocklevel.['w_id'] = neworder.['ol_supply_w_id']
 	stocklevel.['ORDERLINE'] = neworder.['ol_i_id']
+	stocklevel.['w_id'] = neworder.['w_id']
+	stocklevel.['d_id'] = neworder.['d_id']
 </data>
 </edge>
 
@@ -23,10 +23,10 @@
 <edge source="neworder.sql" target="stocklevel.sql">
 	<data key="d1">
 	wr,DISTRICT(['dId','wId']).nextOrdId
-	stocklevel.['w_id'] = neworder.['w_id']
-	stocklevel.['d_id'] = neworder.['d_id']
 	stocklevel.['w_id'] = neworder.['ol_supply_w_id']
 	stocklevel.['ORDERLINE'] = neworder.['ol_i_id']
+	stocklevel.['w_id'] = neworder.['w_id']
+	stocklevel.['d_id'] = neworder.['d_id']
 </data>
 </edge>
 
@@ -35,8 +35,8 @@
 </node>
 <edge source="orderstatus.sql" target="neworder.sql">
 	<data key="d1">
-	rw,ORDERS(*).*
 	rw,ORDERLINE(*).*
+	rw,ORDERS(*).*
 	orderstatus.['o_id'] = neworder.['o_id']
 	orderstatus.['d_id'] = neworder.['d_id']
 	orderstatus.['w_id'] = neworder.['w_id']
@@ -48,8 +48,8 @@
 </node>
 <edge source="neworder.sql" target="orderstatus.sql">
 	<data key="d1">
-	wr,ORDERLINE(*).*
 	wr,ORDERS(*).*
+	wr,ORDERLINE(*).*
 	orderstatus.['o_id'] = neworder.['o_id']
 	orderstatus.['d_id'] = neworder.['d_id']
 	orderstatus.['w_id'] = neworder.['w_id']
@@ -62,8 +62,8 @@
 <edge source="orderstatus.sql" target="delivery.sql">
 	<data key="d1">
 	rw,CUSTOMER(['cId','dId','wId']).balance
-	rw,ORDERS(['oId','dId','wId']).carrierId
 	rw,ORDERLINE(['oId','dId','wId','number']).deliveryDate
+	rw,ORDERS(['oId','dId','wId']).carrierId
 	orderstatus.['d_id'] = delivery.['d_id']
 	orderstatus.['w_id', 'w_Id'] = delivery.['w_Id']
 	orderstatus.['c_id'] = delivery.['c_id']
@@ -78,8 +78,8 @@
 <edge source="delivery.sql" target="orderstatus.sql">
 	<data key="d1">
 	wr,ORDERS(['oId','dId','wId']).carrierId
-	wr,CUSTOMER(['cId','dId','wId']).balance
 	wr,ORDERLINE(['oId','dId','wId','number']).deliveryDate
+	wr,CUSTOMER(['cId','dId','wId']).balance
 	orderstatus.['d_id'] = delivery.['d_id']
 	orderstatus.['w_id', 'w_Id'] = delivery.['w_Id']
 	orderstatus.['c_id'] = delivery.['c_id']
@@ -105,20 +105,20 @@
 </node>
 <edge source="neworder.sql" target="neworder.sql">
 	<data key="d1">
-	ww,ORDERS(*).*
-	rw,DISTRICT(['dId','wId']).nextOrdId
 	rw,STOCK(['iId','wId']).quantity
-	wr,STOCK(['iId','wId']).quantity
-	ww,STOCK(['iId', 'wId']).quantity
-	ww,NEW_ORDER(*).*
-	wr,DISTRICT(['dId','wId']).nextOrdId
 	ww,ORDERLINE(*).*
 	ww,DISTRICT(['dId', 'wId']).nextOrdId
+	ww,STOCK(['iId', 'wId']).quantity
+	wr,DISTRICT(['dId','wId']).nextOrdId
+	ww,NEW_ORDER(*).*
+	ww,ORDERS(*).*
+	rw,DISTRICT(['dId','wId']).nextOrdId
+	wr,STOCK(['iId','wId']).quantity
+	neworder.['ol_i_id'] = neworder.['ol_i_id']
+	neworder.['ol_supply_w_id'] = neworder.['ol_supply_w_id']
 	neworder.* = neworder.*
 	neworder.['d_id'] = neworder.['d_id']
 	neworder.['w_id'] = neworder.['w_id']
-	neworder.['ol_i_id'] = neworder.['ol_i_id']
-	neworder.['ol_supply_w_id'] = neworder.['ol_supply_w_id']
 </data>
 </edge>
 
@@ -127,14 +127,14 @@
 </node>
 <edge source="neworder.sql" target="delivery.sql">
 	<data key="d1">
-	wr,ORDERLINE(*).*
-	wr,NEW_ORDER(*).*
 	wr,ORDERS(*).*
+	wr,NEW_ORDER(*).*
+	wr,ORDERLINE(*).*
 	delivery.['no_o_id'] = neworder.['o_id']
-	delivery.['d_id'] = neworder.['d_id']
-	delivery.['w_id'] = neworder.['w_id']
 	delivery.['d_id'] = neworder.['d_Id']
 	delivery.['w_id'] = neworder.['w_Id']
+	delivery.['d_id'] = neworder.['d_id']
+	delivery.['w_id'] = neworder.['w_id']
 </data>
 </edge>
 
@@ -143,14 +143,14 @@
 </node>
 <edge source="delivery.sql" target="neworder.sql">
 	<data key="d1">
-	rw,ORDERS(*).*
 	rw,NEW_ORDER(*).*
 	rw,ORDERLINE(*).*
+	rw,ORDERS(*).*
 	delivery.['no_o_id'] = neworder.['o_id']
-	delivery.['d_id'] = neworder.['d_id']
-	delivery.['w_id'] = neworder.['w_id']
 	delivery.['d_id'] = neworder.['d_Id']
 	delivery.['w_id'] = neworder.['w_Id']
+	delivery.['d_id'] = neworder.['d_id']
+	delivery.['w_id'] = neworder.['w_id']
 </data>
 </edge>
 
@@ -159,15 +159,15 @@
 </node>
 <edge source="delivery.sql" target="delivery.sql">
 	<data key="d1">
-	ww,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
-	ww,ORDERS(['oId', 'dId', 'wId']).carrierId
-	ww,CUSTOMER(['cId', 'dId', 'wId']).balance
 	ww,ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate
-	delivery.['c_id'] = delivery.['c_id']
-	delivery.['d_id'] = delivery.['d_id']
-	delivery.['w_Id'] = delivery.['w_Id']
+	ww,ORDERS(['oId', 'dId', 'wId']).carrierId
+	ww,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
+	ww,CUSTOMER(['cId', 'dId', 'wId']).balance
 	delivery.['no_o_id'] = delivery.['no_o_id']
+	delivery.['d_id'] = delivery.['d_id']
 	delivery.['w_id'] = delivery.['w_id']
+	delivery.['c_id'] = delivery.['c_id']
+	delivery.['w_Id'] = delivery.['w_Id']
 </data>
 </edge>
 
@@ -188,15 +188,15 @@
 </node>
 <edge source="payment.sql" target="payment.sql">
 	<data key="d1">
-	ww,HISTORY(*).*
-	ww,DISTRICT(['dId', 'wId']).dYTD
 	ww,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
+	ww,HISTORY(*).*
 	ww,WAREHOUSE(['wId']).wYTD
-	payment.* = payment.*
+	ww,DISTRICT(['dId', 'wId']).dYTD
 	payment.['w_id'] = payment.['w_id']
-	payment.['d_id'] = payment.['d_id']
 	payment.['c_d_id'] = payment.['c_d_id']
 	payment.['c_id'] = payment.['c_id']
+	payment.* = payment.*
+	payment.['d_id'] = payment.['d_id']
 </data>
 </edge>
 
@@ -265,14 +265,14 @@
 </node>
 <edge source="payment.sql" target="payment.sql">
 	<data key="d2">
-	ww,CUSTOMER(['cId', 'dId', 'wId']).balance
 	rw,CUSTOMER(['cId','dId','wId']).balance
-	wr,CUSTOMER(['cId','dId','wId']).balance
 	ww,CUSTOMER(['cId', 'dId', 'wId']).data
+	wr,CUSTOMER(['cId','dId','wId']).balance
+	ww,CUSTOMER(['cId', 'dId', 'wId']).balance
 	payment.['w_id', 'w_id'] = payment.['w_id', 'w_id']
 	payment.['c_d_id'] = payment.['c_d_id']
-	payment.['c_id', 'c_id'] = payment.['c_id', 'c_id']
 	payment.['c_id'] = payment.['c_id', 'c_id']
+	payment.['c_id', 'c_id'] = payment.['c_id', 'c_id']
 </data>
 </edge>
 

@@ -10,9 +10,8 @@ public class Main extends Application {
     
     @Override
     public void start(Stage primaryStage) throws Exception{
-        /*GogolParser gogolParser = new GogolParser("./src/dependencies.gogol");*/
         Parent root = FXMLLoader.load(getClass().getResource("View/sample.fxml"));
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("SQL queries and Dependency graph");
         Scene scene = new Scene(root, 1000, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
