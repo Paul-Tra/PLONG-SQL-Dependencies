@@ -7,7 +7,6 @@ class Read_file:
         self.file_content = ""
         self.new_content = ""
         self.primary_dict = primary_dict
-        #print("----------------------------------\n----------------------------------\nWorking on : " , self.file_name ,"\n")
         self.find_function_attr()
         
         self.content_line_by_line = []
@@ -33,9 +32,9 @@ class Read_file:
         self.find_select()
         #self.print_new_select()
         
-    def return_line_numbor_of(self,select ) :
+    def return_line_numbor_of(self,select , index) :
         select = select.strip()
-        return self.read_line_numbers(select)
+        return self.read_line_numbers(select, index)
 
     def read_by_line(self) :
         with open(self.file_name) as file :
@@ -43,7 +42,7 @@ class Read_file:
                 self.content_line_by_line.append(line.strip())
                 self.new_content_line_by_line.append(line.strip())
         
-    def read_line_numbers(self,select):
+    def read_line_numbers(self,select, index):
         check = False
         tmp = ""
         line = self.new_content_line_by_line
@@ -56,7 +55,7 @@ class Read_file:
                     a = i
             select = str(self.prev_select_list[a].replace(";","").strip())
             #print(select)
-        for i in range(0,len(line)):
+        for i in range(index,len(line)):
             l = line[i].replace(";","").strip()
             if ( l in select ) :
                 
@@ -122,8 +121,6 @@ class Read_file:
                 
     def find_update(self):
         res = re.findall("UPDATE (?P<table>[A-Za-z]+) SET (?P<attr>([A-Za-z]+_*[A-Za-z]+).*?)WHERE.*?;",self.file_content)
-    
-        #print(res)
         if ( res ) :
             for i in res :
                 for elt in i :
@@ -143,9 +140,7 @@ class Read_file:
             for i in res :
                 tmp = ""
                 if ( "=" in i[1] ):
-                    #print("OKKK",i[1])
                     tmp = i[1].split("=")[0].strip()
-                    #print(tmp)
                 else :
                     tmp = i[1].strip()
                 if ( i[0] in self.dict_update_table_attr.keys() ) :
@@ -157,17 +152,12 @@ class Read_file:
                 if ( "=" in elt ) :
                     elt = elt.replace(elt,elt.split("=")[0].strip())
         
-        #for k , v in self.dict_update_table_attr.items() :
-        #    print(k,v)
-    
     def find_where_case_in_update(self,table , attr ):
         if ( attr == "*" ):
             return []
         if ( "=" in attr ) :
             attr = attr.split("=")[0].strip()
-        #print(table,attr)
         res = re.findall("UPDATE "+table+" SET.*?"+attr+".*? WHERE.*?;",self.file_content)
-        #print(res)
         l = []
         if ( res ):
             for i in res :
@@ -182,7 +172,6 @@ class Read_file:
         res = re.findall("SELECT .*?;",self.file_content)
         if ( res ):
             for i in res :
-                #print("\n\tSelect find :", i)
                 self.processSelect(i)
                 
     def processSelect(self,select):
