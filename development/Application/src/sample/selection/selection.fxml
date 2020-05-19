@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller.selectionController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.selection.SelectionController">
    <children>
       <ListView fx:id="listView" onMouseClicked="#onClickListView" prefHeight="165.0" prefWidth="580.0" AnchorPane.bottomAnchor="85.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="150.0" />
       <Label layoutX="72.0" layoutY="67.0" prefHeight="16.0" prefWidth="407.0" text="Here you can choose the Transaction that you want to study :" AnchorPane.leftAnchor="72.0" AnchorPane.rightAnchor="121.0" AnchorPane.topAnchor="67.0" />

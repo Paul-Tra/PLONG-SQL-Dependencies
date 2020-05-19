@@ -16,9 +16,15 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import javafx.stage.Stage;
-import sample.*;
 import sample.Parser.GogolParser;
 import sample.Parser.GraphmlParser;
+import sample.exportation.DotWriter;
+import sample.Model.Relation;
+import sample.Model.Transaction;
+import sample.placement.Placement;
+import sample.selection.Selection;
+import sample.style.Style;
+import sample.style.StyleController;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,7 +64,7 @@ public class Controller implements Initializable {
 
     @FXML
     private void onMenuItemAppearance() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../View/Style.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../style/Style.fxml"));
         Parent root = null;
         try {
             root = loader.load();

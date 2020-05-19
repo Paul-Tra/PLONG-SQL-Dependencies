@@ -3,136 +3,142 @@ digraph G{
 	size="8,5"
 	nodesep=1.0
 	node[shape=box style=rounded peripheries=2]
-"stocklevel.sql"->"neworder.sql"[ label = "rw,DISTRICT(['dId','wId']).nextOrdId
-	stocklevel.['w_id'] = neworder.['w_id']
-	stocklevel.['d_id'] = neworder.['d_id']
-	stocklevel.['w_id'] = neworder.['ol_supply_w_id']
-	stocklevel.['ORDERLINE'] = neworder.['ol_i_id']", style = solid, color = black ]
-"neworder.sql"->"stocklevel.sql"[ label = "wr,DISTRICT(['dId','wId']).nextOrdId
-	stocklevel.['w_id'] = neworder.['w_id']
-	stocklevel.['d_id'] = neworder.['d_id']
-	stocklevel.['w_id'] = neworder.['ol_supply_w_id']
-	stocklevel.['ORDERLINE'] = neworder.['ol_i_id']", style = solid, color = black ]
-"orderstatus.sql"->"neworder.sql"[ label = "rw,ORDERLINE(*).*
-	rw,ORDERS(*).*
-	orderstatus.['o_id'] = neworder.['o_id']
-	orderstatus.['d_id'] = neworder.['d_id']
-	orderstatus.['w_id'] = neworder.['w_id']", style = solid, color = black ]
-"neworder.sql"->"orderstatus.sql"[ label = "wr,ORDERLINE(*).*
-	wr,ORDERS(*).*
-	orderstatus.['o_id'] = neworder.['o_id']
-	orderstatus.['d_id'] = neworder.['d_id']
-	orderstatus.['w_id'] = neworder.['w_id']", style = solid, color = black ]
-"orderstatus.sql"->"delivery.sql"[ label = "rw,CUSTOMER(['cId','dId','wId']).balance
-	rw,ORDERS(['oId','dId','wId']).carrierId
-	rw,ORDERLINE(['oId','dId','wId','number']).deliveryDate
-	orderstatus.['d_id'] = delivery.['d_id']
-	orderstatus.['w_id', 'w_Id'] = delivery.['w_Id']
-	orderstatus.['c_id'] = delivery.['c_id']
-	orderstatus.['o_id'] = delivery.['no_o_id']
-	orderstatus.['w_id'] = delivery.['w_id']", style = solid, color = black ]
-"delivery.sql"->"orderstatus.sql"[ label = "wr,CUSTOMER(['cId','dId','wId']).balance
-	wr,ORDERS(['oId','dId','wId']).carrierId
-	wr,ORDERLINE(['oId','dId','wId','number']).deliveryDate
-	orderstatus.['d_id'] = delivery.['d_id']
-	orderstatus.['w_id', 'w_Id'] = delivery.['w_Id']
-	orderstatus.['c_id'] = delivery.['c_id']
-	orderstatus.['o_id'] = delivery.['no_o_id']
-	orderstatus.['w_id'] = delivery.['w_id']", style = solid, color = black ]
-"payment.sql"->"orderstatus.sql"[ label = "wr,CUSTOMER(['cId','dId','wId']).balance
-	orderstatus.['d_id'] = payment.['c_d_id']
-	orderstatus.['w_id', 'w_Id'] = payment.['w_id', 'w_id']
-	orderstatus.['c_id'] = payment.['c_id', 'c_id']", style = solid, color = black ]
-"neworder.sql"->"neworder.sql"[ label = "ww,ORDERLINE(*).*
+"stocklevel.sql"->"neworder.sql"[ label = "stocklevel.['w_id']=neworder.['w_id']
+	stocklevel.['d_id']=neworder.['d_id']
 	rw,DISTRICT(['dId','wId']).nextOrdId
+	stocklevel.['w_id']=neworder.['ol_supply_w_id']", style = solid, color = red ]
+"neworder.sql"->"stocklevel.sql"[ label = "stocklevel.['w_id']=neworder.['w_id']
 	wr,DISTRICT(['dId','wId']).nextOrdId
-	ww,DISTRICT(['dId', 'wId']).nextOrdId
-	ww,ORDERS(*).*
-	wr,STOCK(['iId','wId']).quantity
-	ww,STOCK(['iId', 'wId']).quantity
-	rw,STOCK(['iId','wId']).quantity
-	ww,NEW_ORDER(*).*
-	neworder.* = neworder.*
-	neworder.['d_id'] = neworder.['d_id']
-	neworder.['w_id'] = neworder.['w_id']
-	neworder.['ol_i_id'] = neworder.['ol_i_id']
-	neworder.['ol_supply_w_id'] = neworder.['ol_supply_w_id']", style = solid, color = black ]
-"neworder.sql"->"delivery.sql"[ label = "wr,ORDERS(*).*
-	wr,ORDERLINE(*).*
-	wr,NEW_ORDER(*).*
-	delivery.['no_o_id'] = neworder.['o_id']
-	delivery.['d_id'] = neworder.['d_Id']
-	delivery.['w_id'] = neworder.['w_Id']
-	delivery.['d_id'] = neworder.['d_id']
-	delivery.['w_id'] = neworder.['w_id']", style = solid, color = black ]
-"delivery.sql"->"neworder.sql"[ label = "rw,ORDERLINE(*).*
-	rw,ORDERS(*).*
-	rw,NEW_ORDER(*).*
-	delivery.['no_o_id'] = neworder.['o_id']
-	delivery.['d_id'] = neworder.['d_Id']
-	delivery.['w_id'] = neworder.['w_Id']
-	delivery.['d_id'] = neworder.['d_id']
-	delivery.['w_id'] = neworder.['w_id']", style = solid, color = black ]
-"delivery.sql"->"delivery.sql"[ label = "ww,ORDERS(['oId', 'dId', 'wId']).carrierId
-	ww,CUSTOMER(['cId', 'dId', 'wId']).balance
-	ww,CUSTOMER(['cId', 'dId', 'wId']).deliveryCnt
-	ww,ORDERLINE(['oId', 'dId', 'wId', 'number']).deliveryDate
-	delivery.['no_o_id'] = delivery.['no_o_id']
-	delivery.['d_id'] = delivery.['d_id']
-	delivery.['w_id'] = delivery.['w_id']
-	delivery.['c_id'] = delivery.['c_id']
-	delivery.['w_Id'] = delivery.['w_Id']", style = solid, color = black ]
-"delivery.sql"->"payment.sql"[ label = "wr,CUSTOMER(['cId','dId','wId']).balance
-	payment.['w_id', 'w_id'] = delivery.['w_Id']
-	payment.['c_d_id'] = delivery.['d_id']
-	payment.['c_id'] = delivery.['c_id']", style = solid, color = black ]
-"payment.sql"->"payment.sql"[ label = "ww,DISTRICT(['dId', 'wId']).dYTD
-	ww,WAREHOUSE(['wId']).wYTD
-	ww,CUSTOMER(['cId', 'dId', 'wId']).paymtCnt
-	ww,HISTORY(*).*
-	payment.['w_id'] = payment.['w_id']
-	payment.['d_id'] = payment.['d_id']
-	payment.['c_d_id'] = payment.['c_d_id']
-	payment.['c_id'] = payment.['c_id']
-	payment.* = payment.*", style = solid, color = black ]
-"orderstatus.sql"->"payment.sql"[ label = "rw,CUSTOMER(['cId','dId','wId']).balance
-	orderstatus.['d_id'] = payment.['c_d_id']
-	orderstatus.['w_id', 'w_Id'] = payment.['w_id', 'w_id']
-	orderstatus.['c_id'] = payment.['c_id', 'c_id']", style = solid, color = black ]
-"payment.sql"->"delivery.sql"[ label = "rw,CUSTOMER(['cId','dId','wId']).balance
-	payment.['w_id', 'w_id'] = delivery.['w_Id']
-	payment.['c_d_id'] = delivery.['d_id']
-	payment.['c_id'] = delivery.['c_id']", style = solid, color = black ]
-"orderstatus.sql"->"delivery.sql"[ label = "rw,CUSTOMER(['cId','dId','wId']).balance
-	orderstatus.['d_id'] = delivery.['d_id']
-	orderstatus.['w_id', 'w_Id'] = delivery.['w_Id']
-	orderstatus.['c_id'] = delivery.['c_id']", style = dashed, color = black ]
-"orderstatus.sql"->"payment.sql"[ label = "rw,CUSTOMER(['cId','dId','wId']).balance
-	orderstatus.['d_id'] = payment.['c_d_id']
-	orderstatus.['w_id', 'w_Id'] = payment.['w_id', 'w_id']
-	orderstatus.['c_id'] = payment.['c_id', 'c_id']", style = dashed, color = black ]
-"payment.sql"->"delivery.sql"[ label = "rw,CUSTOMER(['cId','dId','wId']).balance
-	payment.['w_id', 'w_id'] = delivery.['w_Id']
-	payment.['c_d_id'] = delivery.['d_id']
-	payment.['c_id'] = delivery.['c_id']", style = dashed, color = black ]
-"payment.sql"->"payment.sql"[ label = "ww,CUSTOMER(['cId', 'dId', 'wId']).data
+	stocklevel.['d_id']=neworder.['d_id']
+	stocklevel.['w_id']=neworder.['ol_supply_w_id']", style = solid, color = black ]
+"orderstatus.sql"->"neworder.sql"[ label = "rw,ORDERLINE(*).*
+	orderstatus.['d_id']=neworder.['d_id']
+	orderstatus.['w_id']=neworder.['w_id']
+	orderstatus.['o_id']=neworder.['o_id']
+	rw,ORDERS(*).*", style = solid, color = red ]
+"neworder.sql"->"orderstatus.sql"[ label = "wr,ORDERS(*).*
+	orderstatus.['d_id']=neworder.['d_id']
+	orderstatus.['w_id']=neworder.['w_id']
+	orderstatus.['o_id']=neworder.['o_id']
+	wr,ORDERLINE(*).*", style = solid, color = black ]
+"orderstatus.sql"->"delivery.sql"[ label = "orderstatus.['o_id']=delivery.['no_o_id']
+	rw,ORDERS(['oId','dId','wId']).carrierId
 	rw,CUSTOMER(['cId','dId','wId']).balance
-	ww,CUSTOMER(['cId', 'dId', 'wId']).balance
-	wr,CUSTOMER(['cId','dId','wId']).balance
-	payment.['w_id', 'w_id'] = payment.['w_id', 'w_id']
-	payment.['c_d_id'] = payment.['c_d_id']
-	payment.['c_id', 'c_id'] = payment.['c_id', 'c_id']
-	payment.['c_id'] = payment.['c_id', 'c_id']", style = dashed, color = black ]
+	orderstatus.['w_id','w_Id']=delivery.['w_Id']
+	orderstatus.['d_id']=delivery.['d_id']
+	rw,ORDERLINE(['oId','dId','wId','number']).deliveryDate
+	orderstatus.['w_id']=delivery.['w_id']
+	orderstatus.['c_id']=delivery.['c_id']", style = solid, color = red ]
 "delivery.sql"->"orderstatus.sql"[ label = "wr,CUSTOMER(['cId','dId','wId']).balance
-	orderstatus.['d_id'] = delivery.['d_id']
-	orderstatus.['w_id', 'w_Id'] = delivery.['w_Id']
-	orderstatus.['c_id'] = delivery.['c_id']", style = dashed, color = black ]
+	orderstatus.['o_id']=delivery.['no_o_id']
+	orderstatus.['w_id','w_Id']=delivery.['w_Id']
+	orderstatus.['d_id']=delivery.['d_id']
+	wr,ORDERS(['oId','dId','wId']).carrierId
+	orderstatus.['w_id']=delivery.['w_id']
+	orderstatus.['c_id']=delivery.['c_id']
+	wr,ORDERLINE(['oId','dId','wId','number']).deliveryDate", style = solid, color = black ]
 "payment.sql"->"orderstatus.sql"[ label = "wr,CUSTOMER(['cId','dId','wId']).balance
-	orderstatus.['d_id'] = payment.['c_d_id']
-	orderstatus.['w_id', 'w_Id'] = payment.['w_id', 'w_id']
-	orderstatus.['c_id'] = payment.['c_id', 'c_id']", style = dashed, color = black ]
+	orderstatus.['d_id']=payment.['c_d_id']
+	orderstatus.['w_id','w_Id']=payment.['w_id','w_id']
+	orderstatus.['c_id']=payment.['c_id','c_id']", style = solid, color = black ]
+"neworder.sql"->"neworder.sql"[ label = "ww,ORDERLINE(*).*
+	wr,DISTRICT(['dId','wId']).nextOrdId
+	neworder.['ol_i_id']=neworder.['ol_i_id']
+	neworder.*=neworder.*
+	rw,STOCK(['iId','wId']).quantity
+	neworder.['w_id']=neworder.['w_id']
+	ww,NEW_ORDER(*).*
+	ww,STOCK(['iId','wId']).quantity
+	neworder.['d_id']=neworder.['d_id']
+	ww,ORDERS(*).*
+	rw,DISTRICT(['dId','wId']).nextOrdId
+	wr,STOCK(['iId','wId']).quantity
+	neworder.['ol_supply_w_id']=neworder.['ol_supply_w_id']
+	ww,DISTRICT(['dId','wId']).nextOrdId", style = solid, color = red ]
+"neworder.sql"->"delivery.sql"[ label = "wr,ORDERS(*).*
+	delivery.['w_id']=neworder.['w_id']
+	delivery.['d_id']=neworder.['d_id']
+	ww,ORDERS(['oId','dId','wId']).carrierId
+	wr,NEW_ORDER(*).*
+	ww,ORDERLINE(['oId','dId','wId','number']).deliveryDate
+	delivery.['w_id']=neworder.['w_Id']
+	delivery.['d_id']=neworder.['d_Id']
+	delivery.['no_o_id']=neworder.['o_id']
+	wr,ORDERLINE(*).*", style = solid, color = black ]
+"delivery.sql"->"neworder.sql"[ label = "delivery.['w_id']=neworder.['w_id']
+	delivery.['d_id']=neworder.['d_id']
+	ww,ORDERS(['oId','dId','wId']).carrierId
+	rw,ORDERLINE(*).*
+	ww,ORDERLINE(['oId','dId','wId','number']).deliveryDate
+	rw,NEW_ORDER(*).*
+	delivery.['w_id']=neworder.['w_Id']
+	delivery.['d_id']=neworder.['d_Id']
+	rw,ORDERS(*).*
+	delivery.['no_o_id']=neworder.['o_id']", style = solid, color = red ]
+"delivery.sql"->"delivery.sql"[ label = "delivery.['d_id']=delivery.['d_id']
+	delivery.['no_o_id']=delivery.['no_o_id']
+	ww,CUSTOMER(['cId','dId','wId']).deliveryCnt
+	ww,CUSTOMER(['cId','dId','wId']).balance
+	delivery.['w_id']=delivery.['w_id']
+	delivery.['c_id']=delivery.['c_id']
+	ww,ORDERLINE(['oId','dId','wId','number']).deliveryDate
+	ww,ORDERS(['oId','dId','wId']).carrierId
+	delivery.['w_Id']=delivery.['w_Id']", style = solid, color = black ]
 "delivery.sql"->"payment.sql"[ label = "wr,CUSTOMER(['cId','dId','wId']).balance
-	payment.['w_id', 'w_id'] = delivery.['w_Id']
-	payment.['c_d_id'] = delivery.['d_id']
-	payment.['c_id'] = delivery.['c_id']", style = dashed, color = black ]
+	payment.['c_d_id']=delivery.['d_id']
+	ww,CUSTOMER(['cId','dId','wId']).balance
+	payment.['c_id']=delivery.['c_id']
+	payment.['w_id','w_id']=delivery.['w_Id']", style = solid, color = black ]
+"payment.sql"->"payment.sql"[ label = "ww,DISTRICT(['dId','wId']).dYTD
+	payment.['c_d_id']=payment.['c_d_id']
+	payment.['c_id']=payment.['c_id']
+	ww,CUSTOMER(['cId','dId','wId']).paymtCnt
+	payment.['d_id']=payment.['d_id']
+	ww,HISTORY(*).*
+	payment.*=payment.*
+	ww,WAREHOUSE(['wId']).wYTD
+	payment.['w_id']=payment.['w_id']", style = solid, color = black ]
+"orderstatus.sql"->"payment.sql"[ label = "orderstatus.['c_id']=payment.['c_id','c_id']
+	orderstatus.['d_id']=payment.['c_d_id']
+	rw,CUSTOMER(['cId','dId','wId']).balance
+	orderstatus.['w_id','w_Id']=payment.['w_id','w_id']", style = solid, color = red ]
+"payment.sql"->"delivery.sql"[ label = "rw,CUSTOMER(['cId','dId','wId']).balance
+	payment.['c_d_id']=delivery.['d_id']
+	ww,CUSTOMER(['cId','dId','wId']).balance
+	payment.['c_id']=delivery.['c_id']
+	payment.['w_id','w_id']=delivery.['w_Id']", style = solid, color = red ]
+"orderstatus.sql"->"delivery.sql"[ label = "rw,CUSTOMER(['cId','dId','wId']).balance
+	orderstatus.['d_id']=delivery.['d_id']
+	orderstatus.['w_id','w_Id']=delivery.['w_Id']
+	orderstatus.['c_id']=delivery.['c_id']", style = dashed, color = red ]
+"orderstatus.sql"->"payment.sql"[ label = "rw,CUSTOMER(['cId','dId','wId']).balance
+	orderstatus.['d_id']=payment.['c_d_id']
+	orderstatus.['w_id','w_Id']=payment.['w_id','w_id']
+	orderstatus.['c_id']=payment.['c_id','c_id']", style = dashed, color = red ]
+"payment.sql"->"delivery.sql"[ label = "rw,CUSTOMER(['cId','dId','wId']).balance
+	payment.['w_id','w_id']=delivery.['w_Id']
+	payment.['c_d_id']=delivery.['d_id']
+	payment.['c_id']=delivery.['c_id']
+	ww,CUSTOMER(['cId','dId','wId']).balance", style = dashed, color = red ]
+"payment.sql"->"payment.sql"[ label = "wr,CUSTOMER(['cId','dId','wId']).balance
+	ww,CUSTOMER(['cId','dId','wId']).data
+	rw,CUSTOMER(['cId','dId','wId']).balance
+	ww,CUSTOMER(['cId','dId','wId']).balance
+	payment.['w_id','w_id']=payment.['w_id','w_id']
+	payment.['c_d_id']=payment.['c_d_id']
+	payment.['c_id']=payment.['c_id','c_id']
+	payment.['c_id','c_id']=payment.['c_id','c_id']", style = dashed, color = red ]
+"delivery.sql"->"orderstatus.sql"[ label = "wr,CUSTOMER(['cId','dId','wId']).balance
+	orderstatus.['d_id']=delivery.['d_id']
+	orderstatus.['w_id','w_Id']=delivery.['w_Id']
+	orderstatus.['c_id']=delivery.['c_id']", style = dashed, color = black ]
+"payment.sql"->"orderstatus.sql"[ label = "wr,CUSTOMER(['cId','dId','wId']).balance
+	orderstatus.['d_id']=payment.['c_d_id']
+	orderstatus.['w_id','w_Id']=payment.['w_id','w_id']
+	orderstatus.['c_id']=payment.['c_id','c_id']", style = dashed, color = black ]
+"delivery.sql"->"payment.sql"[ label = "wr,CUSTOMER(['cId','dId','wId']).balance
+	payment.['w_id','w_id']=delivery.['w_Id']
+	payment.['c_d_id']=delivery.['d_id']
+	payment.['c_id']=delivery.['c_id']
+	ww,CUSTOMER(['cId','dId','wId']).balance", style = dashed, color = black ]
 }

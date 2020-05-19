@@ -1,4 +1,7 @@
-package sample;
+package sample.placement;
+
+import sample.Model.Relation;
+import sample.Model.Transaction;
 
 import java.util.ArrayList;
 import java.util.HashMap;

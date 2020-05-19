@@ -1,6 +1,6 @@
 package sample.Parser;
 
-import sample.Relation;
+import sample.Model.Relation;
 
 import java.io.BufferedReader;
 import java.io.File;

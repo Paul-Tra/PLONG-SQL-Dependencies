@@ -1,4 +1,4 @@
-package sample;
+package sample.selection;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -6,7 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.RadioButton;
 import javafx.stage.Stage;
 import sample.Controller.Controller;
-import sample.Controller.SelectionController;
+import sample.Model.Transaction;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class Selection {
      * @param controller controller from which we want to launch the window
      */
     public void stageConfiguration(Controller controller) {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("View/selection.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("selection.fxml"));
         Parent root = null;
         try {
             root = loader.load();

@@ -1,4 +1,6 @@
-package sample;
+package sample.exportation;
+
+import sample.Model.Relation;
 
 import java.io.BufferedWriter;
 import java.io.File;

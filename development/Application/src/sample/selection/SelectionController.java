@@ -1,10 +1,11 @@
-package sample.Controller;
+package sample.selection;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
-import sample.Relation;
-import sample.Transaction;
+import sample.Controller.Controller;
+import sample.Model.Relation;
+import sample.Model.Transaction;
 
 import java.util.ArrayList;
 
