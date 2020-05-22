@@ -23,11 +23,11 @@
       </RadioButton>
       <RadioButton fx:id="radioButtonRW" layoutX="197.0" layoutY="200.0" mnemonicParsing="false" onAction="#onRadioButtonRW" text="Read-Write" toggleGroup="$toggleGroupType" />
       <RadioButton fx:id="radioButtonWR" layoutX="311.0" layoutY="200.0" mnemonicParsing="false" onAction="#onRadioButtonWR" text="Write-Read" toggleGroup="$toggleGroupType" />
-      <Label layoutX="65.0" layoutY="55.0" text="Color settings of Vertex :" underline="true">
+      <Label layoutX="65.0" layoutY="55.0" text="Color settings of Vertices :" underline="true">
          <font>
             <Font size="14.0" />
          </font></Label>
-      <Label layoutX="65.0" layoutY="252.0" text="Color setting of Edges :" underline="true">
+      <Label layoutX="65.0" layoutY="252.0" text="Color settings of Edges :" underline="true">
          <font>
             <Font size="14.0" />
          </font></Label>

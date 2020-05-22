@@ -28,14 +28,13 @@ public class GraphmlParser {
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
             document = documentBuilder.parse(file);
         } catch (Exception e) {
-            consumer.accept(" e message : " + e.getMessage());
+            this.consumer.accept(" e message : " + e.getMessage());
             e.printStackTrace();
         }
         try {
             document.getDocumentElement().normalize();
-            System.out.println("normalisation faite !!! ");
         } catch (NullPointerException e) {
-            System.out.println("The generated document is null");
+            this.consumer.accept("The generated document is null");
             return;
         }
         documentAnalysis();
@@ -73,7 +72,7 @@ public class GraphmlParser {
                     e.getElementsByTagName("data").item(0) != null &&
                     e.getElementsByTagName("data").item(0).getTextContent() != null) {
                 name = e.getElementsByTagName("data").item(0).getTextContent();
-                // recovering of the key value  ( d0, d1,...) :
+                /* recovering of the key value  ( d0, d1,...) : */
                 key = getFirstDataKey(e);
             }
             if (!isContained(source, target, name, key)) {

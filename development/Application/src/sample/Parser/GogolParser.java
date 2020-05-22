@@ -112,8 +112,6 @@ public class GogolParser {
     /**
      * fills the map representing the dependencies from all Relation's dependencies
      */
-    // TODO : 3.7 executionjava.lang.IndexOutOfBoundsException: Index -1 out of bounds for length 65
-
     private void fillDependencies() {
         for (Relation relation : this.relations) {
             ArrayList<String> dependencies = relation.getDependenciesLinesFromName();

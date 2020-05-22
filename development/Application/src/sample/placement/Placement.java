@@ -63,14 +63,14 @@ public class Placement {
         }
     }
 
-    int iterations;
-    boolean optimum = false;
-    int nb_node;
-    ArrayList<Node> nodes = new ArrayList<>();
-    ArrayList<Edge> edges = new ArrayList<>();
-    HashMap<Integer,String> map = new HashMap<>();
-    double width;
-    double heigth;
+    private int iterations;
+    private boolean optimum = false;
+    private int nb_node;
+    private ArrayList<Node> nodes = new ArrayList<>();
+    private ArrayList<Edge> edges = new ArrayList<>();
+    private HashMap<Integer,String> map = new HashMap<>();
+    private double width;
+    private double heigth;
     private final int NB_ITERATONS = 1000;
     private static final double IDEAL_COEFFICIENT = 4.6;
     private double temperature; // is the maximum amount of movement allowed for a node
@@ -120,7 +120,7 @@ public class Placement {
                 }
             }
         }
-        // calculate attractive forces (only between neighbors)
+        /* calculate attractive forces (only between neighbors) */
         for (Edge e : edges) {
             double dx = e.v.x - e.u.x;
             double dy = e.v.y - e.u.y;
@@ -146,6 +146,7 @@ public class Placement {
                 y = Math.min(heigth, Math.max(0, y)) - heigth / 2;
                 v.setPos(Math.min(Math.sqrt((width * width / 4) - (y * y)),
                         Math.max(-Math.sqrt((width * width / 4) - (y * y)), x)) + (width / 2),
+
                         Math.min(Math.sqrt(Math.abs((heigth * heigth / 4) - (x * x))),
                                 Math.max(-Math.sqrt(Math.abs((heigth * heigth / 4) - (x * x))),
                                         y))+ (heigth / 2));

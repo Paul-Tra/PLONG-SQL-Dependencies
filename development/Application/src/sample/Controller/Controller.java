@@ -108,7 +108,6 @@ public class Controller implements Initializable {
         String filePath;
         String fileExtension;
         if (file == null) {
-            System.out.println(" chosen file null");
             return;
         }
         filePath = file.getAbsolutePath();
@@ -260,7 +259,6 @@ public class Controller implements Initializable {
 
     @FXML
     private void onMenuItemFile() {
-        //Node node = (Node) event.getSource();
         FileChooser fil_chooser = new FileChooser();
         // add filters file's extension+
         fil_chooser.getExtensionFilters().addAll(
