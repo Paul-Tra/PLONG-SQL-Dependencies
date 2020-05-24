@@ -65,11 +65,11 @@ Feel free to see the **Tools** menu , it give you some possibilities to custom y
 Also , you can export your graph in the **Edit** menu.
 Then , if you only want to study grraph without taking care about dependencies , you can load the **graphml file** by choosing **File** in the **File** menu ( and then , choose your _.gaphml_ file ).
 
-## Authors and acknoledgment 
+## Authors
 
 TRAORE Paul & CADIOU Léo-Paul
 Fell free to see our video in YouTube : 
 ```
-https://www.youtube.com/watch?v=KZth2UhkroY
+https://youtu.be/v1lFgFxjT8U
 ```
 
