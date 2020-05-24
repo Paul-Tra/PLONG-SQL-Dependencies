@@ -15,6 +15,8 @@ This project is an answer of the subject called
 
 To use the App you must have a recent version of **java** (java 14 is needed).
 
+_If you have any problem, try with **OpenJDK** 14._
+
 
 ## Installation
 
@@ -24,20 +26,32 @@ Use the git-commande clone to recover the App folders from the
 #### with SSH URL :
 
 ```bash
-	git clone git@gaufre.informatique.univ-paris-diderot.fr:cadiou/cadiou-traore-plong-1920.git	
+$	git clone git@gaufre.informatique.univ-paris-diderot.fr:cadiou/cadiou-traore-plong-1920.git	
 ```
 #### with HTTPS URL :
 
 ```bash
-	git clone https://gaufre.informatique.univ-paris-diderot.fr/cadiou/cadiou-traore-plong-1920.git
+$	git clone https://gaufre.informatique.univ-paris-diderot.fr/cadiou/cadiou-traore-plong-1920.git
 ```
 ## Usage
 
 The python part is inside the App , so you don't have to process it before.
-( all folders you want to process must be in "Parser_python_tmp" folder )
+( all folders you want to process must be in **Parser_python_tmp** folder )
 
+So , for example , if you want to study a folder name **toto** , just copy your folder in **Parser_python_tmp**.
+``` bash 
+$ 	cp -r Path_to_toto/toto Path_to_app/../Parser_python_tmp
+```
+Make sur your folder will be in the Parser folder.
 
-### During the use :
+##Launch
+
+You must go to the **app** directory, and then execute the command: 
+```bash
+$ 	cd cadiou-traore-plong-1920/app/
+$ 	make
+```
+### During the use
 
 * To generate a graph from your SQL files you have to select the 'folder' menu , then choose "Parser_python_tmp" , then choose your folder ( try with different test ).
 
@@ -45,6 +59,17 @@ The python part is inside the App , so you don't have to process it before.
 
 * You can delete and generate the same or an other graph by using the 'clear' button and do the same procedure than above for the next graph.
 
+### Additional Information
+
+Feel free to see the **Tools** menu , it give you some possibilities to custom your graph.
+Also , you can export your graph in the **Edit** menu.
+Then , if you only want to study grraph without taking care about dependencies , you can load the **graphml file** by choosing **File** in the **File** menu ( and then , choose your _.gaphml_ file ).
+
 ## Authors and acknoledgment 
 
+TRAORE Paul & CADIOU Léo-Paul
+Fell free to see our video in YouTube : 
+```
+https://www.youtube.com/watch?v=KZth2UhkroY
+```
 
