@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane fx:id="borderPane1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefWidth="1000.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller.Controller">
+<BorderPane fx:id="borderPane1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefWidth="1000.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.control.Controller">
     <center>
         <AnchorPane fx:id="anchorPane1" minHeight="571.0" minWidth="552.0" prefHeight="571.0" prefWidth="750.0" BorderPane.alignment="CENTER">
             <children>
@@ -72,6 +72,7 @@
             <Menu fx:id="menuHelp1" mnemonicParsing="false" text="Tools">
                 <items>
                     <MenuItem fx:id="menuItemAppearance" mnemonicParsing="false" onAction="#onMenuItemAppearance" text="appearance" />
+                  <MenuItem fx:id="menuItemSelection" mnemonicParsing="false" onAction="#onMenuItemSelection" text="selection" />
                 </items>
             </Menu>
             </menus>

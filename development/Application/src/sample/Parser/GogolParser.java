@@ -1,6 +1,6 @@
 package sample.Parser;
 
-import sample.Relation;
+import sample.Model.Relation;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -85,7 +85,6 @@ public class GogolParser {
             key = (String[]) iterator.next();
             if (key[0].equals(dependency) && key[1].equals(source)
                     && key[2].equals(target)) {
-                System.out.println("Give me a \"Hell Yeh\" !!");
                 sourceLines.addAll(map.get(key)[0]);
                 targetLines.addAll(map.get(key)[1]);
             }
@@ -113,23 +112,7 @@ public class GogolParser {
     /**
      * fills the map representing the dependencies from all Relation's dependencies
      */
-    // TODO : 3.7 executionjava.lang.IndexOutOfBoundsException: Index -1 out of bounds for length 65
-
     private void fillDependencies() {
-        int cpt = 0;
-        for (Relation relation : this.relations) {
-            ArrayList<String> dependencies = relation.getDependenciesLinesFromName();
-            cpt += dependencies.size();
-        }
-        System.out.println("nb dependence graphml :" + cpt);
-        cpt = 0;
-        for (String file_line : this.file_lines) {
-            if (file_line.contains("<Relation")) {
-                cpt++;
-            }
-        }
-        System.out.println("nb relation gogol :" + cpt);
-
         for (Relation relation : this.relations) {
             ArrayList<String> dependencies = relation.getDependenciesLinesFromName();
             for (String dependency : dependencies) {
@@ -138,7 +121,9 @@ public class GogolParser {
 
                 boolean conditional = !relation.getArrow().getStrokeDashArray().isEmpty();
                 int index = indexRelation(dependency, source, target, conditional);
-
+                if(index == -1){
+                    return;
+                }
                 ArrayList<String> source_lines = new ArrayList<>();
                 index = getTagLinesFromIndex(index, source_lines, this.tagSource);
 

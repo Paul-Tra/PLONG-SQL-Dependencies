@@ -254,9 +254,6 @@ public class Placement {
 
 }
 /*
-    Former implementation : useful only to check the implemented code version
-
-
 // calculate repulsive forces (from every vertex to every other)
 		for (Vertex v : graph.vertexSet()) {
 			// reset displacement vector for new calculation

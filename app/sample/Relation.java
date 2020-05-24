@@ -21,7 +21,6 @@ public class Relation {
     private boolean loop;
     public static final double loopSize = 90;
     Path arrow;
-    CubicCurveTo curve = new CubicCurveTo();
     Circle endArrow = new Circle();
     Circle control1 = new Circle();
     Circle control2 = new Circle();
@@ -33,14 +32,6 @@ public class Relation {
         this.source = source;
         this.target = target;
         this.loop = (this.target.getId().equals(this.source.getId()));
-        //buildRelationShape();
-    }
-
-    /**
-     * manages the creation of the Relation's arrow
-     */
-    public void drawRelationShape(){
-        buildRelationShape();
     }
 
     /**

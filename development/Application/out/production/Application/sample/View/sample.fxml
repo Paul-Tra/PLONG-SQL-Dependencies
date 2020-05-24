@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane fx:id="borderPane1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefWidth="1000.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller.Controller">
+<BorderPane fx:id="borderPane1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefWidth="1000.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.control.Controller">
     <center>
         <AnchorPane fx:id="anchorPane1" minHeight="571.0" minWidth="552.0" prefHeight="571.0" prefWidth="750.0" BorderPane.alignment="CENTER">
             <children>
@@ -54,14 +54,14 @@
             <menus>
                 <Menu fx:id="menuFile" mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem fx:id="menuItemClearLaunch" mnemonicParsing="false" onAction="#onMenuItemClearLaunch" text="Clear/Launch" />
+                        <MenuItem fx:id="menuItemClearLaunch" disable="true" mnemonicParsing="false" onAction="#onMenuItemClearLaunch" text="Clear/Launch" />
                         <MenuItem fx:id="menuItemFolder" mnemonicParsing="false" onAction="#onMenuItemFolder" text="Folder" />
                         <MenuItem fx:id="menuItemFile" mnemonicParsing="false" onAction="#onMenuItemFile" text="File" />
                     </items>
                 </Menu>
                 <Menu fx:id="menuEdit" mnemonicParsing="false" text="Edit">
                     <items>
-                        <MenuItem fx:id="menuItemExport" mnemonicParsing="false" onAction="#onMenuItemExport" text="export" />
+                        <MenuItem fx:id="menuItemExport" disable="true" mnemonicParsing="false" onAction="#onMenuItemExport" text="export" />
                     </items>
                 </Menu>
                 <Menu fx:id="menuHelp" mnemonicParsing="false" text="Help">
@@ -72,6 +72,7 @@
             <Menu fx:id="menuHelp1" mnemonicParsing="false" text="Tools">
                 <items>
                     <MenuItem fx:id="menuItemAppearance" mnemonicParsing="false" onAction="#onMenuItemAppearance" text="appearance" />
+                  <MenuItem fx:id="menuItemSelection" mnemonicParsing="false" onAction="#onMenuItemSelection" text="selection" />
                 </items>
             </Menu>
             </menus>

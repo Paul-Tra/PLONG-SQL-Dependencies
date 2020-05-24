@@ -28,15 +28,16 @@ public class GraphmlParser {
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
             document = documentBuilder.parse(file);
         } catch (Exception e) {
-            consumer.accept(" e message : " + e.getMessage());
+            this.consumer.accept(" e message : " + e.getMessage());
             e.printStackTrace();
         }
         try {
             document.getDocumentElement().normalize();
-            documentAnalysis();
         } catch (NullPointerException e) {
-            System.out.println("The generated document is null");
+            this.consumer.accept("The generated document is null");
+            return;
         }
+        documentAnalysis();
     }
 
 
@@ -46,10 +47,15 @@ public class GraphmlParser {
     private void documentAnalysis() {
         // node == Transaction
         nodeList = document.getElementsByTagName("node");
-        transactionRecovering();
+        if (nodeList.getLength() != 0) {
+            transactionRecovering();
+        }
+
         // edge == Relation
         nodeList = document.getElementsByTagName("edge");
-        relationRecovering();
+        if (nodeList.getLength() != 0) {
+            relationRecovering();
+        }
     }
 
     /**
@@ -60,9 +66,15 @@ public class GraphmlParser {
             Element e = (Element) nodeList.item(i);
             String source = e.getAttribute("source");
             String target = e.getAttribute("target");
-            String name = e.getElementsByTagName("data").item(0).getTextContent();
-            // recovering of the key value  ( d0, d1,...) :
-            String key = getFirstDataKey(e);
+            String name = "";
+            String key = "";
+            if (e.getElementsByTagName("data") != null &&
+                    e.getElementsByTagName("data").item(0) != null &&
+                    e.getElementsByTagName("data").item(0).getTextContent() != null) {
+                name = e.getElementsByTagName("data").item(0).getTextContent();
+                /* recovering of the key value  ( d0, d1,...) : */
+                key = getFirstDataKey(e);
+            }
             if (!isContained(source, target, name, key)) {
                 relationMap.put(relationMap.size(), new String[]{source, target, name, key});
             }
@@ -90,7 +102,6 @@ public class GraphmlParser {
             String id = e.getAttribute("id");
             if (!isContained(id)) {
                 transactionMap.put(transactionMap.size(), id);
-                consumer.accept("id: "+id);
             }
         }
     }
@@ -124,7 +135,6 @@ public class GraphmlParser {
             if (tab.length != 4) {
                 // 4: required number of parameter that identify a Relation as
                 // the function's parameters
-                System.out.println("check tab.length : " + tab.length);
                 return true; // if it is contained, we will not add it so no issues
             }
             if (tab[0].equals(source) && tab[1].equals(target) && tab[2].equals(name) &&
