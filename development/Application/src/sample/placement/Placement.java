@@ -86,7 +86,7 @@ public class Placement {
 
     /**
      * applies Fruchterman-Reingold force-directed layout algorithm
-     * @see
+     * @see Forced_Directed_Gaph.pdf
      */
     public void fruchtermanReingold(){
         temperature = width / 10;
@@ -106,6 +106,7 @@ public class Placement {
      * @param k ideal size of edge
      */
     private void manageFRPlacement(double cooling, double k) {
+        /* repulsion of each node between them */
         for (Node node : nodes) {
             node.setDisp(0, 0);
             for (Node node1 : nodes) {
@@ -121,6 +122,7 @@ public class Placement {
             }
         }
         /* calculate attractive forces (only between neighbors) */
+        /* attraction due to the links between two nodes*/
         for (Edge e : edges) {
             double dx = e.v.x - e.u.x;
             double dy = e.v.y - e.u.y;
@@ -134,14 +136,13 @@ public class Placement {
             }
         }
         optimum = true;
+        /* node displacement affectation */
         for (Node v : nodes) {
-            double dx = v.dx;
-            double dy = v.dy;
+            double dx = v.dx, dy = v.dy;
             double delta = Math.sqrt((dx * dx) + (dy * dy));
             if (delta != 0) {
                 double d = Math.min(delta, temperature) / delta;
-                double x = v.x + dx * d;
-                double y = v.y + dy * d;
+                double x = v.x + dx * d, y = v.y + dy * d;
                 x = Math.min(width, Math.max(0, x)) - width / 2;
                 y = Math.min(heigth, Math.max(0, y)) - heigth / 2;
                 v.setPos(Math.min(Math.sqrt((width * width / 4) - (y * y)),

@@ -3,7 +3,7 @@ package sample.style;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import sample.Controller.Controller;
+import sample.control.Controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;

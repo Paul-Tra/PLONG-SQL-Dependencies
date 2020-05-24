@@ -6,7 +6,7 @@ import javafx.event.Event;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import sample.Controller.Controller;
+import sample.control.Controller;
 
 public class Transaction {
     // dragging attributes

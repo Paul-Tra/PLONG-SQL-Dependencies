@@ -2,7 +2,7 @@ package sample.Model;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
-import sample.Controller.Controller;
+import sample.control.Controller;
 
 import java.util.ArrayList;
 import java.util.Random;

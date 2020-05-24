@@ -5,7 +5,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.RadioButton;
 import javafx.stage.Stage;
-import sample.Controller.Controller;
+import sample.control.Controller;
 import sample.Model.Transaction;
 
 import java.io.IOException;

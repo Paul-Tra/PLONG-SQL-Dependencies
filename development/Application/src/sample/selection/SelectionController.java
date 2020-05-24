@@ -3,7 +3,7 @@ package sample.selection;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
-import sample.Controller.Controller;
+import sample.control.Controller;
 import sample.Model.Relation;
 import sample.Model.Transaction;
 
