@@ -57,19 +57,19 @@ $ 	make
 
 * Then press the 'Open' button to generate the graph.
 
-* You can delete and generate the same or an other graph by using the 'clear' button and do the same procedure than above for the next graph.
+* You can delete and generate the same graph with an other configuration by using the 'clear/launch' button.
 
 ### Additional Information
 
 Feel free to see the **Tools** menu , it give you some possibilities to custom your graph.
 Also , you can export your graph in the **Edit** menu.
-Then , if you only want to study grraph without taking care about dependencies , you can load the **graphml file** by choosing **File** in the **File** menu ( and then , choose your _.gaphml_ file ).
+Then , if you only want to study graph without taking care about dependencies , you can load the **graphml file** by choosing **File** in the **File** menu ( and then , choose your _.gaphml_ file ).
 
 ## Authors
 
 TRAORE Paul & CADIOU Léo-Paul
 Fell free to see our video in YouTube : 
 ```
-https://youtu.be/v1lFgFxjT8U
+https://www.youtube.com/watch?v=v1lFgFxjT8U&feature=youtu.be
 ```
 
